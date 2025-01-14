@@ -84,6 +84,35 @@ CineScope/
 4. Code review by team members
 5. Merge after approval
 
+##Getting Started With Development
+ 1. Clone the repository:
+```Bash
+git clone https://github.com/omniV1/CineScope.git
+cd CineScope
+```
+
+2. Set up your git identity:
+```Bash
+git config user.name "Your Name"
+git config user.email "your.email@example.com"
+```
+
+3. Create your working branch:
+```Bash
+git checkout -b Name-Dev
+
+Example:
+git checkout -b John-Dev
+```
+4. Push your branch:
+```Bash
+git add .
+git commit -m "whatever"
+git push origin Name-Dev
+```
+That's it! Create a Pull Request on GitHub when you're ready for review.
+Note: Always work in your designated Name-Dev branch.
+
 ## 🔍 Code Review Guidelines
 
 - Follow C# coding conventions
