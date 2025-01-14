@@ -84,7 +84,9 @@ CineScope/
 4. Code review by team members
 5. Merge after approval
 
-##Getting Started With Development
+
+## 🤝 Contributing
+
  1. Clone the repository:
 ```Bash
 git clone https://github.com/omniV1/CineScope.git
@@ -140,14 +142,6 @@ Additional documentation can be found in the `/Documents` directory:
 ## 🚀 Deployment
 
 [To be added based on deployment strategy]
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
 
 ## 📄 License
 
