@@ -26,7 +26,7 @@ We need to create detailed architecture documentation that will serve as the fou
 Our current focus is specifically on documenting the login system and homepage requirements. The site architecture documentation needs significant expansion.
 
 ### Current Progress
-- We have an initial sitemap available here: [Current Sitemap](https://github.com/omniV1/CineScope/tree/main/Documents/sitemap)
+- We have an initial sitemap available here: [Current Sitemap](https://github.com/omniV1/CineScope/blob/main/Documents/sitemap/readme.md)
 - The current sitemap provides a basic structure but requires enhancement
 - *While visual improvements would be beneficial, they are not the primary focus at this stage*
 
