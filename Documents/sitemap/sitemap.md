@@ -1,5 +1,6 @@
 ```mermaid
 
+
 graph TD
     Landing[Landing Page] --> Movies[Movies by Category]
     Landing --> Login[Login/Logout]
@@ -8,10 +9,7 @@ graph TD
     Movies --> Featured[Featured Movies]
     Movies --> Recent[Recently Added]
     Movies --> TopRated[Top Rated]
-    Movies --> RomCom[Rom-Com]
-    Movies --> Horror[Horror/Thriller]
-    Movies --> Action[Action]
-    Movies --> SciFi[Sci-Fi]
+    
     
     Login --> UserProfile[User Profile]
     UserProfile --> MyReviews[My Reviews]
@@ -23,6 +21,8 @@ graph TD
     MoviePage --> Reviews[Reviews Section]
     Reviews --> FilterReviews[Filter Reviews]
     Reviews --> SortReviews[Sort Reviews]
+
+
 
 
 ```
