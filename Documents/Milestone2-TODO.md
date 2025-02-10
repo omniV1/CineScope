@@ -1,60 +1,58 @@
-# CineScope Project TODO List
+# CineScope Project Documentation Requirements
 
-## Architecture Diagrams
-These diagrams will provide a clear visual representation of our technical and communication infrastructure.
+## Architecture Documentation Requirements
+We need to create detailed architecture documentation that will serve as the foundation for our functional requirements. This involves creating two distinct diagrams:
 
-### 1. Technical Stack Diagram
-This diagram will showcase our core technologies and their interactions.
-- [ ] Create comprehensive visual diagram including:
-  - C# Blazor Web App architecture
-  - Tailwind CSS integration
-  - MongoDB database structure
-- [ ] Add official logos for each technology
-- [ ] Illustrate connections between components
-- [ ] Implement brand-consistent color scheme
-- [ ] Conduct final review for clarity
+### Technical Architecture Diagram
+- [ ] Create a comprehensive diagram of our technology stack that includes:
+  - C# Blazor web application architecture and components
+  - Tailwind CSS implementation and styling structure
+  - MongoDB database architecture and relationships
+  - Technology logos for visual clarity
+  - Connection flows between different technology components
 
-### 2. Communication Infrastructure Diagram
-This diagram will map out our team's communication and project management tools.
-- [ ] Design detailed flow diagram showing:
-  - Discord channel organization
-  - Confluence documentation structure
-  - Jira workflow processes
-- [ ] Define team roles and access levels
-- [ ] Map integrations between tools
-- [ ] Document communication protocols
 
-## Site Mapping and Wireframes
-Our initial focus will be on core user journey components.
+*Note: This diagram should be visually appealing while maintaining technical accuracy. The inclusion of official logos and proper color schemes will help with presentation clarity.*
 
-### Login System Architecture
-- [ ] Create detailed authentication flow
-- [ ] Document user role hierarchy
-- [ ] Outline security implementation
-- [ ] Define error handling procedures
+### Team Communication Architecture
+- [ ] Document our communication infrastructure including:
+  - Discord channel structure and communication protocols
+  - Confluence documentation organization and standards
+  - Jira workflow and project management methodology
+  - Integration points between communication tools
+  - Team roles and access level documentation
 
-### Homepage Development
-- [ ] Design component architecture
-- [ ] Create navigation structure
-- [ ] Define content organization
-- [ ] Document user interaction paths
+## Site Architecture Documentation
+Our current focus is specifically on documenting the login system and homepage requirements. The site architecture documentation needs significant expansion.
 
-### Development Tools
-- Primary Design Tool: Figma
-- Alternative Tool: draw.io
-- Current Sitemap Reference: [View Current Sitemap](https://github.com/omniV1/CineScope/tree/main/Documents/sitemap)
+### Current Progress
+- We have an initial sitemap available here: [Current Sitemap](https://github.com/omniV1/CineScope/tree/main/Documents/sitemap)
+- The current sitemap provides a basic structure but requires enhancement
+- *While visual improvements would be beneficial, they are not the primary focus at this stage*
 
-## Wireframe Implementation
-- [ ] Generate and distribute access links
-- [ ] Configure team editing permissions
-- [ ] Create wireframe standards documentation
-- [ ] Implement review workflow
+### Site Documentation Tools
+- [ ] Establish documentation in Figma (primary tool)
+  - *Note: Initial exploration of Figma has shown promise, but additional learning time will be needed*
+- [ ] Alternative documentation can be created in draw.io if needed
+- [ ] Develop wireframe documentation standards
+- [ ] Create shared access protocols for team collaboration
 
-## Project Management Setup
-- [ ] Transfer functional requirements to Jira
-- [ ] Review and update non-functional requirements
-- [ ] Create task dependency structure
-- [ ] Set task priorities and timelines
+## Functional Requirements Documentation
+- [ ] Transfer all functional requirements into Jira as structured tasks
+- [ ] Review and refactor existing functional requirements
+- [ ] Update non-functional requirements as needed
+  - *This may require significant restructuring but is manageable within current timeline*
+
+### Documentation Sharing
+- [ ] Wireframe documentation access will be provided to team
+- [ ] Team members will have full editing capabilities
+
+
+## Documentation Timeline Considerations
+1. Functional requirements documentation in Jira takes priority
+2. Architecture diagrams will be developed alongside requirements documentation
+3. Site documentation will focus exclusively on login and homepage initially
+4. Wireframe access and collaboration protocols will be established as requirements are finalized
 
 ---
-**Note:** Our primary focus remains on developing the login system and homepage while completing these organizational tasks.
+**Remember:** Our goal is to create comprehensive functional requirement documentation. All diagrams and documentation should focus on clearly communicating requirements rather than technical implementation details.
