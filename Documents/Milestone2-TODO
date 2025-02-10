@@ -1,0 +1,22 @@
+**TODO:**
+
+**We need an updated Architecture diagram.**
+**We need two different ones:**
+1. One for tech stack ex. C# Blazor web app, Tailwind Css, Mongodb (just needs to look good, add a logo of the technology etc.)
+2. One for communication applications (discord, confluence, jira)
+
+**We need to create a site map using figma or draw.io and expand on the wireframes we've got.**
+We will only focus on logging in and building a landing / homepage.
+*Honestly I tried figma for the first time today and it looks really cool. I need more time with it though.*
+
+[[Current Sitemap Link](https://github.com/omniV1/CineScope/tree/main/Documents/sitemap)]
+*This is our current sitemap and its okay, id like to make it better looking but its not super important right now.*
+
+- I will share those wireframe links in a bit! Everyone will be able to access them and edit them. Feel free to make any changes youd like.
+
+**I need to create the functional requirements as tasks in jira!**
+*I dont mind doing this but it does mean I wont get around to doing the above tasks as quickly.*
+*This is also going to prompt a lot of refactoring in our functional and non functional requirements but again thats no big deal I can do that as well.*
+
+***I dont mind doing this but it does mean I wont get around to doing the above tasks as quickly.***
+***This is also going to prompt a lot of refactoring in our functional and non functional requirements but again thats no big deal I can do that as well.*** 
