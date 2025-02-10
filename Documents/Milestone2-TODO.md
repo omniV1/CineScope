@@ -1,14 +1,60 @@
-## TODO:
-### We need an updated Architecture diagram. 
- ***we need two different ones***, 
-1. one for tech stack ex. C# Blazor web app, Tailwind Css, Mongodb ( just needs to look good, add a logo of the technology etc.) 
-2. one for communication applications (discord, confluence, jira). 
-### We need to create a site map using figma or draw.io and expand on the wireframes we've got. We will only focus on logging in and building a landing / homepage. 
-***Honestly I tried figma for the first time today and it looks really cool. I need more time with it though.***
- 
-![Sitemap](https://github.com/omniV1/CineScope/blob/main/Documents/sitemap/sitemap.md)
-***This is our current sitemap and its okay, id like to make it better looking but its not super important right now.*** 
-- I will share those wireframe links in a bit! Everyone will be able to access them and edit them. Feel free to make any changes youd like. 
-### I need to create the functional requirements as tasks in jira! 
-***I dont mind doing this but it does mean I wont get around to doing the above tasks as quickly.***
-***This is also going to prompt a lot of refactoring in our functional and non functional requirements but again thats no big deal I can do that as well.***
+# CineScope Project TODO List
+
+## Architecture Diagrams
+These diagrams will provide a clear visual representation of our technical and communication infrastructure.
+
+### 1. Technical Stack Diagram
+This diagram will showcase our core technologies and their interactions.
+- [ ] Create comprehensive visual diagram including:
+  - C# Blazor Web App architecture
+  - Tailwind CSS integration
+  - MongoDB database structure
+- [ ] Add official logos for each technology
+- [ ] Illustrate connections between components
+- [ ] Implement brand-consistent color scheme
+- [ ] Conduct final review for clarity
+
+### 2. Communication Infrastructure Diagram
+This diagram will map out our team's communication and project management tools.
+- [ ] Design detailed flow diagram showing:
+  - Discord channel organization
+  - Confluence documentation structure
+  - Jira workflow processes
+- [ ] Define team roles and access levels
+- [ ] Map integrations between tools
+- [ ] Document communication protocols
+
+## Site Mapping and Wireframes
+Our initial focus will be on core user journey components.
+
+### Login System Architecture
+- [ ] Create detailed authentication flow
+- [ ] Document user role hierarchy
+- [ ] Outline security implementation
+- [ ] Define error handling procedures
+
+### Homepage Development
+- [ ] Design component architecture
+- [ ] Create navigation structure
+- [ ] Define content organization
+- [ ] Document user interaction paths
+
+### Development Tools
+- Primary Design Tool: Figma
+- Alternative Tool: draw.io
+- Current Sitemap Reference: [View Current Sitemap](https://github.com/omniV1/CineScope/tree/main/Documents/sitemap)
+
+## Wireframe Implementation
+- [ ] Generate and distribute access links
+- [ ] Configure team editing permissions
+- [ ] Create wireframe standards documentation
+- [ ] Implement review workflow
+
+## Project Management Setup
+- [ ] Transfer functional requirements to Jira
+- [ ] Review and update non-functional requirements
+- [ ] Create task dependency structure
+- [ ] Set task priorities and timelines
+
+---
+**Note:** Our primary focus remains on developing the login system and homepage while completing these organizational tasks.
