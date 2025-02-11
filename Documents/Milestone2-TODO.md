@@ -4,7 +4,7 @@
 We need to create detailed architecture documentation that will serve as the foundation for our functional requirements. This involves creating two distinct diagrams:
 
 ### Technical Architecture Diagram
-- [ ] Create a comprehensive diagram of our technology stack that includes:
+- [X] Create a comprehensive diagram of our technology stack that includes:
   - C# Blazor web application architecture and components
   - Tailwind CSS implementation and styling structure
   - MongoDB database architecture and relationships
@@ -38,7 +38,7 @@ Our current focus is specifically on documenting the login system and homepage r
 - [ ] Create shared access protocols for team collaboration
 
 ## Functional Requirements Documentation
-- [ ] Transfer all functional requirements into Jira as structured tasks
+- [X] Transfer all functional requirements into Jira as structured tasks
 - [ ] Review and refactor existing functional requirements
 - [ ] Update non-functional requirements as needed
   - *This may require significant restructuring but is manageable within current timeline*
