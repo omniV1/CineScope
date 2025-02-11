@@ -89,12 +89,12 @@ The project operates under several foundational assumptions. Users are expected 
 
 The CineScope platform implements a comprehensive communication structure to support effective team collaboration and development workflows. Figure 1 illustrates the primary communication channels and their purposes.
 
-![Communication Pipeline](F:\GCU\CineScope\Documents\Images\Communication.png)
+![Communication Pipeline](https://github.com/omniV1/CineScope/blob/main/Documents/Images/Communication.png)
 Figure 1: Team Communication Pathways
 
 The development architecture follows an N-layer design pattern that promotes separation of concerns and maintainability. Figure 2 shows the architectural layers and their relationships.
 
-![N-Layer Architecture](F:\GCU\CineScope\Documents\Images\N-layer.png)
+![[N-Layer Architecture](https://github.com/omniV1/CineScope/blob/main/Documents/Images/N-layer.png)
 Figure 2: CineScope N-Layer Architecture
 
 ## 2.2 Site Navigation Structure
