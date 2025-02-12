@@ -132,6 +132,13 @@ Figure 3: CineScope Site Navigation Map
 
 The following section presents the wireframes for key system interfaces. These wireframes illustrate the layout and functionality of major system components.
 
+### Authentication System Interfaces
+The authentication system represents a core component of our user experience, implementing a comprehensive set of interfaces designed for security and ease of use. The login interface presents users with a focused design centered around the CineScope branding, featuring clearly labeled input fields for username and password entry. Additional authentication options include social media integration through Facebook, Google, and Apple ID services, providing users with flexible access methods while maintaining security standards.
+
+The registration process expands upon this, guiding users through a structured form for data collection. Users provide essential information including name, email address, mobile number, and password, with clear validation feedback at each step. The success state provides users with clear confirmation and automatic redirection to the landing page with the membership acess. Profile management capabilities allow users to maintain their account information through an organized, accessible interface.
+
+![Authentication Wireframes]()
+
 [Note: This section will be populated with wireframe designs showing the layout and interaction design for key system interfaces including:
 - Landing page layout
 - Movie detail views
@@ -173,101 +180,99 @@ The filtering engine implements sophisticated pattern matching while supporting 
 
 The system's functional requirements encompass several key areas of functionality, each mapped to specific use cases and implementation tasks. These requirements define the core behaviors necessary for the CineScope platform to meet user needs effectively.
 
+
 ### Landing Page Requirements
 
-| Use Case ID | Functional Req. ID | Functional Requirement |
-|-------------|-------------------|---------------------|
-| UC-1 | FR-1.1 | The System shall display movies on the Landing page |
-| UC-1 | FR-1.2 | The System shall display section for Features Movies |
-| UC-1 | FR-1.3 | The System shall display section for Recently Viewed Movies |
-| UC-1 | FR-1.4 | The System shall display section for Top-Rated Movies |
-| UC-1 | FR-1.5 | The System shall display section for Rom-Com Movies |
-| UC-1 | FR-1.6 | The System shall display section for Thriller/Horror Movies |
-| UC-1 | FR-1.7 | The System shall display section for Action Movies |
-| UC-1 | FR-1.8 | The System shall display section for Sci-FI Movies |
-| UC-1 | FR-1.9 | The System shall display section for Recently Added Movies |
-| UC-1 | FR-1.10 | The System shall redirect the user to a movie's page if clicked |
-| UC-1 | FR-1.11 | The System shall display an error message and log the user out if an error occurs |
+| Use Case ID | Functional Req. ID | Functional Requirement | SCRUM ID |
+|-------------|-------------------|---------------------|-----------|
+| UC-1 | FR-1.1 | The System shall display movies on the Landing page | SCRUM-21 |
+| UC-1 | FR-1.2 | The System shall display section for Features Movies | SCRUM-22 |
+| UC-1 | FR-1.3 | The System shall display section for Recently Viewed Movies | SCRUM-23 |
+| UC-1 | FR-1.4 | The System shall display section for Top-Rated Movies | SCRUM-24 |
+| UC-1 | FR-1.5 | The System shall display section for Rom-Com Movies | SCRUM-24 |
+| UC-1 | FR-1.6 | The System shall display section for Thriller/Horror Movies | SCRUM-24 |
+| UC-1 | FR-1.7 | The System shall display section for Action Movies | SCRUM-24 |
+| UC-1 | FR-1.8 | The System shall display section for Sci-FI Movies | SCRUM-24 |
+| UC-1 | FR-1.9 | The System shall display section for Recently Added Movies | |
+| UC-1 | FR-1.10 | The System shall redirect the user to a movie's page if clicked | SCRUM-25 |
+| UC-1 | FR-1.11 | The System shall display an error message and log the user out if an error occurs | SCRUM-26 |
 
 ### Review Management Requirements
 
-| Use Case ID | Functional Req. ID | Functional Requirement |
-|-------------|-------------------|---------------------|
-| UC-2 | FR-2.1 | The system shall provide a "Filters" button on the movie reviews page |
-| UC-2 | FR-2.2 | The system shall allow users to select a filter category |
-| UC-2 | FR-2.3 | The system shall update the displayed reviews based on the selected filter |
-| UC-2 | FR-2.4 | The system shall provide a "Sort" button on the movie reviews page |
-| UC-2 | FR-2.5 | The system shall allow users to select a sorting option |
-| UC-2 | FR-2.6 | The system shall update the displayed reviews based on the selected sorting order |
-| UC-2 | FR-2.7 | The system shall display a message if no reviews match the selected filter |
-| UC-2 | FR-2.8 | The system shall display an error message if an error occurs while filtering |
+| Use Case ID | Functional Req. ID | Functional Requirement | SCRUM ID |
+|-------------|-------------------|---------------------|-----------|
+| UC-2 | FR-2.1 | The system shall provide a "Filters" button on the movie reviews page | |
+| UC-2 | FR-2.2 | The system shall allow users to select a filter category | |
+| UC-2 | FR-2.3 | The system shall update the displayed reviews based on the selected filter | |
+| UC-2 | FR-2.4 | The system shall provide a "Sort" button on the movie reviews page | |
+| UC-2 | FR-2.5 | The system shall allow users to select a sorting option | |
+| UC-2 | FR-2.6 | The system shall update the displayed reviews based on the selected sorting order | |
+| UC-2 | FR-2.7 | The system shall display a message if no reviews match the selected filter | |
+| UC-2 | FR-2.8 | The system shall display an error message if an error occurs while filtering | |
 
 ### User Review Operations
 
-| Use Case ID | Functional Req. ID | Functional Requirement |
-|-------------|-------------------|---------------------|
-| UC-3 | FR-3.1 | The system shall provide a "Create Review" page |
-| UC-3 | FR-3.2 | The system shall allow users to input movie title, rating, and review text |
-| UC-3 | FR-3.3 | The system shall validate the review input for required fields |
-| UC-3 | FR-3.4 | The system shall apply content filter to review text |
-| UC-3 | FR-3.5 | The system shall save review to database if it passes filter |
-| UC-3 | FR-3.6 | The system shall display confirmation message upon successful creation |
-| UC-3 | FR-3.7 | The system shall display error message if review fails filter |
+| Use Case ID | Functional Req. ID | Functional Requirement | SCRUM ID |
+|-------------|-------------------|---------------------|-----------|
+| UC-3 | FR-3.1 | The system shall provide a "Create Review" page | SCRUM-35 |
+| UC-3 | FR-3.2 | The system shall allow users to input movie title, rating, and review text | SCRUM-35 |
+| UC-3 | FR-3.3 | The system shall validate the review input for required fields | SCRUM-35 |
+| UC-3 | FR-3.4 | The system shall apply content filter to review text | SCRUM-35 |
+| UC-3 | FR-3.5 | The system shall save review to database if it passes filter | SCRUM-35 |
+| UC-3 | FR-3.6 | The system shall display confirmation message upon successful creation | SCRUM-35 |
+| UC-3 | FR-3.7 | The system shall display error message if review fails filter | SCRUM-35 |
 
 ### Authentication Requirements
 
-| Use Case ID | Functional Req. ID | Functional Requirement |
-|-------------|-------------------|---------------------|
-| UC-4 | FR-4.1 | The system shall allow users to login with unique credentials |
-| UC-4 | FR-4.2 | The system shall lock account after three failed attempts |
-| UC-4 | FR-4.3 | The system shall provide password reset functionality |
-| UC-4 | FR-4.4 | The system shall allow users to log out |
-| UC-4 | FR-4.5 | The system shall handle all authentication errors appropriately |
-| UC-4 | FR-4.6 | The system shall validate credentials against database |
-| UC-4 | FR-4.7 | The system shall ensure account security through monitoring |
+| Use Case ID | Functional Req. ID | Functional Requirement | SCRUM ID |
+|-------------|-------------------|---------------------|-----------|
+| UC-4 | FR-4.1 | The system shall allow users to login with unique credentials | SCRUM-28 |
+| UC-4 | FR-4.2 | The system shall lock account after three failed attempts | SCRUM-29 |
+| UC-4 | FR-4.3 | The system shall provide password reset functionality | SCRUM-30 |
+| UC-4 | FR-4.4 | The system shall allow users to log out | SCRUM-31 |
+| UC-4 | FR-4.5 | The system shall handle all authentication errors appropriately | SCRUM-32 |
+| UC-4 | FR-4.6 | The system shall validate credentials against database | SCRUM-29 |
+| UC-4 | FR-4.7 | The system shall ensure account security through monitoring | SCRUM-33 |
 
 ### Content Filtering Requirements
 
-| Use Case ID | Functional Req. ID | Functional Requirement |
-|-------------|-------------------|---------------------|
-| UC-5 | FR-5.1 | The system shall maintain a list of banned words and phrases |
-| UC-5 | FR-5.2 | The system shall check review text against banned list |
-| UC-5 | FR-5.3 | The system shall flag reviews containing inappropriate content |
-| UC-5 | FR-5.4 | The system shall allow users to view the banned word list |
-
-## 3.6 Non-Functional Requirements
-
-The system must meet specific performance, reliability, and quality standards to ensure effective operation. These requirements define the operational characteristics necessary for optimal user experience.
+| Use Case ID | Functional Req. ID | Functional Requirement | SCRUM ID |
+|-------------|-------------------|---------------------|-----------|
+| UC-5 | FR-5.1 | The system shall maintain a list of banned words and phrases | SCRUM-40 |
+| UC-5 | FR-5.2 | The system shall check review text against banned list | SCRUM-41 |
+| UC-5 | FR-5.3 | The system shall flag reviews containing inappropriate content | SCRUM-41 |
+| UC-5 | FR-5.4 | The system shall allow users to view the banned word list | SCRUM-44 |
 
 ### Performance Requirements
 
-| ID | Non-Functional Requirement |
-|----|---------------------------|
-| NFR-1.1 | The system shall load the landing page within 3 seconds |
-| NFR-1.2 | The system shall support 100 concurrent users |
-| NFR-1.3 | The system shall be fully responsive on mobile and desktop |
-| NFR-1.4 | The system shall use modular design for easy updates |
-| NFR-1.6 | The system shall support the latest two versions of major browsers |
+| ID | Non-Functional Requirement | SCRUM ID |
+|----|---------------------------|-----------|
+| NFR-1.1 | The system shall load the landing page within 3 seconds | SCRUM-21 |
+| NFR-1.2 | The system shall support 100 concurrent users | SCRUM-21 |
+| NFR-1.3 | The system shall be fully responsive on mobile and desktop | SCRUM-21 |
+| NFR-1.4 | The system shall use modular design for easy updates | SCRUM-21 |
+| NFR-1.6 | The system shall support the latest two versions of major browsers | SCRUM-21 |
 
 ### Review System Requirements
 
-| ID | Non-Functional Requirement |
-|----|---------------------------|
-| NFR-2.1 | The system shall update filtered reviews within 2 seconds |
-| NFR-2.2 | The system shall support 100 concurrent users filtering reviews |
-| NFR-2.3 | The system shall maintain 300ms maximum latency for queries |
-| NFR-2.4 | The system shall limit users to 100 filter requests per hour |
-| NFR-2.5 | The system shall maintain 90-day audit logs |
+| ID | Non-Functional Requirement | SCRUM ID |
+|----|---------------------------|-----------|
+| NFR-2.1 | The system shall update filtered reviews within 2 seconds | SCRUM-36 |
+| NFR-2.2 | The system shall support 100 concurrent users filtering reviews | SCRUM-36 |
+| NFR-2.3 | The system shall maintain 300ms maximum latency for queries | SCRUM-36 |
+| NFR-2.4 | The system shall limit users to 100 filter requests per hour | SCRUM-36 |
+| NFR-2.5 | The system shall maintain 90-day audit logs | SCRUM-36 |
 
 ### Content Management Requirements
 
-| ID | Non-Functional Requirement |
-|----|---------------------------|
-| NFR-5.1 | Content filter shall process text within 200ms up to 5000 characters |
-| NFR-5.2 | System shall maintain 99.9% content filter accuracy |
-| NFR-5.3 | Banned word list shall update within 30 seconds across instances |
-| NFR-5.4 | System shall log filter rejections within 100ms |
-| NFR-5.5 | System shall maintain backup with 5-second failover |
+| ID | Non-Functional Requirement | SCRUM ID |
+|----|---------------------------|-----------|
+| NFR-5.1 | Content filter shall process text within 200ms up to 5000 characters | SCRUM-41 |
+| NFR-5.2 | System shall maintain 99.9% content filter accuracy | SCRUM-41 |
+| NFR-5.3 | Banned word list shall update within 30 seconds across instances | SCRUM-40 |
+| NFR-5.4 | System shall log filter rejections within 100ms | SCRUM-43 |
+| NFR-5.5 | System shall maintain backup with 5-second failover | SCRUM-40 |
+
 
 # 4. Implementation Plan
 
