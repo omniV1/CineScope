@@ -31,10 +31,10 @@ Our current focus is specifically on documenting the login system and homepage r
 - *While visual improvements would be beneficial, they are not the primary focus at this stage*
 
 ### Site Documentation Tools
-- [ x ] Establish documentation in Figma (primary tool)
+- [x] Establish documentation in Figma (primary tool)
   - *Note: Initial exploration of Figma has shown promise, but additional learning time will be needed*
-- [ x ] Develop wireframe documentation standards
-- [ x ] Create shared access protocols for team collaboration
+- [x] Develop wireframe documentation standards
+- [x] Create shared access protocols for team collaboration
 
 ## Functional Requirements Documentation
 - [X] Transfer all functional requirements into Jira as structured tasks
@@ -47,11 +47,11 @@ Our current focus is specifically on documenting the login system and homepage r
 - [x] Team members will have full editing capabilities
 
 ## Landing page Wireframe creation
-- [] Create wireframe for the public state of the landing page (will need a login section and only allow read only access so no writing reviews). 
-- [] Create wireframe for the private member access of the landing page allowing users to view thier profile, views, and create reviews for movies. 
+- [ ] Create wireframe for the public state of the landing page (will need a login section and only allow read only access so no writing reviews). 
+- [ ] Create wireframe for the private member access of the landing page allowing users to view thier profile, views, and create reviews for movies. 
    - In the the landing page we must be able to filter reviews by categories (Recently added, Top Rated, Featured movies)
    - We must also be able to search for movies in a search bar.
-- [] Create the movie details page allowing users to select a movie and enter a page that displays the movie, the reviews, highlights the user review if applicable, and allows the Member to create a review.
+- [ ] Create the movie details page allowing users to select a movie and enter a page that displays the movie, the reviews, highlights the user review if applicable, and allows the Member to create a review.
     - We must be able to create a review when logged in.
     - If we are logged out only allow the user to view the reviews and movie details but NOT create reviews. 
 
