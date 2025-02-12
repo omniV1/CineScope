@@ -182,7 +182,7 @@ The authentication system represents a core component of our user experience, im
 
 The registration process expands upon this, guiding users through a structured form for data collection. Users provide essential information including name, email address, mobile number, and password, with clear validation feedback at each step. The success state provides users with clear confirmation and automatic redirection to the landing page with the membership acess. Profile management capabilities allow users to maintain their account information through an organized, accessible interface.
 
-![Authentication Wireframes]()
+![Authentication Wireframes](https://github.com/omniV1/CineScope/blob/main/Documents/Images/Login.-logout-registration.png)
 
 [Note: This section will be populated with wireframe designs showing the layout and interaction design for key system interfaces including:
 - Landing page layout
