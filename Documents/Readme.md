@@ -201,14 +201,14 @@ The system's functional requirements encompass several key areas of functionalit
 
 | Use Case ID | Functional Req. ID | Functional Requirement | SCRUM ID |
 |-------------|-------------------|---------------------|-----------|
-| UC-2 | FR-2.1 | The system shall provide a "Filters" button on the movie reviews page | |
-| UC-2 | FR-2.2 | The system shall allow users to select a filter category | |
-| UC-2 | FR-2.3 | The system shall update the displayed reviews based on the selected filter | |
-| UC-2 | FR-2.4 | The system shall provide a "Sort" button on the movie reviews page | |
-| UC-2 | FR-2.5 | The system shall allow users to select a sorting option | |
-| UC-2 | FR-2.6 | The system shall update the displayed reviews based on the selected sorting order | |
-| UC-2 | FR-2.7 | The system shall display a message if no reviews match the selected filter | |
-| UC-2 | FR-2.8 | The system shall display an error message if an error occurs while filtering | |
+| UC-2 | FR-2.1 | The system shall provide a "Filters" button on the movie reviews page | SCRUM-46 |
+| UC-2 | FR-2.2 | The system shall allow users to select a filter category | SCRUM-46 |
+| UC-2 | FR-2.3 | The system shall update the displayed reviews based on the selected filter | SCRUM-48 |
+| UC-2 | FR-2.4 | The system shall provide a "Sort" button on the movie reviews page | SCRUM-47 |
+| UC-2 | FR-2.5 | The system shall allow users to select a sorting option | SCRUM-47 |
+| UC-2 | FR-2.6 | The system shall update the displayed reviews based on the selected sorting order | SCRUM-49 |
+| UC-2 | FR-2.7 | The system shall display a message if no reviews match the selected filter | SCRUM-50 |
+| UC-2 | FR-2.8 | The system shall display an error message if an error occurs while filtering | SCRUM-50 |
 
 ### User Review Operations
 
