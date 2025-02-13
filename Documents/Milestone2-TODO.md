@@ -47,6 +47,7 @@ Our current focus is specifically on documenting the login system, homepage requ
 
 ## Movie Browsing and Details Implementation
 ### Landing Page Requirements
+**Andrew will accomplish this task**
 - [ ] Create unified landing page wireframe with authentication states:
   - Common Features:
     - Movie grid/list view with basic information
