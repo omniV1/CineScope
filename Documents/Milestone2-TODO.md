@@ -68,13 +68,18 @@ Our current focus is specifically on documenting the login system, homepage requ
 
 ### Movie Details Page Requirements
 - [ ] Create wireframe for movie details page with two states:
-  - Public (Non-logged in) View: **This will be done by Michael**
+  - Public (Non-logged in) View:
+
+    **This will be done by Michael**
+    
     - Display comprehensive movie information (release date, description, genre)
     - Show average user score
     - Display existing user reviews in read-only mode
     - Clear indication of login requirement for leaving reviews
   - Member (Logged in) View:
-    ** This will be completed by carter (wait for michael because you will just add the signed in user features to his wireframe)**
+  - 
+    **This will be completed by carter (wait for michael because you will just add the signed in user features to his wireframe)**
+    
     - All public view features
     - Interface for creating new reviews
     - Display user's existing review if applicable
