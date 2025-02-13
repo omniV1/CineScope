@@ -11,7 +11,6 @@ We need to create detailed architecture documentation that will serve as the fou
   - Technology logos for visual clarity
   - Connection flows between different technology components
 
-
 *Note: This diagram should be visually appealing while maintaining technical accuracy. The inclusion of official logos and proper color schemes will help with presentation clarity.*
 
 ### Team Communication Architecture
@@ -23,7 +22,7 @@ We need to create detailed architecture documentation that will serve as the fou
   - Team roles and access level documentation
 
 ## Site Architecture Documentation
-Our current focus is specifically on documenting the login system and homepage requirements. The site architecture documentation needs significant expansion.
+Our current focus is specifically on documenting the login system, homepage requirements, and movie browsing functionality. The site architecture documentation needs significant expansion.
 
 ### Current Progress
 - We have an initial sitemap available here: [Current Sitemap](https://github.com/omniV1/CineScope/blob/main/Documents/sitemap/readme.md)
@@ -46,20 +45,44 @@ Our current focus is specifically on documenting the login system and homepage r
 - [x] Wireframe documentation access will be provided to team
 - [x] Team members will have full editing capabilities
 
-## Landing page Wireframe creation
-- [ ] Create wireframe for the public state of the landing page (will need a login section and only allow read only access so no writing reviews). 
-- [ ] Create wireframe for the private member access of the landing page allowing users to view thier profile, views, and create reviews for movies. 
-   - In the the landing page we must be able to filter reviews by categories (Recently added, Top Rated, Featured movies)
-   - We must also be able to search for movies in a search bar.
-- [ ] Create the movie details page allowing users to select a movie and enter a page that displays the movie, the reviews, highlights the user review if applicable, and allows the Member to create a review.
-    - We must be able to create a review when logged in.
-    - If we are logged out only allow the user to view the reviews and movie details but NOT create reviews. 
+## Movie Browsing and Details Implementation
+### Landing Page Requirements
+- [ ] Create unified landing page wireframe with authentication states:
+  - Common Features:
+    - Movie grid/list view with basic information
+    - Filtering system for movies:
+      - Recently added
+      - Top rated
+      - Featured movies
+      - Genre categories
+    - Search functionality with search bar
+    - Movie thumbnails, titles, and basic information
+  - Non-authenticated State:
+    - Login/Register prompt in header
+    - Read-only access to movie listings
+  - Authenticated State:
+    - Profile section in header
+    - Quick access to user's review history
+    - Link to detailed profile page showing user's activity and reviews
 
+### Movie Details Page Requirements
+- [ ] Create wireframe for movie details page with two states:
+  - Public (Non-logged in) View:
+    - Display comprehensive movie information (release date, description, genre)
+    - Show average user score
+    - Display existing user reviews in read-only mode
+    - Clear indication of login requirement for leaving reviews
+  - Member (Logged in) View:
+    - All public view features
+    - Interface for creating new reviews
+    - Display user's existing review if applicable
+    - Ability to edit/delete user's own review
+    - Highlight the logged-in user's review distinctly
 
 ## Documentation Timeline Considerations
 1. Functional requirements documentation in Jira takes priority
 2. Architecture diagrams will be developed alongside requirements documentation
-3. Site documentation will focus exclusively on login and homepage initially
+3. Site documentation will focus exclusively on login, homepage, and movie browsing initially
 4. Wireframe access and collaboration protocols will be established as requirements are finalized
 
 ---
