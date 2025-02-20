@@ -6,9 +6,9 @@ Owen, Andrew Mack, Carter Wright, Rian Smart
 
 Grand Canyon University: CST-326
 
-February 11, 2025
+February 23, 2025
 
-Document Version 1.0
+Document Version 2.0
 
 ## AUTHORS
 
