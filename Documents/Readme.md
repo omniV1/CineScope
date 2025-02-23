@@ -132,7 +132,7 @@ Figure 3: CineScope Site Navigation Map
 
 The following section documents the key interfaces of the CineScope platform based on approved wireframes.
 
-![Wireframes](https://github.com/omniV1/CineScope/blob/main/Documents/Images/WireFrames.png)
+![Authentication Wireframes](https://github.com/omniV1/CineScope/blob/main/Documents/Images/WireFrames.png)
 
 #### Landing Page
 The landing page centers on the CineScope logo with the tagline "FOR MOVIE LOVERS, BY MOVIE LOVERS". Two main action buttons, LOGIN and REGISTER, provide clear entry points for users. The page features a red curtain background that establishes the cinematic theme, with "EXPLORE. CONNECT. DISCOVER." displayed prominently to reinforce the platform's purpose.
