@@ -171,27 +171,80 @@ graph TD
 ```
 Figure 3: CineScope Site Navigation Map
 
-## 2.3 User Interface Design
+### 2.3 User Interface Design
 
-The following section presents the wireframes for key system interfaces. These wireframes illustrate the layout and functionality of major system components.
+The following section presents detailed wireframe specifications for key system interfaces, organized by major functional areas and user interaction flows.
 
-### Authentication System Interfaces
-The authentication system represents a core component of our user experience, implementing a comprehensive set of interfaces designed for security and ease of use. The login interface presents users with a focused design centered around the CineScope branding, featuring clearly labeled input fields for username and password entry. Additional authentication options include social media integration through Facebook, Google, and Apple ID services, providing users with flexible access methods while maintaining security standards.
+#### Landing Page Interface
 
-The registration process expands upon this, guiding users through a structured form for data collection. Users provide essential information including name, email address, mobile number, and password, with clear validation feedback at each step. The success state provides users with clear confirmation and automatic redirection to the landing page with the membership acess. Profile management capabilities allow users to maintain their account information through an organized, accessible interface.
+The landing page serves as the primary entry point to CineScope, establishing the platform's theatrical aesthetic and brand identity. A dramatic red curtain motif frames the central "CINESCOPE" logo, immediately conveying the cinematic focus of the platform. The tagline "FOR MOVIE LOVERS, BY MOVIE LOVERS" reinforces the community-driven nature of the service. Below this, the platform's core value proposition appears in three commanding words: "EXPLORE. CONNECT. DISCOVER." Two prominent action buttons, "LOGIN" and "REGISTER", guide users toward immediate engagement with the platform.
+
+#### Authentication System
+
+**Login Interface**
+The login interface maintains the established branding while streamlining the authentication process. Users encounter a clean, focused layout with clearly labeled input fields for username and password. Convenience features include "Forgot Username?" and "Forgot Password?" recovery options positioned near their relevant fields. Social media authentication alternatives appear as distinct buttons for Facebook, Google, and Apple ID integration. New users are guided to the registration process through a prominent link, while help center access remains readily available.
+
+**Registration Interface**
+The registration process implements a structured data collection form that prioritizes clarity and completeness. Users provide essential information through clearly labeled fields for name, email address, mobile number, and password with confirmation. The interface includes a mandatory terms and conditions acceptance checkbox. A prominent "Register" button appears once all required fields are complete. Help center access is maintained through a visible link, ensuring support throughout the registration process.
+
+**Registration Success**
+Upon successful registration, users receive immediate visual confirmation through a green checkmark indicator. The interface displays a countdown to automatic redirection while providing a manual redirect option. The help center link remains accessible during this transition phase.
+
+#### Profile Management
+
+**Profile Overview**
+The profile management interface organizes user-specific functions into logical sections. Personal details and review collections are accessible through clear navigation elements. The interface includes profile image management and a straightforward logout option. This centralized hub allows users to manage all aspects of their platform presence.
+
+**Profile Editing**
+The profile editing interface presents user information in an editable format with clear interaction points. Each field – name, surname, username, password, email address, and mobile number – features an accompanying edit icon. The layout maintains consistency with the platform's overall design language while clearly indicating editable elements.
+
+#### Review System
+
+**Review Creation Interface**
+The review creation process centers around the specific movie being reviewed, displaying the title and release year prominently. A five-star rating system allows for quick scoring, while a dedicated text area accepts detailed written feedback. The interface includes a persistent navigation bar for accessing key platform features during review composition.
+
+**Review Management**
+The "My Reviews" section presents a user's review history in a scrollable format. Each entry displays the movie title, year, star rating, and a preview of the written review. The interface allows for quick assessment of past contributions while maintaining easy access to full review content.
+
+#### Movie Details
+
+The movie details interface provides comprehensive film information through several distinct sections:
+
+Primary Information
+A prominent display of the movie poster accompanies basic details including title, release year, and language. The overall rating appears prominently near the top of the page.
+
+Description Section
+The movie's plot summary and key details appear in a clearly formatted text block, providing immediate context for viewers.
+
+Cast Information
+A horizontal scroll of cast member thumbnails allows quick recognition of key performers, each with associated character information.
+
+Review Collection
+User reviews appear in a dedicated section, displaying individual ratings and written feedback in a consistent format.
+
+Similar Content
+Related movie suggestions appear as thumbnail previews, encouraging further platform exploration.
+
+#### Navigation Elements
+
+The platform implements persistent navigation through a bottom-mounted bar containing four key elements:
+
+Movie Catalog Access
+Direct access to the full movie collection, organized by categories including top rated, new releases, and featured selections.
+
+Search Functionality
+A powerful search interface allows users to quickly locate specific content within the platform.
+
+Bookmarking System
+Users can maintain collections of favorite or saved content for future reference.
+
+Profile Access
+Quick access to user-specific functions and settings remains consistently available.
+
+All interfaces maintain visual consistency through the platform's signature red and gray color scheme, ensuring a cohesive user experience across all functional areas. Typography and spacing follow established patterns that prioritize readability and clear information hierarchy.
 
 ![Authentication Wireframes](https://github.com/omniV1/CineScope/blob/main/Documents/Images/WireFrames.png)
 
-[Note: This section will be populated with wireframe designs showing the layout and interaction design for key system interfaces including:
-- Landing page layout
-- Movie detail views
-- Review creation and management interfaces
-- User authentication screens
-- Search and filtering interfaces]
-
-The platform implements a layered architecture optimizing separation of concerns and maintainability. The frontend layer utilizes Blazor components and WebAssembly interfaces to deliver responsive user experiences. A robust backend layer implements business logic through C# API controllers and specialized services. The data access layer manages MongoDB interactions while implementing efficient caching strategies.
-
-This architecture supports key technical requirements including responsive performance, scalable operations, and maintainable code structure. Component isolation enables independent scaling and updates while maintaining system stability. The design emphasizes security through proper authentication mechanisms and data access controls.
 
 # 3. Functional Specifications
 
