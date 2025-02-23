@@ -2,7 +2,7 @@
 
 for CineScope Movie Review Platform
 
-Owen, Andrew Mack, Carter Wright, Rian Smart
+Owen Lindsey, Andrew Mack, Carter Wright, Rian Smart
 
 Grand Canyon University: CST-326
 
