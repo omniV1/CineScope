@@ -33,8 +33,6 @@ Document Version 2.0
 
 # Table of Contents
 
-# Table of Contents
-
 1. [Introduction](#1-introduction) ........................................................................... 
    
    1.1. [Purpose of the Document](#11-purpose-of-the-document) .........................
