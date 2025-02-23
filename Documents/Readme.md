@@ -94,7 +94,7 @@ Figure 1: Team Communication Pathways
 
 The development architecture follows an N-layer design pattern that promotes separation of concerns and maintainability. Figure 2 shows the architectural layers and their relationships.
 
-![N-Layer Architecture](https://github.com/omniV1/CineScope/blob/main/Documents/Images/WireFrames.png)
+![WireFrames](https://github.com/omniV1/CineScope/blob/main/Documents/Images/WireFrames.png)
 Figure 2: CineScope N-Layer Architecture
 
 ## 2.2 Site Navigation Structure
