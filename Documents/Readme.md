@@ -6,9 +6,9 @@ Owen, Andrew Mack, Carter Wright, Rian Smart
 
 Grand Canyon University: CST-326
 
-February 23, 2025
+February 11, 2025
 
-Document Version 2.0
+Document Version 1.0
 
 ## AUTHORS
 
@@ -30,50 +30,6 @@ Document Version 2.0
 | Approval Date | Approved Version | Approver Role | Approver |
 |--------------|------------------|---------------|----------|
 | | 1.0 | | |
-
-# Table of Contents
-
-# Table of Contents
-
-1. [Introduction](#1-introduction) ........................................................................... 
-   
-   1.1. [Purpose of the Document](#11-purpose-of-the-document) .........................
-   
-   1.2. [Project Scope](#12-project-scope) .......................................................
-   
-   1.3. [Related Documents and Resources](#13-related-documents-and-resources) ..............
-   
-   1.4. [Terms/Acronyms and Definitions](#14-termsacronyms-and-definitions) .........
-   
-   1.5. [Risks and Assumptions](#15-risks-and-assumptions) ..................................
-   
-3. [System/Solutions Overview](#2-systemsolutions-overview) ............................
-   
-   2.1. [System Architecture and Communication](#21-system-architecture-and-communication) ...................
-   
-   2.2. [Site Navigation Structure](#22-site-navigation-structure) .............................
-   
-   2.3. [User Interface Design](#23-user-interface-design) .....................................
-   
-4. [Functional Specifications](#3-functional-specifications) ................................ 
-
-   3.1. [Landing Page Implementation](#31-landing-page-implementation) .........................
-   
-   3.2. [Authentication System](#32-authentication-system) ........................................
-   
-   3.3. [Review Management](#33-review-management) .........................................
-   
-   3.4. [Content Filtering](#34-content-filtering) ................................................
-    
-   3.5. [Functional Requirements](#35-functional-requirements) ...............................
-    
-   3.6. [Non-Functional Requirements](#36-non-functional-requirements) .............................
-   
-5. [Implementation Plan](#4-implementation-plan) .............................................. 
-   
-6. [Quality Assurance](#5-quality-assurance) ......................................................  
-
- 
 
 # 1. Introduction
 
@@ -133,8 +89,7 @@ The project operates under several foundational assumptions. Users are expected 
 
 The CineScope platform implements a comprehensive communication structure to support effective team collaboration and development workflows. Figure 1 illustrates the primary communication channels and their purposes.
 
-![Communication Pipeline](https://github.com/omniV1/CineScope/blob/main/Documents/Images/Communication.png)
-
+![Communication Pipeline](F:\GCU\CineScope\Documents\Images\Communication.png)
 Figure 1: Team Communication Pathways
 
 The development architecture follows an N-layer design pattern that promotes separation of concerns and maintainability. Figure 2 shows the architectural layers and their relationships.
@@ -177,7 +132,7 @@ Figure 3: CineScope Site Navigation Map
 
 The following section documents the key interfaces of the CineScope platform based on approved wireframes.
 
-![Wireframes](https://github.com/omniV1/CineScope/tree/main/Documents/Images/WireFrames)
+![Authentication Wireframes](https://github.com/omniV1/CineScope/blob/main/Documents/Images/WireFrames.png)
 
 #### Landing Page
 The landing page centers on the CineScope logo with the tagline "FOR MOVIE LOVERS, BY MOVIE LOVERS". Two main action buttons, LOGIN and REGISTER, provide clear entry points for users. The page features a red curtain background that establishes the cinematic theme, with "EXPLORE. CONNECT. DISCOVER." displayed prominently to reinforce the platform's purpose.
