@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "PYM8PNJhqYg=",
+  "dgSpecHash": "pHNvemCQ9n4=",
   "success": true,
   "projectFilePath": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\CineScope\\CineScope.Client\\CineScope.Client.csproj",
   "expectedPackageFiles": [
@@ -29,8 +29,7 @@
     "C:\\Users\\Owenl\\.nuget\\packages\\microsoft.jsinterop.webassembly\\8.0.13\\microsoft.jsinterop.webassembly.8.0.13.nupkg.sha512",
     "C:\\Users\\Owenl\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.13\\microsoft.net.illink.tasks.8.0.13.nupkg.sha512",
     "C:\\Users\\Owenl\\.nuget\\packages\\microsoft.net.sdk.webassembly.pack\\9.0.2\\microsoft.net.sdk.webassembly.pack.9.0.2.nupkg.sha512",
-    "C:\\Users\\Owenl\\.nuget\\packages\\system.io.pipelines\\8.0.0\\system.io.pipelines.8.0.0.nupkg.sha512",
-    "C:\\Users\\Owenl\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\8.0.13\\microsoft.netcore.app.runtime.mono.browser-wasm.8.0.13.nupkg.sha512"
+    "C:\\Users\\Owenl\\.nuget\\packages\\system.io.pipelines\\8.0.0\\system.io.pipelines.8.0.0.nupkg.sha512"
   ],
   "logs": []
 }
