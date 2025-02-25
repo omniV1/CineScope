@@ -36,7 +36,8 @@ CineScope is a comprehensive web application that allows users to browse movie i
 
 The CineScope platform implements an N-layer architecture that promotes separation of concerns and maintainability. The architecture is composed of the following layers:
 
-![N-Layer Architecture](https://github.com/omniV1/CineScope/blob/main/Documents/Images/N-layer.png)
+![N-layer]
+<img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/N-layer.png" width="500"> 
 
 Figure 1: CineScope N-Layer Architecture
 
@@ -51,7 +52,8 @@ The architecture consists of:
 
 The CineScope platform implements a comprehensive communication structure to support effective team collaboration and development workflows.
 
-![Communication Pipeline](https://github.com/omniV1/CineScope/blob/main/Documents/Images/Communication.png)
+![Communication-Pipeline]
+<img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/Communication.png" width="500">
 
 Figure 2: Team Communication Pathways
 
@@ -96,14 +98,14 @@ Figure 3: CineScope Site Navigation Map
 The following section presents detailed wireframe specifications for key system interfaces, organized according to typical user interaction flow through the CineScope platform.
 
 #### 1. Landing Page Interface
-
-![Landing Page Wireframe](https://github.com/omniV1/CineScope/blob/main/Documents/Images/Landing_Page_Wireframe.png)
+![Landing-Page]
+<img src ="https://github.com/omniV1/CineScope/blob/main/Documents/Images/Landing_Page_Wireframe.png" width="500">
 
 The landing page serves as the primary entry point to CineScope, A red curtain frames the central "CINESCOPE" logo, conveying the cinematic focus of the platform. Two prominent action buttons, "LOGIN" and "REGISTER", guide users toward immediate engagement with the platform.
 
 #### 2. Authentication System Interfaces
-
-![Login Wireframe](https://github.com/omniV1/CineScope/blob/Owen-Dev/Documents/Images/Login_Wireframe.png)
+![Login]
+<img src="https://github.com/omniV1/CineScope/blob/Owen-Dev/Documents/Images/Login_Wireframe.png" width="500">
 
 ##### 2.1 Login Interface
 The login interface maintains the established branding while streamlining the authentication process. Users encounter a clean, focused layout with clearly labeled input fields for username and password. Convenience features include "Forgot Username?" and "Forgot Password?" recovery options positioned near their relevant fields. Social media authentication alternatives appear as distinct buttons for Facebook, Google, and Apple ID integration. New users are guided to the registration process through a prominent link, while help center access remains readily available.
