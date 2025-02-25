@@ -103,7 +103,7 @@ The landing page serves as the primary entry point to CineScope, A red curtain f
 
 #### 2. Authentication System Interfaces
 
-![Login Wireframe]()
+![Login Wireframe](https://github.com/omniV1/CineScope/blob/Owen-Dev/Documents/Images/Login_Wireframe.png)
 
 ##### 2.1 Login Interface
 The login interface maintains the established branding while streamlining the authentication process. Users encounter a clean, focused layout with clearly labeled input fields for username and password. Convenience features include "Forgot Username?" and "Forgot Password?" recovery options positioned near their relevant fields. Social media authentication alternatives appear as distinct buttons for Facebook, Google, and Apple ID integration. New users are guided to the registration process through a prominent link, while help center access remains readily available.
