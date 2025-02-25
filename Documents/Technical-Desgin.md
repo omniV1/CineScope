@@ -9,7 +9,7 @@
 
 Grand Canyon University: CST-326
 
-February 24, 2025
+March 02, 2025
 
 
 ## DOCUMENT HISTORY
@@ -20,7 +20,7 @@ February 24, 2025
 
 ## Introduction
 
-CineScope is a modern, user-friendly movie review platform that enables movie enthusiasts to share opinions and discover new films. Built using C# ASP.NET Core Web App (MVC) with MongoDB as the database system, the platform delivers a responsive web interface for browsing movies, writing reviews, and interacting with other users' content.
+CineScope is a modern, user-friendly movie review platform that enables movie enthusiasts to share opinions and discover new films. Built using Blazor C# ASP.NET Core Web App (MVC) with MongoDB as the database system, the platform delivers a responsive web interface for browsing movies, writing reviews, and interacting with other users' content.
 
 ## Scope
 
@@ -91,12 +91,121 @@ Figure 3: CineScope Site Navigation Map
 
 ### User Interface Wireframes
 
-#### Authentication System Interfaces
+### User Interface Wireframes
 
-The authentication system represents a core component of our user experience, implementing a comprehensive set of interfaces designed for security and ease of use.
+The following section presents detailed wireframe specifications for key system interfaces, organized according to typical user interaction flow through the CineScope platform.
 
-![Authentication Wireframes](https://github.com/omniV1/CineScope/blob/main/Documents/Images/WireFrames.png)
+#### 1. Landing Page Interface
 
+![Landing Page Wireframe]()
+
+The landing page serves as the primary entry point to CineScope, A red curtain frames the central "CINESCOPE" logo, conveying the cinematic focus of the platform. Two prominent action buttons, "LOGIN" and "REGISTER", guide users toward immediate engagement with the platform.
+
+#### 2. Authentication System Interfaces
+
+![Login Wireframe]()
+
+##### 2.1 Login Interface
+The login interface maintains the established branding while streamlining the authentication process. Users encounter a clean, focused layout with clearly labeled input fields for username and password. Convenience features include "Forgot Username?" and "Forgot Password?" recovery options positioned near their relevant fields. Social media authentication alternatives appear as distinct buttons for Facebook, Google, and Apple ID integration. New users are guided to the registration process through a prominent link, while help center access remains readily available.
+
+![Registration Wireframe]()
+
+##### 2.2 Registration Interface
+The registration process implements a structured data collection form that prioritizes clarity and completeness. Users provide essential information through clearly labeled fields for name, email address, mobile number, and password with confirmation. The interface includes a mandatory terms and conditions acceptance checkbox. A prominent "Register" button appears once all required fields are complete. Help center access is maintained through a visible link, ensuring support throughout the registration process.
+
+![Registration Success Wireframe]()
+
+##### 2.3 Registration Success
+Upon successful registration, users receive immediate visual confirmation through a green checkmark indicator. The interface displays a countdown to automatic redirection while providing a manual redirect option. The help center link remains accessible during this transition phase.
+
+#### 3. Movie Browsing Interfaces
+
+![Movie Browsing Wireframe]()
+
+##### 3.1 Movies by Category
+The category browsing interface presents film collections through a grid-based layout that prioritizes visual recognition. Each movie appears as a poster thumbnail with title and year information. The layout implements responsive design, adjusting column count based on viewport width. Category headers clearly identify each collection section, while navigation controls support both scrolling and pagination access methods.
+
+##### 3.2 Featured Movies Section
+The featured content section presents highlighted movies through an immersive carousel presentation. Each featured film displays with a large poster image and prominent title treatment. Brief descriptive text provides immediate content context, while a clear "View Details" action button encourages deeper engagement. The carousel implements intuitive navigation controls that remain visible during interaction.
+
+##### 3.3 Top Rated Movies Section
+The top rated section emphasizes community validation through a visually distinct presentation approach. Each film displays not only its poster and title but also its aggregate star rating using a consistent visual indicator. The section header clearly identifies the curation method, while a subtle sorting control allows users to refine the display order according to different ranking metrics.
+
+#### 4. Movie Details Interface
+
+![Movie Details Wireframe]()
+
+The movie details interface provides comprehensive film information through several distinct sections:
+
+##### 4.1 Primary Information
+A prominent display of the movie poster accompanies basic details including title, release year, and language. The overall rating appears prominently near the top of the page.
+
+##### 4.2 Description Section
+The movie's plot summary and key details appear in a clearly formatted text block, providing immediate context for viewers.
+
+##### 4.3 Cast Information
+A horizontal scroll of cast member thumbnails allows quick recognition of key performers, each with associated character information.
+
+##### 4.4 Review Collection
+User reviews appear in a dedicated section, displaying individual ratings and written feedback in a consistent format.
+
+##### 4.5 Similar Content
+Related movie suggestions appear as thumbnail previews, encouraging further platform exploration.
+
+#### 5. Search and Filtering Interfaces
+
+![Search Wireframe]()
+
+##### 5.1 Search Results Interface
+The search results interface presents matched content in a clear, scannable format. Each result displays essential information including poster thumbnail, title, year, and rating. The interface implements a dual-view option allowing users to toggle between grid and list presentations. Filter controls appear in a collapsible sidebar, providing refinement options without consuming excessive screen space.
+
+##### 5.2 Content Filtering Interface
+The filtering interface presents categorization options through a series of expandable sections. Each filter category (genre, year, rating) presents appropriate control types including checkboxes, range sliders, and selectors. Applied filters appear as removable tags at the top of the results area, allowing quick modification. A prominent "Apply Filters" button confirms selections, while a "Reset" option allows quick restoration of default views.
+
+#### 6. Review System Interfaces
+
+![Review System Wireframe]()
+
+##### 6.1 Review Creation Interface
+The review creation process centers around the specific movie being reviewed, displaying the title and release year prominently. A five-star rating system allows for quick scoring, while a dedicated text area accepts detailed written feedback. The interface includes a persistent navigation bar for accessing key platform features during review composition.
+
+![My Reviews Wireframe]()
+
+##### 6.2 Review Management Interface
+The "My Reviews" section presents a user's review history in a scrollable format. Each entry displays the movie title, year, star rating, and a preview of the written review. The interface allows for quick assessment of past contributions while maintaining easy access to full review content.
+
+##### 6.3 Review Editing Interface
+The editing interface maintains context by displaying the original review details while enabling focused modifications. The star rating control allows immediate adjustment, while the text field presents the existing content in an editable format. Clear "Save" and "Cancel" actions provide unambiguous interaction paths.
+
+#### 7. User Profile Management
+![My Profile Home Page Wireframe]()
+
+##### 7.1 Profile Overview
+The profile management interface organizes user-specific functions into logical sections. Personal details and review collections are accessible through clear navigation elements. The interface includes profile image management and a straightforward logout option. This centralized hub allows users to manage all aspects of their platform presence.
+
+![Edit Profile Wireframes]()
+
+##### 7.2 Profile Editing
+The profile editing interface presents user information in an editable format with clear interaction points. Each field – name, surname, username, password, email address, and mobile number – features an accompanying edit icon. The layout maintains consistency with the platform's overall design language while clearly indicating editable elements.
+
+#### 8. Navigation Elements
+![Movies Landing Page Without Login Wireframes]()
+
+The platform implements persistent navigation through a bottom-mounted bar containing four key elements:
+
+##### 8.1 Movie Catalog Access
+Direct access to the full movie collection, organized by categories including top rated, new releases, and featured selections.
+
+##### 8.2 Search Functionality
+A powerful search interface allows users to quickly locate specific content within the platform.
+
+##### 8.3 Bookmarking System
+Users can maintain collections of favorite or saved content for future reference.
+
+##### 8.4 Profile Access
+Quick access to user-specific functions and settings remains consistently available.
+
+All interfaces maintain visual consistency through the platform's signature red and gray color scheme, ensuring a cohesive user experience across all functional areas. Typography and spacing follow established patterns that prioritize readability and clear information hierarchy.
 Figure 4: Authentication System Wireframes
 
 ## Technical Implementation Details
