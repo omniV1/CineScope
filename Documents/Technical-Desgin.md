@@ -97,7 +97,7 @@ The following section presents detailed wireframe specifications for key system 
 
 #### 1. Landing Page Interface
 
-![Landing Page Wireframe]()
+![Landing Page Wireframe](https://github.com/omniV1/CineScope/blob/main/Documents/Images/Landing_Page_Wireframe.png)
 
 The landing page serves as the primary entry point to CineScope, A red curtain frames the central "CINESCOPE" logo, conveying the cinematic focus of the platform. Two prominent action buttons, "LOGIN" and "REGISTER", guide users toward immediate engagement with the platform.
 
