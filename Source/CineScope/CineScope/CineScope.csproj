@@ -9,10 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CineScope.Client\CineScope.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.13" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\" />
+    <PackageReference Include="MongoDB.Bson" Version="3.2.1" />
   </ItemGroup>
 
 </Project>
