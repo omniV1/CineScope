@@ -36,7 +36,6 @@ CineScope is a comprehensive web application that allows users to browse movie i
 
 The CineScope platform implements an N-layer architecture that promotes separation of concerns and maintainability. The architecture is composed of the following layers:
 
-![N-layer]
 <img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/N-layer.png" width="500"> 
 
 Figure 1: CineScope N-Layer Architecture
@@ -52,7 +51,6 @@ The architecture consists of:
 
 The CineScope platform implements a comprehensive communication structure to support effective team collaboration and development workflows.
 
-![Communication-Pipeline]
 <img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/Communication.png" width="500">
 
 Figure 2: Team Communication Pathways
