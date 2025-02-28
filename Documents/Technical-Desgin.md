@@ -99,7 +99,7 @@ The following section presents detailed wireframe specifications for key system 
 
 #### 1. Landing Page Interface
 ![Landing-Page]
-<img src ="https://github.com/omniV1/CineScope/blob/main/Documents/Images/Landing_Page_Wireframe.png" width="500">
+<img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/Landing_Page_Wireframe.png" width="500">
 
 The landing page serves as the primary entry point to CineScope, A red curtain frames the central "CINESCOPE" logo, conveying the cinematic focus of the platform. Two prominent action buttons, "LOGIN" and "REGISTER", guide users toward immediate engagement with the platform.
 
@@ -110,19 +110,22 @@ The landing page serves as the primary entry point to CineScope, A red curtain f
 ##### 2.1 Login Interface
 The login interface maintains the established branding while streamlining the authentication process. Users encounter a clean, focused layout with clearly labeled input fields for username and password. Convenience features include "Forgot Username?" and "Forgot Password?" recovery options positioned near their relevant fields. Social media authentication alternatives appear as distinct buttons for Facebook, Google, and Apple ID integration. New users are guided to the registration process through a prominent link, while help center access remains readily available.
 
-![Registration Wireframe]()
+![Registration Wireframe]
+<img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/Registration_Wireframe.png" width="500">
 
 ##### 2.2 Registration Interface
 The registration process implements a structured data collection form that prioritizes clarity and completeness. Users provide essential information through clearly labeled fields for name, email address, mobile number, and password with confirmation. The interface includes a mandatory terms and conditions acceptance checkbox. A prominent "Register" button appears once all required fields are complete. Help center access is maintained through a visible link, ensuring support throughout the registration process.
 
-![Registration Success Wireframe]()
+![Registration Success Wireframe]
+<img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/Registration_Successful_Wireframe.png" width="500">
 
 ##### 2.3 Registration Success
 Upon successful registration, users receive immediate visual confirmation through a green checkmark indicator. The interface displays a countdown to automatic redirection while providing a manual redirect option. The help center link remains accessible during this transition phase.
 
 #### 3. Movie Browsing Interfaces
 
-![Movie Browsing Wireframe]()
+![Movie Browsing Wireframe]
+<img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/Movies_Browsing_Wireframe.png" width="500">
 
 ##### 3.1 Movies by Category
 The category browsing interface presents film collections through a grid-based layout that prioritizes visual recognition. Each movie appears as a poster thumbnail with title and year information. The layout implements responsive design, adjusting column count based on viewport width. Category headers clearly identify each collection section, while navigation controls support both scrolling and pagination access methods.
@@ -135,7 +138,8 @@ The top rated section emphasizes community validation through a visually distinc
 
 #### 4. Movie Details Interface
 
-![Movie Details Wireframe]()
+![Movie Details Wireframe]
+<img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/Movie_Details_Wireframes.png" width="500">
 
 The movie details interface provides comprehensive film information through several distinct sections:
 
@@ -156,7 +160,8 @@ Related movie suggestions appear as thumbnail previews, encouraging further plat
 
 #### 5. Search and Filtering Interfaces
 
-![Search Wireframe]()
+![Search Wireframe]
+<img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/Search_Wireframe.png" width="500">
 
 ##### 5.1 Search Results Interface
 The search results interface presents matched content in a clear, scannable format. Each result displays essential information including poster thumbnail, title, year, and rating. The interface implements a dual-view option allowing users to toggle between grid and list presentations. Filter controls appear in a collapsible sidebar, providing refinement options without consuming excessive screen space.
@@ -166,12 +171,14 @@ The filtering interface presents categorization options through a series of expa
 
 #### 6. Review System Interfaces
 
-![Review System Wireframe]()
+![Review System Wireframe]
+<img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/Review_System_Wireframe.png" width="500">
 
 ##### 6.1 Review Creation Interface
 The review creation process centers around the specific movie being reviewed, displaying the title and release year prominently. A five-star rating system allows for quick scoring, while a dedicated text area accepts detailed written feedback. The interface includes a persistent navigation bar for accessing key platform features during review composition.
 
-![My Reviews Wireframe]()
+![My Reviews Wireframe]
+<img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/My_Reviews_Wireframe.png" width="500">
 
 ##### 6.2 Review Management Interface
 The "My Reviews" section presents a user's review history in a scrollable format. Each entry displays the movie title, year, star rating, and a preview of the written review. The interface allows for quick assessment of past contributions while maintaining easy access to full review content.
@@ -180,18 +187,21 @@ The "My Reviews" section presents a user's review history in a scrollable format
 The editing interface maintains context by displaying the original review details while enabling focused modifications. The star rating control allows immediate adjustment, while the text field presents the existing content in an editable format. Clear "Save" and "Cancel" actions provide unambiguous interaction paths.
 
 #### 7. User Profile Management
-![My Profile Home Page Wireframe]()
+![My Profile Home Page Wireframe]
+<img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/My_Profile_Home_Page_Wireframe.png" width="500">
 
 ##### 7.1 Profile Overview
 The profile management interface organizes user-specific functions into logical sections. Personal details and review collections are accessible through clear navigation elements. The interface includes profile image management and a straightforward logout option. This centralized hub allows users to manage all aspects of their platform presence.
 
-![Edit Profile Wireframes]()
+![Edit Profile Wireframes]
+<img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/Edit_Profile_Wireframe.png" width="500">
 
 ##### 7.2 Profile Editing
 The profile editing interface presents user information in an editable format with clear interaction points. Each field – name, surname, username, password, email address, and mobile number – features an accompanying edit icon. The layout maintains consistency with the platform's overall design language while clearly indicating editable elements.
 
 #### 8. Navigation Elements
-![Movies Landing Page Without Login Wireframes]()
+![Movies Landing Page Without Login Wireframes]
+<img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/Movies_Without_Login.png" width="500">
 
 The platform implements persistent navigation through a bottom-mounted bar containing four key elements:
 
