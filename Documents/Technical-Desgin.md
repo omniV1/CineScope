@@ -120,7 +120,7 @@ Upon successful registration, users receive immediate visual confirmation throug
 
 #### 3. Movie Browsing Interfaces
 
-![Movie Details](https://github.com/omniV1/CineScope/blob/Michael-Dev/Documents/Images/Movie_Details_Wireframes.png)
+![Movie Browsing}(https://github.com/omniV1/CineScope/blob/Michael-Dev/Documents/Images/Movies_Browsing_Wireframe.png)
 
 ##### 3.1 Movies by Category
 The category browsing interface presents film collections through a grid-based layout that prioritizes visual recognition. Each movie appears as a poster thumbnail with title and year information. The layout implements responsive design, adjusting column count based on viewport width. Category headers clearly identify each collection section, while navigation controls support both scrolling and pagination access methods.
@@ -133,7 +133,7 @@ The top rated section emphasizes community validation through a visually distinc
 
 #### 4. Movie Details Interface
 
-<img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/Movie_Details_Wireframes.png"
+![Movie Details](https://github.com/omniV1/CineScope/blob/Michael-Dev/Documents/Images/Movie_Details_Wireframes.png)
 
 The movie details interface provides comprehensive film information through several distinct sections:
 
