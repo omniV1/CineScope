@@ -204,7 +204,7 @@ Users can maintain collections of favorite or saved content for future reference
 Quick access to user-specific functions and settings remains consistently available.
 
 All interfaces maintain visual consistency through the platform's signature red and gray color scheme, ensuring a cohesive user experience across all functional areas. Typography and spacing follow established patterns that prioritize readability and clear information hierarchy.
-Figure 4: Authentication System Wireframes
+
 
 ## Technical Implementation Details
 
