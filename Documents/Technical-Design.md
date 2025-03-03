@@ -118,7 +118,7 @@ Upon successful registration, users receive immediate visual confirmation throug
 
 #### 3. Movie Browsing Interfaces
 
-![Movie Browsing}(https://github.com/omniV1/CineScope/blob/Michael-Dev/Documents/Images/Movies_Browsing_Wireframe.png)
+![Movie Browsing](https://github.com/omniV1/CineScope/blob/Michael-Dev/Documents/Images/Movies_Browsing_Wireframe.png)
 
 ##### 3.1 Movies by Category
 The category browsing interface presents film collections through a grid-based layout that prioritizes visual recognition. Each movie appears as a poster thumbnail with title and year information. The layout implements responsive design, adjusting column count based on viewport width. Category headers clearly identify each collection section, while navigation controls support both scrolling and pagination access methods.
@@ -204,7 +204,7 @@ Users can maintain collections of favorite or saved content for future reference
 Quick access to user-specific functions and settings remains consistently available.
 
 All interfaces maintain visual consistency through the platform's signature red and gray color scheme, ensuring a cohesive user experience across all functional areas. Typography and spacing follow established patterns that prioritize readability and clear information hierarchy.
-Figure 4: Authentication System Wireframes
+
 
 ## Technical Implementation Details
 
