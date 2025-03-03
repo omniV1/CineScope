@@ -20,7 +20,7 @@ March 02, 2025
 
 ## Introduction
 
-CineScope is a modern, user-friendly movie review platform that enables movie enthusiasts to share opinions and discover new films. Built using Blazor C# ASP.NET Core Web App (MVC) with MongoDB as the database system, the platform delivers a responsive web interface for browsing movies, writing reviews, and interacting with other users' content.
+CineScope is a modern, user-friendly movie review platform that enables movie enthusiasts to share opinions and discover new films. Built using Blazor C# ASP.NET Web App (MVC) with MongoDB as the database system, the platform delivers a responsive web interface for browsing movies, writing reviews, and interacting with other users' content.
 
 ## Scope
 
@@ -89,7 +89,7 @@ graph TD
 
 Figure 3: CineScope Site Navigation Map
 
-### User Interface Wireframes
+
 
 ### User Interface Wireframes
 
@@ -118,13 +118,13 @@ Upon successful registration, users receive immediate visual confirmation throug
 
 #### 3. Movie Browsing Interfaces
 
-![Movie Browsing}(https://github.com/omniV1/CineScope/blob/Michael-Dev/Documents/Images/Movies_Browsing_Wireframe.png)
+![Movie Browsing](https://github.com/omniV1/CineScope/blob/Michael-Dev/Documents/Images/Movies_Browsing_Wireframe.png)
 
 ##### 3.1 Movies by Category
 The category browsing interface presents film collections through a grid-based layout that prioritizes visual recognition. Each movie appears as a poster thumbnail with title and year information. The layout implements responsive design, adjusting column count based on viewport width. Category headers clearly identify each collection section, while navigation controls support both scrolling and pagination access methods.
 
 ##### 3.2 Featured Movies Section
-The featured content section presents highlighted movies through an immersive carousel presentation. Each featured film displays with a large poster image and prominent title treatment. Brief descriptive text provides immediate content context, while a clear "View Details" action button encourages deeper engagement. The carousel implements intuitive navigation controls that remain visible during interaction.
+The featured content section presents highlighted movies through a carousel presentation. Each featured film displays with a large poster image and prominent title treatment. Brief descriptive text provides immediate content context, while a clear "View Details" action button encourages deeper engagement. The carousel implements intuitive navigation controls that remain visible during interaction.
 
 ##### 3.3 Top Rated Movies Section
 The top rated section emphasizes community validation through a visually distinct presentation approach. Each film displays not only its poster and title but also its aggregate star rating using a consistent visual indicator. The section header clearly identifies the curation method, while a subtle sorting control allows users to refine the display order according to different ranking metrics.
@@ -184,7 +184,7 @@ The profile management interface organizes user-specific functions into logical 
 <img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/Edit_Profile_Wireframe.png" width="500">
 
 ##### 7.2 Profile Editing
-The profile editing interface presents user information in an editable format with clear interaction points. Each field – name, surname, username, password, email address, and mobile number – features an accompanying edit icon. The layout maintains consistency with the platform's overall design language while clearly indicating editable elements.
+The profile editing interface presents user information in an editable format with clear interaction points. Each field – name, username, password, email address, and mobile number – features an accompanying edit icon. The layout maintains consistency with the platform's overall design language while clearly indicating editable elements.
 
 #### 8. Navigation Elements
 <img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/Movies_Without_Login.png" width="500">
@@ -500,7 +500,6 @@ The Data Access Layer will implement the Repository pattern with the following c
 
 ### Authentication Security
 
-- Implement JWT-based authentication for API access
 - Use secure cookie storage for web sessions
 - Implement proper CORS configuration for API security
 - Use HTTPS for all communications
@@ -559,7 +558,7 @@ Figure 7: Production Deployment Architecture
 
 ### Technology Stack
 
-- **Frontend**: ASP.NET Core MVC, Bootstrap, jQuery
+- **Frontend**: ASP.NET Blazor Web App, Bootstrap, jQuery
 - **Backend**: C# ASP.NET Core
 - **Database**: MongoDB
 - **Testing**: xUnit, Moq, AutoFixture
