@@ -10,7 +10,6 @@ March 3, 2025
 
 ---
 
-© 2025. Grand Canyon University. All Rights Reserved.
 
 A Version Description Document is used to identify the contents of a delivery. For this class, a scaled version of this is used to provide artifacts of your management process and to develop a SELF-SCAN FUNCTIONAL SPEC.
 
