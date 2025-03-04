@@ -58,7 +58,7 @@ This document provides a comprehensive to-do list for completing the CineScope M
 - [ ] Verify cross-references between documents are accurate
 - [ ] Check that all document dates and versions are consistent
 
-> **Direction**: Add explicit references to the Test Procedures document in the Milestone Deliverables section. Ensure consistency in dates, sprint schedules, and version numbers across all documents.
+> **Direction**: Follow the detailed instructions in the [Document Integration Guide](https://github.com/omniV1/CineScope/blob/main/Documents/Help/document-integration-guide.md) to add explicit references to the Test Procedures document in the Milestone Deliverables section. Ensure consistency in dates, sprint schedules, and version numbers across all documents.
 
 ---
 
