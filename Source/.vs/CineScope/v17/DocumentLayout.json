@@ -1,7 +1,104 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "F:\\GCU\\CineScope\\Source\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\cinescope.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\cinescope.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{52B761D6-4965-4137-9D21-256DEDC95281}|CineScope\\CineScope.Client\\CineScope.Client.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope.client\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{52B761D6-4965-4137-9D21-256DEDC95281}|CineScope\\CineScope.Client\\CineScope.Client.csproj|solutionrelative:cinescope\\cinescope.client\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\interfaces\\iuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\interfaces\\iuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\interfaces\\iuserrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\interfaces\\iuserrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\interfaces\\ireviewservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\interfaces\\ireviewservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\interfaces\\ireviewrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\interfaces\\ireviewrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\interfaces\\imovieservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\interfaces\\imovieservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\interfaces\\imovierepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\interfaces\\imovierepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\interfaces\\icontentfilterservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\interfaces\\icontentfilterservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\interfaces\\ibannedwordrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\interfaces\\ibannedwordrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\repositories\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\repositories\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\repositories\\reviewrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\repositories\\reviewrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\repositories\\movierepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\repositories\\movierepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\repositories\\bannedwordrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\repositories\\bannedwordrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{52B761D6-4965-4137-9D21-256DEDC95281}|CineScope\\CineScope.Client\\CineScope.Client.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope.client\\cinescope.client.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{52B761D6-4965-4137-9D21-256DEDC95281}|CineScope\\CineScope.Client\\CineScope.Client.csproj|solutionrelative:cinescope\\cinescope.client\\cinescope.client.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\globalusings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\globalusings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\services\\contentfilterservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\services\\contentfilterservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\services\\databaseseederservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\services\\databaseseederservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\controllers\\testcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\controllers\\testcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\models\\mongodbsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\models\\mongodbsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\services\\mongodbindexservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\services\\mongodbindexservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\services\\reviewservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\services\\reviewservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\services\\movieservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\services\\movieservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|f:\\gcu\\cinescope\\source\\cinescope\\cinescope\\services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7B8969E5-8511-4D87-A5CA-8BD1E3AB4BB8}|CineScope\\CineScope\\CineScope.csproj|solutionrelative:cinescope\\cinescope\\services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,7 +106,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 8,
           "Children": [
             {
               "$type": "Bookmark",
@@ -41,15 +138,322 @@
             },
             {
               "$type": "Bookmark",
-              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "CineScope",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\CineScope.csproj",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\CineScope.csproj",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\CineScope.csproj",
+              "RelativeToolTip": "CineScope\\CineScope\\CineScope.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-03-05T15:31:25.85Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "MovieRepository.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Repositories\\MovieRepository.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\Repositories\\MovieRepository.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Repositories\\MovieRepository.cs",
+              "RelativeToolTip": "CineScope\\CineScope\\Repositories\\MovieRepository.cs",
+              "ViewState": "AgIAACgAAAAAAAAAAAAkwEQAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T14:46:22.856Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "ReviewRepository.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Repositories\\ReviewRepository.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\Repositories\\ReviewRepository.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Repositories\\ReviewRepository.cs",
+              "RelativeToolTip": "CineScope\\CineScope\\Repositories\\ReviewRepository.cs",
+              "ViewState": "AgIAAB8AAAAAAAAAAAAkwDsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T14:46:36.729Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "UserRepository.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Repositories\\UserRepository.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\Repositories\\UserRepository.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Repositories\\UserRepository.cs",
+              "RelativeToolTip": "CineScope\\CineScope\\Repositories\\UserRepository.cs",
+              "ViewState": "AgIAABwAAAAAAAAAAAAkwDgAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T14:46:10.262Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "IBannedWordRepository.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Interfaces\\IBannedWordRepository.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\Interfaces\\IBannedWordRepository.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Interfaces\\IBannedWordRepository.cs",
+              "RelativeToolTip": "CineScope\\CineScope\\Interfaces\\IBannedWordRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T15:17:51.309Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "IContentFilterService.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Interfaces\\IContentFilterService.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\Interfaces\\IContentFilterService.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Interfaces\\IContentFilterService.cs",
+              "RelativeToolTip": "CineScope\\CineScope\\Interfaces\\IContentFilterService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T14:45:00.191Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "IMovieService.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Interfaces\\IMovieService.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\Interfaces\\IMovieService.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Interfaces\\IMovieService.cs",
+              "RelativeToolTip": "CineScope\\CineScope\\Interfaces\\IMovieService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T14:44:14.853Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "IMovieRepository.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Interfaces\\IMovieRepository.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\Interfaces\\IMovieRepository.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Interfaces\\IMovieRepository.cs",
+              "RelativeToolTip": "CineScope\\CineScope\\Interfaces\\IMovieRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T14:42:48.18Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "IReviewRepository.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Interfaces\\IReviewRepository.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\Interfaces\\IReviewRepository.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Interfaces\\IReviewRepository.cs",
+              "RelativeToolTip": "CineScope\\CineScope\\Interfaces\\IReviewRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T14:43:05.35Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "IReviewService.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Interfaces\\IReviewService.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\Interfaces\\IReviewService.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Interfaces\\IReviewService.cs",
+              "RelativeToolTip": "CineScope\\CineScope\\Interfaces\\IReviewService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T14:44:44.407Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "IUserRepository.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Interfaces\\IUserRepository.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\Interfaces\\IUserRepository.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Interfaces\\IUserRepository.cs",
+              "RelativeToolTip": "CineScope\\CineScope\\Interfaces\\IUserRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T14:42:18.693Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "IUserService.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Interfaces\\IUserService.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\Interfaces\\IUserService.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Interfaces\\IUserService.cs",
+              "RelativeToolTip": "CineScope\\CineScope\\Interfaces\\IUserService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T14:43:57.892Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope.Client\\Program.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope.Client\\Program.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope.Client\\Program.cs",
+              "RelativeToolTip": "CineScope\\CineScope.Client\\Program.cs",
+              "ViewState": "AgIAAC8AAAAAAAAAAAAowFYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T14:56:30.662Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "BannedWordRepository.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Repositories\\BannedWordRepository.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\Repositories\\BannedWordRepository.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Repositories\\BannedWordRepository.cs",
+              "RelativeToolTip": "CineScope\\CineScope\\Repositories\\BannedWordRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAD0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T14:46:52.291Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "CineScope.Client",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope.Client\\CineScope.Client.csproj",
+              "RelativeDocumentMoniker": "CineScope\\CineScope.Client\\CineScope.Client.csproj",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope.Client\\CineScope.Client.csproj",
+              "RelativeToolTip": "CineScope\\CineScope.Client\\CineScope.Client.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-03-05T15:24:51.325Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "MongoDBSettings.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Models\\MongoDBSettings.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\Models\\MongoDBSettings.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Models\\MongoDBSettings.cs",
+              "RelativeToolTip": "CineScope\\CineScope\\Models\\MongoDBSettings.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T14:53:35.943Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "TestController.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Controllers\\TestController.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\Controllers\\TestController.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Controllers\\TestController.cs",
+              "RelativeToolTip": "CineScope\\CineScope\\Controllers\\TestController.cs",
+              "ViewState": "AgIAADwAAAAAAAAAAAAkwFgAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T14:49:05.124Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "DatabaseSeederService.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Services\\DatabaseSeederService.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\Services\\DatabaseSeederService.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Services\\DatabaseSeederService.cs",
+              "RelativeToolTip": "CineScope\\CineScope\\Services\\DatabaseSeederService.cs",
+              "ViewState": "AgIAAOEAAAAAAAAAAAAkwP0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T14:48:36.942Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "ContentFilterService.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Services\\ContentFilterService.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\Services\\ContentFilterService.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Services\\ContentFilterService.cs",
+              "RelativeToolTip": "CineScope\\CineScope\\Services\\ContentFilterService.cs",
+              "ViewState": "AgIAAHUAAAAAAAAAAAAkwJEAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T14:47:54.419Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "GlobalUsings.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\GlobalUsings.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\GlobalUsings.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\GlobalUsings.cs",
+              "RelativeToolTip": "CineScope\\CineScope\\GlobalUsings.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T15:12:46.659Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "MongoDBIndexService.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Services\\MongoDBIndexService.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\Services\\MongoDBIndexService.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Services\\MongoDBIndexService.cs",
+              "RelativeToolTip": "CineScope\\CineScope\\Services\\MongoDBIndexService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEwAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T14:48:18.996Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "ReviewService.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Services\\ReviewService.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\Services\\ReviewService.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Services\\ReviewService.cs",
+              "RelativeToolTip": "CineScope\\CineScope\\Services\\ReviewService.cs",
+              "ViewState": "AgIAAIwAAAAAAAAAAAAkwKgAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T14:47:40.375Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "MovieService.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Services\\MovieService.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\Services\\MovieService.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Services\\MovieService.cs",
+              "RelativeToolTip": "CineScope\\CineScope\\Services\\MovieService.cs",
+              "ViewState": "AgIAADQAAAAAAAAAAAAkwFAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T14:47:26.681Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "UserService.cs",
+              "DocumentMoniker": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Services\\UserService.cs",
+              "RelativeDocumentMoniker": "CineScope\\CineScope\\Services\\UserService.cs",
+              "ToolTip": "F:\\GCU\\CineScope\\Source\\CineScope\\CineScope\\Services\\UserService.cs",
+              "RelativeToolTip": "CineScope\\CineScope\\Services\\UserService.cs",
+              "ViewState": "AgIAAGYAAAAAAAAAAAAkwIIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-05T14:47:13.502Z",
+              "EditorCaption": ""
             }
           ]
         }
