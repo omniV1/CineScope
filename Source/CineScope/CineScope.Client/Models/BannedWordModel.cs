@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 
-namespace CineScope.Models
+namespace CineScope.Client.Models
 {
     public class BannedWordModel
     {

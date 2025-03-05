@@ -2,7 +2,7 @@
 using MongoDB.Bson;
 using System.IO;
 
-namespace CineScope.Models
+namespace CineScope.Client.Models
 {
     public class MovieModel
     {

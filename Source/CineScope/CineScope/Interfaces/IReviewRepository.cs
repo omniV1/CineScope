@@ -1,4 +1,4 @@
-﻿using CineScope.Models;
+﻿using CineScope.Client.Models;
 using MongoDB.Bson;
 using System.Collections.Generic;
 using System.Threading.Tasks;

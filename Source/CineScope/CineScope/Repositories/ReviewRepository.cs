@@ -1,5 +1,6 @@
-﻿using CineScope.Interfaces;
-using CineScope.Models;
+﻿using CineScope.Helpers;
+using CineScope.Interfaces;
+using CineScope.Client.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Collections.Generic;
@@ -7,54 +8,53 @@ using System.Threading.Tasks;
 
 namespace CineScope.Repositories
 {
-    public class BannedWordRepository : IBannedWordRepository
+    public class ReviewRepository : IReviewRepository
     {
-        private readonly IMongoCollection<BannedWordModel> _bannedWords;
+        private readonly IMongoCollection<ReviewModel> _reviews;
 
-        public BannedWordRepository(MongoDBSettings settings)
+        public ReviewRepository(MongoDBSettings settings)
         {
-            var client = new MongoClient(settings.ConnectionString);
+            var client = MongoDbConnectionHelper.CreateClient(settings);
             var database = client.GetDatabase(settings.DatabaseName);
-            _bannedWords = database.GetCollection<BannedWordModel>(settings.BannedWordsCollectionName);
+            _reviews = database.GetCollection<ReviewModel>(settings.ReviewsCollectionName);
         }
 
-        public async Task<List<BannedWordModel>> GetAllAsync()
+        public async Task<List<ReviewModel>> GetAllAsync()
         {
-            return await _bannedWords.Find(word => true).ToListAsync();
+            return await _reviews.Find(review => true).ToListAsync();
         }
 
-        public async Task<BannedWordModel> GetByIdAsync(ObjectId id)
+        public async Task<ReviewModel> GetByIdAsync(ObjectId id)
         {
-            return await _bannedWords.Find(word => word.Id == id).FirstOrDefaultAsync();
+            return await _reviews.Find(review => review.Id == id).FirstOrDefaultAsync();
         }
 
-        public async Task<BannedWordModel> GetByWordAsync(string word)
+        public async Task<List<ReviewModel>> GetByUserIdAsync(ObjectId userId)
         {
-            return await _bannedWords.Find(bannedWord => bannedWord.Word.ToLower() == word.ToLower()).FirstOrDefaultAsync();
+            return await _reviews.Find(review => review.UserId == userId).ToListAsync();
         }
 
-        public async Task<List<BannedWordModel>> GetByCategoryAsync(string category)
+        public async Task<List<ReviewModel>> GetByMovieIdAsync(ObjectId movieId)
         {
-            return await _bannedWords.Find(word => word.Category == category).ToListAsync();
+            return await _reviews.Find(review => review.MovieId == movieId)
+                .Sort(Builders<ReviewModel>.Sort.Descending(r => r.CreatedAt))
+                .ToListAsync();
         }
 
-        public async Task<BannedWordModel> CreateAsync(BannedWordModel bannedWord)
+        public async Task<ReviewModel> CreateAsync(ReviewModel review)
         {
-            bannedWord.AddedAt = DateTime.UtcNow;
-            bannedWord.UpdatedAt = DateTime.UtcNow;
-            await _bannedWords.InsertOneAsync(bannedWord);
-            return bannedWord;
+            await _reviews.InsertOneAsync(review);
+            return review;
         }
 
-        public async Task UpdateAsync(ObjectId id, BannedWordModel updatedBannedWord)
+        public async Task UpdateAsync(ObjectId id, ReviewModel updatedReview)
         {
-            updatedBannedWord.UpdatedAt = DateTime.UtcNow;
-            await _bannedWords.ReplaceOneAsync(word => word.Id == id, updatedBannedWord);
+            await _reviews.ReplaceOneAsync(review => review.Id == id, updatedReview);
         }
 
         public async Task DeleteAsync(ObjectId id)
         {
-            await _bannedWords.DeleteOneAsync(word => word.Id == id);
+            await _reviews.DeleteOneAsync(review => review.Id == id);
         }
     }
 }

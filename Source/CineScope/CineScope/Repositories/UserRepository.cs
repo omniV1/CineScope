@@ -1,5 +1,6 @@
-﻿using CineScope.Interfaces;
-using CineScope.Models;
+﻿using CineScope.Helpers;
+using CineScope.Interfaces;
+using CineScope.Client.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace CineScope.Repositories
 
         public UserRepository(MongoDBSettings settings)
         {
-            var client = new MongoClient(settings.ConnectionString);
+            var client = MongoDbConnectionHelper.CreateClient(settings);
             var database = client.GetDatabase(settings.DatabaseName);
             _users = database.GetCollection<UserModel>(settings.UsersCollectionName);
         }

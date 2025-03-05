@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CineScope.Models
+namespace CineScope.Client.Models
 {
     public class MongoDBSettings
     {

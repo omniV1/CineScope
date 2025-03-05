@@ -2,7 +2,7 @@
 using MongoDB.Bson;
 using System.Reflection.Metadata.Ecma335;
 
-namespace CineScope.Models
+namespace CineScope.Client.Models
 {
     public class ReviewModel
     {
