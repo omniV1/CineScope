@@ -1,11 +1,11 @@
 ﻿using MongoDB.Driver;
-using CineScope.Client.Models;  
+using CineScope.Models;  
 
 namespace CineScope.Helpers
 {
     public static class MongoDbConnectionHelper
     {
-        public static IMongoClient CreateClient(Client.Models.MongoDBSettings settings)  // Fully qualify the type
+        public static IMongoClient CreateClient(Models.MongoDBSettings settings)  // Fully qualify the type
         {
             var clientSettings = MongoClientSettings.FromConnectionString(settings.ConnectionString);
             clientSettings.ServerApi = new ServerApi(ServerApiVersion.V1);

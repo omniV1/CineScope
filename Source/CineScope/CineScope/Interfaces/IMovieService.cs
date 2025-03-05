@@ -1,4 +1,4 @@
-﻿using CineScope.Client.Models;
+﻿using CineScope.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

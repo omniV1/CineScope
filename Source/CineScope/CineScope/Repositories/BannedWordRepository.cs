@@ -1,6 +1,6 @@
 ﻿using CineScope.Helpers;
 using CineScope.Interfaces;
-using CineScope.Client.Models;
+using CineScope.Models;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
