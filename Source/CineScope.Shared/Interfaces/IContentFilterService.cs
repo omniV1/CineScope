@@ -1,8 +1,8 @@
-﻿using CineScope.Models;
+﻿using CineScope.Shared.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace CineScope.Interfaces
+namespace CineScope.Shared.Interfaces
 {
     public interface IContentFilterService
     {

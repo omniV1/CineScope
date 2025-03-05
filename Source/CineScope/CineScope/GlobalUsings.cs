@@ -1,5 +1,4 @@
-﻿
-global using System;
+﻿global using System;
 global using System.Collections.Generic;
 global using System.Linq;
 global using System.Text;
@@ -15,7 +14,7 @@ global using Microsoft.Extensions.Logging;
 global using Microsoft.Extensions.Options;
 global using MongoDB.Bson;
 global using MongoDB.Driver;
-global using CineScope.Models;
-global using CineScope.Interfaces;
+global using CineScope.Shared.Models; // Updated namespace
+global using CineScope.Shared.Interfaces;
 global using CineScope.Repositories;
 global using CineScope.Services;

@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace CineScope.Models
+namespace CineScope.Shared.Models
 {
     public class UserModel
     {

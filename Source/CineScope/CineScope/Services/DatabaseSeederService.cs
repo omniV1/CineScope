@@ -1,5 +1,5 @@
-﻿using CineScope.Interfaces;
-using CineScope.Models;
+﻿using CineScope.Shared.Interfaces;
+using CineScope.Shared.Models;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
