@@ -1,0 +1,113 @@
+﻿@page "/login"
+@using CineScope.Client.ClientServices
+@using CineScope.Shared.Models
+@inject UserClientService UserService
+@inject NavigationManager NavigationManager
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-center bg-dark text-white">
+                    <h3>CINESCOPE</h3>
+                    <p class="mb-0">Login to your account</p>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger">
+                            @errorMessage
+                        </div>
+                    }
+
+                    <EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
+                        <DataAnnotationsValidator />
+
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <InputText id="username" @bind-Value="loginModel.Username" class="form-control" />
+                            <ValidationMessage For="@(() => loginModel.Username)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <InputText type="password" id="password" @bind-Value="loginModel.Password" class="form-control" />
+                            <ValidationMessage For="@(() => loginModel.Password)" />
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <InputCheckbox id="rememberMe" @bind-Value="loginModel.RememberMe" class="form-check-input" />
+                            <label class="form-check-label" for="rememberMe">Remember me</label>
+                        </div>
+
+                        <div class="mb-3 d-grid">
+                            <button type="submit" class="btn btn-primary" disabled="@isLoggingIn">
+                                @if (isLoggingIn)
+                                {
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    <span> Logging in...</span>
+                                }
+                                else
+                                {
+                                    <span>Login</span>
+                                }
+                            </button>
+                        </div>
+
+                        <div class="mb-3 text-center">
+                            <a href="/forgot-password">Forgot Password?</a>
+                        </div>
+                    </EditForm>
+
+                    <hr />
+
+                    <div class="text-center">
+                        <p>Don't have an account? <a href="/register">Register</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginModel loginModel = new();
+    private bool isLoggingIn = false;
+    private string errorMessage = string.Empty;
+
+    private async Task HandleLogin()
+    {
+        try
+        {
+            isLoggingIn = true;
+            errorMessage = string.Empty;
+
+            // Using TestController login endpoint via UserClientService
+            var loginRequest = new
+            {
+                Username = loginModel.Username,
+                Password = loginModel.Password
+            };
+
+            var response = await UserService.LoginAsync(loginModel.Username, loginModel.Password);
+
+            if (response != null)
+            {
+                // Successful login - redirect to homepage
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                errorMessage = "Invalid username or password";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Login failed: {ex.Message}";
+        }
+        finally
+        {
+            isLoggingIn = false;
+        }
+    }
+}

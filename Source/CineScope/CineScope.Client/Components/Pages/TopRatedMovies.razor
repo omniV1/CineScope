@@ -1,0 +1,83 @@
+﻿@page "/top-rated"
+@using CineScope.Client.ClientServices
+@using CineScope.Shared.Models
+@inject MovieClientService MovieService
+
+<h1>Top Rated Movies</h1>
+
+@if (movies == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (!movies.Any())
+{
+    <p>No movies available.</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var movie in movies)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="position-absolute top-0 end-0 p-2">
+                        <span class="badge bg-primary rounded-pill">
+                            <i class="bi bi-star-fill"></i> @movie.AverageRating.ToString("0.0")
+                        </span>
+                    </div>
+                    <img src="@movie.PosterUrl" class="card-img-top" alt="@movie.Title"
+                         style="height: 300px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">@movie.Title</h5>
+                        <p class="card-text">
+                            <small class="text-muted">Released: @movie.ReleaseDate.Year</small>
+                        </p>
+                        <p class="card-text">
+                            <small class="text-muted">@movie.ReviewCount reviews</small>
+                        </p>
+                        <p class="card-text">
+                            @foreach (var genre in movie.Genres)
+                            {
+                                <span class="badge bg-secondary me-1">@genre</span>
+                            }
+                        </p>
+                        <a href="/movie/@movie.Id" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<div class="mt-4">
+    <button class="btn btn-outline-primary" @onclick="LoadMore">Load More</button>
+</div>
+
+@code {
+    private List<MovieModel> movies;
+    private int currentLimit = 6;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMovies();
+    }
+
+    private async Task LoadMovies()
+    {
+        try
+        {
+            movies = await MovieService.GetTopRatedMoviesAsync(currentLimit);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading movies: {ex.Message}");
+            movies = new List<MovieModel>();
+        }
+    }
+
+    private async Task LoadMore()
+    {
+        currentLimit += 6;
+        await LoadMovies();
+    }
+}

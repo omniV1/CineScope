@@ -1,0 +1,143 @@
+﻿@page "/register"
+@using CineScope.Client.ClientServices
+@using CineScope.Shared.Models
+@inject UserClientService UserService
+@inject NavigationManager NavigationManager
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-center bg-dark text-white">
+                    <h3>CINESCOPE</h3>
+                    <p class="mb-0">Create your account</p>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger">
+                            @errorMessage
+                        </div>
+                    }
+
+                    @if (registrationSuccess)
+                    {
+                        <div class="alert alert-success">
+                            <h4>Registration Successful!</h4>
+                            <p>Your account has been created. You will be redirected to the login page in @redirectCountdown seconds...</p>
+                            <a href="/login" class="btn btn-primary">Go to Login</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <EditForm Model="@registerModel" OnValidSubmit="HandleRegistration">
+                            <DataAnnotationsValidator />
+
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <InputText id="username" @bind-Value="registerModel.Username" class="form-control" />
+                                <ValidationMessage For="@(() => registerModel.Username)" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <InputText id="email" @bind-Value="registerModel.Email" class="form-control" />
+                                <ValidationMessage For="@(() => registerModel.Email)" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <InputText type="password" id="password" @bind-Value="registerModel.Password" class="form-control" />
+                                <ValidationMessage For="@(() => registerModel.Password)" />
+                                <small class="form-text text-muted">Password must be at least 6 characters long.</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                                <InputText type="password" id="confirmPassword" @bind-Value="registerModel.ConfirmPassword" class="form-control" />
+                                <ValidationMessage For="@(() => registerModel.ConfirmPassword)" />
+                            </div>
+
+                            <div class="mb-3 d-grid">
+                                <button type="submit" class="btn btn-primary" disabled="@isRegistering">
+                                    @if (isRegistering)
+                                    {
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        <span> Registering...</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Register</span>
+                                    }
+                                </button>
+                            </div>
+                        </EditForm>
+
+                        <hr />
+
+                        <div class="text-center">
+                            <p>Already have an account? <a href="/login">Login</a></p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private RegisterModel registerModel = new();
+    private bool isRegistering = false;
+    private string errorMessage = string.Empty;
+    private bool registrationSuccess = false;
+    private int redirectCountdown = 5;
+
+    protected override async Task OnInitializedAsync()
+    {
+        registrationSuccess = false;
+    }
+
+    private async Task HandleRegistration()
+    {
+        try
+        {
+            isRegistering = true;
+            errorMessage = string.Empty;
+
+            // You'll need to create a RegisterAsync method in your UserClientService
+            // or modify this to use your TestController if it supports registration
+            var response = await UserService.RegisterAsync(
+                registerModel.Username,
+                registerModel.Email,
+                registerModel.Password);
+
+            if (response != null)
+            {
+                // Registration successful - show success message and countdown
+                registrationSuccess = true;
+
+                // Start countdown
+                for (redirectCountdown = 5; redirectCountdown > 0; redirectCountdown--)
+                {
+                    StateHasChanged();
+                    await Task.Delay(1000);
+                }
+
+                // Redirect to login page
+                NavigationManager.NavigateTo("/login");
+            }
+            else
+            {
+                errorMessage = "Registration failed. Please try again.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Registration failed: {ex.Message}";
+        }
+        finally
+        {
+            isRegistering = false;
+        }
+    }
+}
