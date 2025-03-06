@@ -1,0 +1,338 @@
+@page "/api-debug"
+@using System.Net.Http.Json
+@using System.Text.Json
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<div class="container mt-5">
+    <h1>API Debugging Tool</h1>
+    <p class="text-muted">This page helps test the API endpoints directly.</p>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Connection Information</h3>
+        </div>
+        <div class="card-body">
+            <p><strong>Base Address:</strong> @Http.BaseAddress</p>
+            <p><strong>Current Path:</strong> @NavigationManager.Uri</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>Login Test</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="loginUsername" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="loginUsername" @bind="loginUsername" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="loginPassword" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="loginPassword" @bind="loginPassword" />
+                    </div>
+                    <button class="btn btn-primary" @onclick="TestLogin" disabled="@isLoading">
+                        @if (isLoading)
+                        {
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            <span> Testing...</span>
+                        }
+                        else
+                        {
+                            <span>Test Login</span>
+                        }
+                    </button>
+                </div>
+                @if (!string.IsNullOrEmpty(loginResult))
+                {
+                    <div class="card-footer">
+                        <h5>Result:</h5>
+                        <pre class="response-display @(loginSuccess ? "text-success" : "text-danger")">@loginResult</pre>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>Register Test</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="registerUsername" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="registerUsername" @bind="registerUsername" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="registerEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="registerEmail" @bind="registerEmail" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="registerPassword" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="registerPassword" @bind="registerPassword" />
+                    </div>
+                    <button class="btn btn-primary" @onclick="TestRegister" disabled="@isLoading">
+                        @if (isLoading)
+                        {
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            <span> Testing...</span>
+                        }
+                        else
+                        {
+                            <span>Test Register</span>
+                        }
+                    </button>
+                </div>
+                @if (!string.IsNullOrEmpty(registerResult))
+                {
+                    <div class="card-footer">
+                        <h5>Result:</h5>
+                        <pre class="response-display @(registerSuccess ? "text-success" : "text-danger")">@registerResult</pre>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Custom API Request</h3>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label for="apiEndpoint" class="form-label">API Endpoint (e.g. api/users/login)</label>
+                <input type="text" class="form-control" id="apiEndpoint" @bind="customEndpoint" />
+            </div>
+            <div class="mb-3">
+                <label for="requestMethod" class="form-label">Method</label>
+                <select class="form-select" id="requestMethod" @bind="requestMethod">
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="DELETE">DELETE</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="requestBody" class="form-label">Request Body (JSON for POST/PUT)</label>
+                <textarea class="form-control" id="requestBody" rows="5" @bind="requestBody"></textarea>
+            </div>
+            <button class="btn btn-primary" @onclick="SendCustomRequest" disabled="@isLoading">
+                @if (isLoading)
+                {
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span> Sending...</span>
+                }
+                else
+                {
+                    <span>Send Request</span>
+                }
+            </button>
+        </div>
+        @if (!string.IsNullOrEmpty(customResult))
+        {
+            <div class="card-footer">
+                <h5>Result:</h5>
+                <pre class="response-display">@customResult</pre>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .response-display {
+        background-color: #f5f5f5;
+        padding: 1rem;
+        border-radius: 4px;
+        white-space: pre-wrap;
+        word-break: break-all;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .text-success {
+        color: #28a745;
+    }
+    
+    .text-danger {
+        color: #dc3545;
+    }
+</style>
+
+@code {
+    // Login test
+    private string loginUsername = "";
+    private string loginPassword = "";
+    private string loginResult = "";
+    private bool loginSuccess = false;
+    
+    // Register test
+    private string registerUsername = "";
+    private string registerEmail = "";
+    private string registerPassword = "";
+    private string registerResult = "";
+    private bool registerSuccess = false;
+    
+    // Custom request
+    private string customEndpoint = "api/users/login";
+    private string requestMethod = "POST";
+    private string requestBody = "{\n  \"username\": \"testuser\",\n  \"password\": \"password123\"\n}";
+    private string customResult = "";
+    
+    private bool isLoading = false;
+    
+    private async Task TestLogin()
+    {
+        try
+        {
+            isLoading = true;
+            loginResult = "Sending request...";
+            
+            var loginData = new { Username = loginUsername, Password = loginPassword };
+            var jsonContent = new StringContent(
+                JsonSerializer.Serialize(loginData),
+                System.Text.Encoding.UTF8,
+                "application/json");
+                
+            // Log the request details
+            await LogRequestDetails("api/users/login", "POST", JsonSerializer.Serialize(loginData));
+            
+            var response = await Http.PostAsync("api/users/login", jsonContent);
+            var content = await response.Content.ReadAsStringAsync();
+            
+            // Format the JSON if possible
+            try {
+                var jsonDoc = JsonDocument.Parse(content);
+                content = JsonSerializer.Serialize(jsonDoc, new JsonSerializerOptions { WriteIndented = true });
+            } catch { /* If it's not valid JSON, keep the original content */ }
+            
+            loginResult = $"Status: {response.StatusCode}\n\n{content}";
+            loginSuccess = response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            loginResult = $"Error: {ex.Message}";
+            loginSuccess = false;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+    
+    private async Task TestRegister()
+    {
+        try
+        {
+            isLoading = true;
+            registerResult = "Sending request...";
+            
+            var registerData = new { 
+                Username = registerUsername, 
+                Email = registerEmail, 
+                Password = registerPassword 
+            };
+            
+            var jsonContent = new StringContent(
+                JsonSerializer.Serialize(registerData),
+                System.Text.Encoding.UTF8,
+                "application/json");
+                
+            // Log the request details
+            await LogRequestDetails("api/users/register", "POST", JsonSerializer.Serialize(registerData));
+            
+            var response = await Http.PostAsync("api/users/register", jsonContent);
+            var content = await response.Content.ReadAsStringAsync();
+            
+            // Format the JSON if possible
+            try {
+                var jsonDoc = JsonDocument.Parse(content);
+                content = JsonSerializer.Serialize(jsonDoc, new JsonSerializerOptions { WriteIndented = true });
+            } catch { /* If it's not valid JSON, keep the original content */ }
+            
+            registerResult = $"Status: {response.StatusCode}\n\n{content}";
+            registerSuccess = response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            registerResult = $"Error: {ex.Message}";
+            registerSuccess = false;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+    
+    private async Task SendCustomRequest()
+    {
+        try
+        {
+            isLoading = true;
+            customResult = "Sending request...";
+            
+            HttpResponseMessage response;
+            
+            // Log the request details
+            await LogRequestDetails(customEndpoint, requestMethod, requestBody);
+            
+            switch (requestMethod)
+            {
+                case "GET":
+                    response = await Http.GetAsync(customEndpoint);
+                    break;
+                    
+                case "POST":
+                    var postContent = new StringContent(
+                        requestBody,
+                        System.Text.Encoding.UTF8,
+                        "application/json");
+                    response = await Http.PostAsync(customEndpoint, postContent);
+                    break;
+                    
+                case "PUT":
+                    var putContent = new StringContent(
+                        requestBody,
+                        System.Text.Encoding.UTF8,
+                        "application/json");
+                    response = await Http.PutAsync(customEndpoint, putContent);
+                    break;
+                    
+                case "DELETE":
+                    response = await Http.DeleteAsync(customEndpoint);
+                    break;
+                    
+                default:
+                    throw new InvalidOperationException($"Unsupported method: {requestMethod}");
+            }
+            
+            var content = await response.Content.ReadAsStringAsync();
+            
+            // Format the JSON if possible
+            try {
+                var jsonDoc = JsonDocument.Parse(content);
+                content = JsonSerializer.Serialize(jsonDoc, new JsonSerializerOptions { WriteIndented = true });
+            } catch { /* If it's not valid JSON, keep the original content */ }
+            
+            customResult = $"Status: {response.StatusCode}\n\n{content}";
+        }
+        catch (Exception ex)
+        {
+            customResult = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+    
+    private async Task LogRequestDetails(string endpoint, string method, string body)
+    {
+        await JSRuntime.InvokeVoidAsync("console.log", 
+            $"API Debug - Request to: {Http.BaseAddress}{endpoint}", 
+            $"Method: {method}", 
+            $"Body: {body}");
+    }
+} 

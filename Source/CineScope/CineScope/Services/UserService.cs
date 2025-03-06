@@ -44,7 +44,7 @@ namespace CineScope.Services
             // Hash the password before storing
             user.PasswordHash = HashPassword(user.PasswordHash);
             user.CreatedAt = DateTime.UtcNow;
-            user.LastLogin = DateTime.MinValue;
+            user.LastLogin = null;
             user.IsLocked = false;
             user.FailedLoginAttempts = 0;
 
@@ -126,6 +126,12 @@ namespace CineScope.Services
         {
             var hashedProvidedPassword = HashPassword(providedPassword);
             return hashedProvidedPassword == storedHash;
+        }
+        
+        // Public method for testing password hashes
+        public string HashPasswordForTesting(string password)
+        {
+            return HashPassword(password);
         }
     }
 }

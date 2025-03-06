@@ -1,79 +1,338 @@
 ﻿@page "/login"
 @using CineScope.Client.ClientServices
 @using CineScope.Shared.Models
+@using CineScope.Client.Helpers
 @inject UserClientService UserService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header text-center bg-dark text-white">
-                    <h3>CINESCOPE</h3>
-                    <p class="mb-0">Login to your account</p>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h3>CINESCOPE</h3>
+            <p>Welcome back</p>
+        </div>
+        <div class="auth-body">
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger">
+                    @errorMessage
                 </div>
-                <div class="card-body">
-                    @if (!string.IsNullOrEmpty(errorMessage))
+            }
+
+            <EditForm Model="@loginModel" OnValidSubmit="HandleLogin" FormName="login-form">
+                <DataAnnotationsValidator />
+
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <InputText id="username" @bind-Value="loginModel.Username" class="form-control" />
+                    <ValidationMessage For="@(() => loginModel.Username)" class="validation-message" />
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <InputText type="password" id="password" @bind-Value="loginModel.Password" class="form-control" />
+                    <ValidationMessage For="@(() => loginModel.Password)" class="validation-message" />
+                </div>
+
+                <div class="form-check">
+                    <InputCheckbox id="rememberMe" @bind-Value="loginModel.RememberMe" class="form-check-input" />
+                    <label class="form-check-label" for="rememberMe">Remember me</label>
+                </div>
+
+                <button type="submit" class="auth-btn" disabled="@isLoggingIn">
+                    @if (isLoggingIn)
                     {
-                        <div class="alert alert-danger">
-                            @errorMessage
-                        </div>
+                        <div class="spinner-border-sm" role="status"></div>
+                        <span> Logging in...</span>
                     }
+                    else
+                    {
+                        <span>Login</span>
+                    }
+                </button>
+            </EditForm>
 
-                    <EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
-                        <DataAnnotationsValidator />
-
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <InputText id="username" @bind-Value="loginModel.Username" class="form-control" />
-                            <ValidationMessage For="@(() => loginModel.Username)" />
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <InputText type="password" id="password" @bind-Value="loginModel.Password" class="form-control" />
-                            <ValidationMessage For="@(() => loginModel.Password)" />
-                        </div>
-
-                        <div class="mb-3 form-check">
-                            <InputCheckbox id="rememberMe" @bind-Value="loginModel.RememberMe" class="form-check-input" />
-                            <label class="form-check-label" for="rememberMe">Remember me</label>
-                        </div>
-
-                        <div class="mb-3 d-grid">
-                            <button type="submit" class="btn btn-primary" disabled="@isLoggingIn">
-                                @if (isLoggingIn)
-                                {
-                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                    <span> Logging in...</span>
-                                }
-                                else
-                                {
-                                    <span>Login</span>
-                                }
-                            </button>
-                        </div>
-
-                        <div class="mb-3 text-center">
-                            <a href="/forgot-password">Forgot Password?</a>
-                        </div>
-                    </EditForm>
-
-                    <hr />
-
-                    <div class="text-center">
-                        <p>Don't have an account? <a href="/register">Register</a></p>
-                    </div>
-                </div>
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="/register">Register</a></p>
+                <a href="/forgot-password">Forgot Password?</a>
             </div>
+
+            @if (showDebugInfo)
+            {
+                <div class="debug-info mt-4 p-3 border border-secondary rounded">
+                    <h6 class="text-warning">Debug Information</h6>
+                    <pre class="text-light bg-dark p-2 rounded" style="font-size: 0.8rem; max-height: 200px; overflow: auto;">@debugInfo</pre>
+                </div>
+            }
         </div>
     </div>
 </div>
+
+<style>
+    .auth-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        background: linear-gradient(135deg, #141414, #333333);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-card {
+        width: 100%;
+        max-width: 450px;
+        background-color: rgba(30, 30, 30, 0.95);
+        border-radius: 8px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+        position: relative;
+        z-index: 2;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .auth-header {
+        background: linear-gradient(45deg, #E50914, #FF6B6B);
+        padding: 2rem;
+        text-align: center;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-header h3 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .auth-header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    .auth-body {
+        padding: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #ccc;
+        font-weight: 500;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #E50914;
+        background-color: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.25);
+    }
+
+    .form-check {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-check-input {
+        width: 1.2rem;
+        height: 1.2rem;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    .form-check-label {
+        color: #ccc;
+        cursor: pointer;
+    }
+
+    .auth-btn {
+        width: 100%;
+        padding: 1rem;
+        background-color: #E50914;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .auth-btn:hover {
+        background-color: #F40612;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .auth-btn:disabled {
+        background-color: rgba(229, 9, 20, 0.5);
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .auth-footer {
+        text-align: center;
+        padding: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 1rem;
+    }
+
+    .auth-footer a {
+        color: #E50914;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    .auth-footer a:hover {
+        color: #FF6B6B;
+    }
+
+    .validation-message {
+        color: #FF6B6B;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .alert {
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-danger {
+        background-color: rgba(220, 53, 69, 0.2);
+        border: 1px solid rgba(220, 53, 69, 0.3);
+        color: #ff8c94;
+    }
+
+    .debug-info {
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+
+    .spinner-border-sm {
+        width: 1rem;
+        height: 1rem;
+        border-width: 0.2em;
+        display: inline-block;
+        vertical-align: text-bottom;
+        border: 0.2em solid currentColor;
+        border-right-color: transparent;
+        border-radius: 50%;
+    }
+
+    .text-warning {
+        color: #ffc107 !important;
+    }
+
+    .text-light {
+        color: #f8f9fa !important;
+    }
+
+    .bg-dark {
+        background-color: #212529 !important;
+    }
+
+    .mt-4 {
+        margin-top: 1.5rem !important;
+    }
+
+    .p-3 {
+        padding: 1rem !important;
+    }
+
+    .p-2 {
+        padding: 0.5rem !important;
+    }
+
+    .border {
+        border: 1px solid !important;
+    }
+
+    .border-secondary {
+        border-color: #6c757d !important;
+    }
+
+    .rounded {
+        border-radius: 0.25rem !important;
+    }
+</style>
 
 @code {
     private LoginModel loginModel = new();
     private bool isLoggingIn = false;
     private string errorMessage = string.Empty;
+    private string debugInfo = string.Empty;
+    private bool showDebugInfo = true; // Set to false in production
+    private bool firstRender = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        AppendDebug("Login page initialized");
+        
+        try {
+            AppendDebug("Checking server connection...");
+            
+            // Use the helper but without JS calls during prerendering
+            await BlazorInitHelper.EnsureInitialized(JSRuntime, "Login Page", false);
+            
+            // Get base address without JS calls
+            string baseAddress = UserService.GetBaseAddress();
+            AppendDebug($"Base address: {baseAddress}");
+            
+            // Force render cycle
+            StateHasChanged();
+            
+            AppendDebug("Login page ready for rendering");
+        }
+        catch (Exception ex) {
+            AppendDebug($"Error during initialization: {ex.Message}");
+        }
+    }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            this.firstRender = false;
+            
+            try
+            {
+                // Now it's safe to make JS calls
+                await JSRuntime.InvokeVoidAsync("console.log", "Login page rendered");
+                AppendDebug("Login page fully initialized and rendered");
+                
+                // Force another render to update UI with debug info
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                AppendDebug($"Error in after render: {ex.Message}");
+            }
+        }
+    }
 
     private async Task HandleLogin()
     {
@@ -81,33 +340,67 @@
         {
             isLoggingIn = true;
             errorMessage = string.Empty;
+            AppendDebug($"Login attempt with username: {loginModel.Username}");
+            StateHasChanged();
 
-            // Using TestController login endpoint via UserClientService
-            var loginRequest = new
+            // Basic client-side validation
+            if (string.IsNullOrWhiteSpace(loginModel.Username))
             {
-                Username = loginModel.Username,
-                Password = loginModel.Password
-            };
+                errorMessage = "Username is required";
+                AppendDebug("Login failed: Username is empty");
+                return;
+            }
 
+            if (string.IsNullOrWhiteSpace(loginModel.Password))
+            {
+                errorMessage = "Password is required";
+                AppendDebug("Login failed: Password is empty");
+                return;
+            }
+
+            AppendDebug("Sending login request to server...");
             var response = await UserService.LoginAsync(loginModel.Username, loginModel.Password);
-
+            
             if (response != null)
             {
-                // Successful login - redirect to homepage
-                NavigationManager.NavigateTo("/");
+                AppendDebug($"Login response received. Success: {response.Success}");
+                
+                if (response.Success)
+                {
+                    AppendDebug("Login successful, navigating to movies page");
+                    await JSRuntime.InvokeVoidAsync("console.log", "Login successful", response);
+                    
+                    // Navigate to home page or dashboard
+                    NavigationManager.NavigateTo("/movies");
+                }
+                else
+                {
+                    errorMessage = response.Message ?? "Invalid username or password";
+                    AppendDebug($"Login failed: {errorMessage}");
+                }
             }
             else
             {
-                errorMessage = "Invalid username or password";
+                errorMessage = "Login failed. Please check your credentials and try again.";
+                AppendDebug("Login failed: No response received from server");
             }
         }
         catch (Exception ex)
         {
             errorMessage = $"Login failed: {ex.Message}";
+            AppendDebug($"Exception during login: {ex.Message}");
+            AppendDebug($"Stack trace: {ex.StackTrace}");
+            await JSRuntime.InvokeVoidAsync("console.log", "Login error", ex);
         }
         finally
         {
             isLoggingIn = false;
+            StateHasChanged();
         }
+    }
+    
+    private void AppendDebug(string message)
+    {
+        debugInfo += $"[{DateTime.Now.ToString("HH:mm:ss")}] {message}\n";
     }
 }

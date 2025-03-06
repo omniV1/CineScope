@@ -17,5 +17,8 @@ namespace CineScope.Shared.Interfaces
         Task<bool> IsAccountLockedAsync(string username);
         Task RecordFailedLoginAttemptAsync(string username);
         Task ResetFailedLoginAttemptsAsync(string username);
+        
+        // Added for debugging/testing
+        string HashPasswordForTesting(string password);
     }
 }

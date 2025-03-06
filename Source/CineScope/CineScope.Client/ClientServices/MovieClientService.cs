@@ -71,5 +71,18 @@ namespace CineScope.Client.ClientServices
                 return new List<ReviewModel>();
             }
         }
+
+        public async Task<List<MovieModel>> GetRecentMoviesAsync(int limit = 5)
+        {
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<List<MovieModel>>($"api/movies/recent?limit={limit}") ?? new List<MovieModel>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetRecentMoviesAsync: {ex.Message}");
+                return new List<MovieModel>();
+            }
+        }
     }
 }

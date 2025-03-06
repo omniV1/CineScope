@@ -10,16 +10,16 @@ namespace CineScope.Shared.Models
         public ObjectId Id { get; set; }
 
         [BsonElement("username")]  // Map to lowercase field name in MongoDB
-        public string username { get; set; }
+        public string username { get; set; } = string.Empty;
 
         [BsonElement("email")]     // Map to lowercase field name in MongoDB
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [BsonElement("passwordHash")]
-        public string PasswordHash { get; set; }
+        public string PasswordHash { get; set; } = string.Empty;
 
         [BsonElement("roles")]
-        public List<string> Roles { get; set; }
+        public List<string> Roles { get; set; } = new List<string>();
 
         [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; }
@@ -33,10 +33,10 @@ namespace CineScope.Shared.Models
         [BsonElement("failedLoginAttempts")]
         public int FailedLoginAttempts { get; set; }
 
-        public UserModel(ObjectId id, string username, string email, string passwordHash, List<string> roles, DateTime createdAt, DateTime lastLogin, bool isLocked, int failedLoginAttempts)
+        public UserModel(ObjectId id, string username, string email, string passwordHash, List<string> roles, DateTime createdAt, DateTime? lastLogin, bool isLocked, int failedLoginAttempts)
         {
             Id = id;
-            username = username;
+            this.username = username;
             Email = email;
             PasswordHash = passwordHash;
             Roles = roles;
@@ -49,12 +49,12 @@ namespace CineScope.Shared.Models
         public UserModel()
         {
             Id = ObjectId.GenerateNewId();
-            username = "";
-            Email = "";
-            PasswordHash = "";
+            username = string.Empty;
+            Email = string.Empty;
+            PasswordHash = string.Empty;
             Roles = new List<string>();
             CreatedAt = DateTime.UtcNow;
-            LastLogin = DateTime.MinValue;
+            LastLogin = null;
             IsLocked = false;
             FailedLoginAttempts = 0;
         }

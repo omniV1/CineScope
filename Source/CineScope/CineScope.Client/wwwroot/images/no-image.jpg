@@ -1,0 +1,6 @@
+﻿namespace CineScope.Client.wwwroot.images
+{
+    public class no_image
+    {
+    }
+}
