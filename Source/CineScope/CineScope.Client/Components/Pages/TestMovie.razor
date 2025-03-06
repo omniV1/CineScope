@@ -1,0 +1,87 @@
+﻿@page "/test-movie"
+@using CineScope.Client.ClientServices
+@using CineScope.Shared.Models
+@inject MovieClientService MovieService
+
+<h1>Movie Test</h1>
+
+@if (loading)
+{
+    <p>Loading...</p>
+}
+else if (error != null)
+{
+    <div class="alert alert-danger">
+        <h4>Error</h4>
+        <p>@error</p>
+    </div>
+}
+else if (movies != null && movies.Any())
+{
+    <div class="card" style="width: 18rem;">
+        <img src="@movies[0].PosterUrl" class="card-img-top" alt="@movies[0].Title"
+             onerror="this.src='https://via.placeholder.com/300x400?text=No+Image';">
+        <div class="card-body">
+            <h5 class="card-title">@movies[0].Title</h5>
+            <p class="card-text">@movies[0].Description</p>
+            <p class="card-text">Director: @movies[0].Director</p>
+            <p class="card-text">Rating: @movies[0].AverageRating</p>
+            <p class="card-text">
+                Genres: @string.Join(", ", movies[0].Genres)
+            </p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">
+        No movies found.
+    </div>
+}
+
+<div class="mt-4">
+    <h3>Debug Info</h3>
+    <pre>@debugInfo</pre>
+</div>
+
+@code {
+    private List<MovieModel> movies;
+    private bool loading = true;
+    private string error;
+    private string debugInfo = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            loading = true;
+            debugInfo += "Starting movie fetch...\n";
+
+            movies = await MovieService.GetAllMoviesAsync();
+
+            debugInfo += $"Fetched {movies?.Count ?? 0} movies\n";
+
+            if (movies != null && movies.Any())
+            {
+                debugInfo += $"First movie ID: {movies[0].Id}\n";
+                debugInfo += $"First movie Title: {movies[0].Title}\n";
+                debugInfo += $"First movie Description: {movies[0].Description}\n";
+                debugInfo += $"First movie PosterUrl: {movies[0].PosterUrl}\n";
+            }
+            else
+            {
+                debugInfo += "No movies returned from API\n";
+            }
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+            debugInfo += $"Error: {ex.Message}\n";
+            debugInfo += $"Stack trace: {ex.StackTrace}";
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+}

@@ -1,11 +1,9 @@
 using CineScope.Client.Components;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Components.WebAssembly.Server;
+using Microsoft.AspNetCore.StaticFiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,16 +12,15 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-// Add controllers with explicit assembly scanning
-var mvcBuilder = builder.Services.AddControllers();
-mvcBuilder.AddApplicationPart(typeof(Program).Assembly);
-mvcBuilder.AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.PropertyNamingPolicy = null;
-    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-});
+// Add controllers
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
 
-// Add Razor Pages (without runtime compilation since you're missing the package)
+// Add Razor Pages
 builder.Services.AddRazorPages();
 
 // Configure CORS
@@ -31,10 +28,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
     {
-        builder.WithOrigins("http://localhost:5000", "https://localhost:5001")
+        builder.AllowAnyOrigin()
                .AllowAnyMethod()
-               .AllowAnyHeader()
-               .AllowCredentials();
+               .AllowAnyHeader();
     });
 });
 
@@ -63,8 +59,9 @@ builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IContentFilterService, ContentFilterService>();
 
-// Controller debugging
-builder.Logging.AddFilter("Microsoft.AspNetCore.Mvc", LogLevel.Debug);
+// Set up detailed logging
+builder.Logging.AddConsole();
+builder.Logging.SetMinimumLevel(LogLevel.Debug);
 
 var app = builder.Build();
 
@@ -79,24 +76,31 @@ else
     app.UseExceptionHandler("/Error");
 }
 
-app.UseStaticFiles();
-app.UseBlazorFrameworkFiles(); // Serve Blazor WebAssembly files
+// Configure MIME types for Blazor WebAssembly
+var provider = new FileExtensionContentTypeProvider();
+provider.Mappings[".dll"] = "application/octet-stream";
+provider.Mappings[".wasm"] = "application/wasm";
+provider.Mappings[".dat"] = "application/octet-stream";
+provider.Mappings[".blat"] = "application/octet-stream";
+
+// Use static files with the configured MIME types
+app.UseStaticFiles(new StaticFileOptions
+{
+    ContentTypeProvider = provider
+});
+
+app.UseBlazorFrameworkFiles();
 app.UseRouting();
 app.UseCors("AllowAll");
-app.UseAntiforgery();
-
-// Logging assemblies for debugging
-Console.WriteLine("Client Assembly: " + typeof(CineScope.Client._Imports).Assembly.FullName);
-foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
-{
-    if (asm.FullName.Contains("CineScope"))
-    {
-        Console.WriteLine("Loaded: " + asm.FullName);
-    }
-}
 
 // Map controllers
 app.MapControllers();
+
+// Map Razor Pages and Blazor components
+app.MapRazorPages();
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode()
+    .AddInteractiveWebAssemblyRenderMode();
 
 // Initialize MongoDB
 var indexService = app.Services.GetRequiredService<MongoDBIndexService>();
@@ -109,7 +113,7 @@ using (var scope = app.Services.CreateScope())
     seeder.SeedDatabaseAsync().GetAwaiter().GetResult();
 }
 
-// This must be the last middleware in the pipeline
+// Fallback route
 app.MapFallbackToFile("index.html");
 
 app.Run();
