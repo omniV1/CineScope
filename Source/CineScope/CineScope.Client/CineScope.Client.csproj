@@ -8,18 +8,21 @@
     <StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
   </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.2" />
-		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-		<PackageReference Include="MongoDB.Bson" Version="3.2.1" />
-		<PackageReference Include="MongoDB.Driver" Version="3.2.1" />
-	</ItemGroup>
+  <ItemGroup>
+    <None Remove="Components\mo1cqzyl.uwq~" />
+  </ItemGroup>
 
-	<ItemGroup>
-	  <ProjectReference Include="..\..\CineScope.Shared\CineScope.Shared.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+    <PackageReference Include="MongoDB.Bson" Version="3.2.1" />
+    <PackageReference Include="MongoDB.Driver" Version="3.2.1" />
+  </ItemGroup>
 
+  <ItemGroup>
+    <!-- Removed the incorrect reference -->
+    <ProjectReference Include="..\..\CineScope.Shared\CineScope.Shared.csproj" />
+  </ItemGroup>
 
 </Project>

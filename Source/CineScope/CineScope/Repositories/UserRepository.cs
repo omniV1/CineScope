@@ -31,7 +31,7 @@ namespace CineScope.Repositories
 
         public async Task<UserModel> GetByUsernameAsync(string username)
         {
-            return await _users.Find(user => user.Username == username).FirstOrDefaultAsync();
+            return await _users.Find(user => user.username == username).FirstOrDefaultAsync();
         }
 
         public async Task<UserModel> GetByEmailAsync(string email)

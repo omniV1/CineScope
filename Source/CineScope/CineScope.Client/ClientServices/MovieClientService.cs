@@ -1,5 +1,8 @@
-﻿using System.Net.Http.Json;
-using CineScope.Shared.Models;
+﻿using CineScope.Shared.Models;
+using System.Net.Http.Json;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CineScope.Client.ClientServices
 {
@@ -16,47 +19,55 @@ namespace CineScope.Client.ClientServices
         {
             try
             {
-                // Use relative URL to avoid confusion
-                string apiUrl = "api/test/movies";
-                Console.WriteLine($"Calling API endpoint: {apiUrl}");
-
-                var request = new HttpRequestMessage(HttpMethod.Get, apiUrl);
-                request.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-
-                var response = await _httpClient.SendAsync(request);
-                Console.WriteLine($"Response status: {response.StatusCode}");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return await response.Content.ReadFromJsonAsync<List<MovieModel>>() ?? new List<MovieModel>();
-                }
-                else
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"Error response: {content.Substring(0, Math.Min(500, content.Length))}");
-                    return new List<MovieModel>();
-                }
+                Console.WriteLine("Calling GetAllMoviesAsync");
+                var movies = await _httpClient.GetFromJsonAsync<List<MovieModel>>("api/test/movies");
+                Console.WriteLine($"Retrieved {movies?.Count ?? 0} movies");
+                return movies ?? new List<MovieModel>();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in GetAllMoviesAsync: {ex}");
+                Console.WriteLine($"Error in GetAllMoviesAsync: {ex.Message}");
                 return new List<MovieModel>();
             }
         }
 
         public async Task<MovieModel?> GetMovieAsync(string id)
         {
-            return await _httpClient.GetFromJsonAsync<MovieModel>($"api/test/movies/{id}");
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<MovieModel>($"api/test/movies/{id}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetMovieAsync: {ex.Message}");
+                return null;
+            }
         }
 
         public async Task<List<MovieModel>> GetTopRatedMoviesAsync(int limit = 5)
         {
-            return await _httpClient.GetFromJsonAsync<List<MovieModel>>($"api/test/movies/top-rated?limit={limit}") ?? new List<MovieModel>();
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<List<MovieModel>>($"api/test/movies/top-rated?limit={limit}") ?? new List<MovieModel>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetTopRatedMoviesAsync: {ex.Message}");
+                return new List<MovieModel>();
+            }
         }
 
         public async Task<List<ReviewModel>> GetMovieReviewsAsync(string movieId)
         {
-            return await _httpClient.GetFromJsonAsync<List<ReviewModel>>($"api/test/movies/{movieId}/reviews") ?? new List<ReviewModel>();
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<List<ReviewModel>>($"api/test/movies/{movieId}/reviews") ?? new List<ReviewModel>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetMovieReviewsAsync: {ex.Message}");
+                return new List<ReviewModel>();
+            }
         }
     }
 }

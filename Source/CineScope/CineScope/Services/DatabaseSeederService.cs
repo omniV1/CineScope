@@ -47,7 +47,7 @@ namespace CineScope.Services
                 new()
                 {
                     Id = ObjectId.GenerateNewId(),
-                    Username = "admin",
+                    username = "admin",
                     Email = "admin@cinescope.com",
                     PasswordHash = HashPassword("Admin@123"),
                     Roles = ["Admin", "User"],
@@ -59,7 +59,7 @@ namespace CineScope.Services
                 new()
                 {
                     Id = ObjectId.GenerateNewId(),
-                    Username = "johndoe",
+                    username = "johndoe",
                     Email = "john@example.com",
                     PasswordHash = HashPassword("User@123"),
                     Roles = ["User"],
@@ -71,7 +71,7 @@ namespace CineScope.Services
                 new()
                 {
                     Id = ObjectId.GenerateNewId(),
-                    Username = "janesmith",
+                    username = "janesmith",
                     Email = "jane@example.com",
                     PasswordHash = HashPassword("User@123"),
                     Roles = ["User"],

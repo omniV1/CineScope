@@ -1,17 +1,24 @@
 using CineScope.Client.Components;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Conventions;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Components.WebAssembly.Server;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add services to the container
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents(); // This should now work
 
-// Add controllers for API endpoints
-builder.Services.AddControllers();
+// Add controllers with explicit assembly scanning
+var mvcBuilder = builder.Services.AddControllers();
+mvcBuilder.AddApplicationPart(typeof(Program).Assembly);
 
-// Configure CORS policy
+// Configure CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
@@ -22,38 +29,40 @@ builder.Services.AddCors(options =>
     });
 });
 
+var conventionPack = new ConventionPack { new IgnoreExtraElementsConvention(true) };
+ConventionRegistry.Register("IgnoreExtraElements", conventionPack, type => true);
+
 // Configure MongoDB Settings
 builder.Services.Configure<MongoDBSettings>(
     builder.Configuration.GetSection(nameof(MongoDBSettings)));
-
 builder.Services.AddSingleton<MongoDBSettings>(sp =>
     sp.GetRequiredService<IOptions<MongoDBSettings>>().Value);
 
-// Register MongoDB Index Service
+// Register services
 builder.Services.AddSingleton<MongoDBIndexService>();
-
-// Register Database Seeder
 builder.Services.AddScoped<DatabaseSeederService>();
 
-// Register Repositories
+// Register repositories and services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IBannedWordRepository, BannedWordRepository>();
 
-// Register Services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IContentFilterService, ContentFilterService>();
 
+// Controller debugging
+builder.Logging.AddFilter("Microsoft.AspNetCore.Mvc", LogLevel.Debug);
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-    // app.UseWebAssemblyDebugging(); // This line is removed as it is not available in WebApplication
+    app.UseWebAssemblyDebugging();
 }
 else
 {
@@ -61,27 +70,35 @@ else
 }
 
 app.UseStaticFiles();
+app.UseRouting();
+app.UseCors("AllowAll");
 app.UseAntiforgery();
 
-// Enable CORS
-app.UseCors("AllowAll");
+Console.WriteLine("Client Assembly: " + typeof(CineScope.Client._Imports).Assembly.FullName);
 
-// Use routing for API endpoints
-app.UseRouting();
+// Then after all mapping is done
+foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+{
+    if (asm.FullName.Contains("CineScope"))
+    {
+        Console.WriteLine("Loaded: " + asm.FullName);
+    }
+}
 
-// Add API endpoints
+// Map controllers
 app.MapControllers();
 
-// Map Razor components
+// Map Razor components - MODIFIED THIS SECTION
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
-    .AddAdditionalAssemblies(typeof(CineScope.Client.Components.App).Assembly);
+    .AddInteractiveWebAssemblyRenderMode();
+   
 
-// Create MongoDB indexes at application startup
+// Initialize MongoDB
 var indexService = app.Services.GetRequiredService<MongoDBIndexService>();
 indexService.CreateIndexesAsync().GetAwaiter().GetResult();
 
-// Seed database on startup
+// Seed database
 using (var scope = app.Services.CreateScope())
 {
     var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeederService>();

@@ -1,16 +1,14 @@
-﻿using CineScope.Shared.Interfaces;
+﻿using Microsoft.AspNetCore.Mvc;
 using CineScope.Shared.Models;
-using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
+using CineScope.Shared.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CineScope.Controllers
 {
-    // Explicitly set the route to lowercase "test" to ensure consistency
-    [Route("api/test")]
     [ApiController]
+    [Route("api/test")]
     public class TestController : ControllerBase
     {
         private readonly IMovieService _movieService;
@@ -37,12 +35,13 @@ namespace CineScope.Controllers
             {
                 _logger.LogInformation("Getting all movies");
                 var movies = await _movieService.GetAllMoviesAsync();
+                _logger.LogInformation($"Found {movies?.Count ?? 0} movies");
                 return Ok(movies);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving movies");
-                return StatusCode(500, new { message = $"Error retrieving movies: {ex.Message}" });
+                return StatusCode(500, new { message = $"Error retrieving movies: {ex.Message}", stackTrace = ex.StackTrace });
             }
         }
 
@@ -93,58 +92,76 @@ namespace CineScope.Controllers
                 return StatusCode(500, new { message = $"Error retrieving reviews: {ex.Message}" });
             }
         }
-
-        [HttpGet("users")]
-        public async Task<ActionResult<List<UserModel>>> GetUsers()
-        {
-            try
-            {
-                var users = await _userService.GetAllUsersAsync();
-
-                // Don't return password hashes
-                foreach (var user in users)
-                {
-                    user.PasswordHash = null;
-                }
-
-                return Ok(users);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving users");
-                return StatusCode(500, new { message = $"Error retrieving users: {ex.Message}" });
-            }
-        }
-
-        [HttpPost("login")]
-        public async Task<ActionResult> Login([FromBody] LoginRequest request)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password))
-                {
-                    return BadRequest(new { message = "Username and password are required" });
-                }
-
-                var isAuthenticated = await _userService.AuthenticateUserAsync(request.Username, request.Password);
-
-                if (!isAuthenticated)
-                    return Unauthorized(new { message = "Invalid username or password" });
-
-                return Ok(new { message = "Login successful" });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error during login for user {Username}", request.Username);
-                return StatusCode(500, new { message = $"Login error: {ex.Message}" });
-            }
-        }
-     
     }
 
-    public class LoginRequest
+    [ApiController]
+    [Route("api/ping")]
+    public class PingController : ControllerBase
     {
-        public string Username { get; set; }
-        public string Password { get; set; }
+        [HttpGet]
+        public IActionResult Get()
+        {
+            return Ok(new
+            {
+                message = "API is working",
+                time = DateTime.UtcNow,
+                version = "1.0"
+            });
+        }
+    }
+
+    [ApiController]
+    [Route("api/diagnostic")]
+    public class DiagnosticController : ControllerBase
+    {
+        private readonly MongoDBSettings _settings;
+        private readonly ILogger<DiagnosticController> _logger;
+
+        public DiagnosticController(MongoDBSettings settings, ILogger<DiagnosticController> logger)
+        {
+            _settings = settings;
+            _logger = logger;
+        }
+
+        [HttpGet("mongo")]
+        public async Task<IActionResult> TestMongo()
+        {
+            try
+            {
+                var client = new MongoClient(_settings.ConnectionString);
+                var database = client.GetDatabase(_settings.DatabaseName);
+
+                // Get counts from all collections
+                var moviesCount = await database.GetCollection<BsonDocument>(_settings.MoviesCollectionName)
+                    .CountDocumentsAsync(new BsonDocument());
+
+                var usersCount = await database.GetCollection<BsonDocument>(_settings.UsersCollectionName)
+                    .CountDocumentsAsync(new BsonDocument());
+
+                var reviewsCount = await database.GetCollection<BsonDocument>(_settings.ReviewsCollectionName)
+                    .CountDocumentsAsync(new BsonDocument());
+
+                var bannedWordsCount = await database.GetCollection<BsonDocument>(_settings.BannedWordsCollectionName)
+                    .CountDocumentsAsync(new BsonDocument());
+
+                return Ok(new
+                {
+                    status = "Connected",
+                    database = _settings.DatabaseName,
+                    counts = new
+                    {
+                        movies = moviesCount,
+                        users = usersCount,
+                        reviews = reviewsCount,
+                        bannedWords = bannedWordsCount
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error testing MongoDB connection");
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
     }
 }
