@@ -3,47 +3,291 @@
 @using CineScope.Shared.Models
 @inject MovieClientService MovieService
 
-<h1>Movies</h1>
-
-@if (movies == null)
-{
-    <p><em>Loading...</em></p>
-}
-else if (!movies.Any())
-{
-    <p>No movies available.</p>
-}
-else
-{
-    <div class="row">
-        @foreach (var movie in movies)
+<div class="netflix-container">
+    @if (movies == null)
+    {
+        <div class="loading-container">
+            <div class="spinner-border text-danger" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading movies...</p>
+        </div>
+    }
+    else if (!movies.Any())
+    {
+        <div class="empty-state">
+            <h2>No movies available</h2>
+            <p>Check back soon for new releases</p>
+        </div>
+    }
+    else
+    {
+        <!-- Hero Section -->
+        if (movies.Count > 0)
         {
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <img src="@movie.PosterUrl" class="card-img-top" alt="@movie.Title"
-                         style="height: 300px; object-fit: cover;">
-                    <div class="card-body">
-                        <h5 class="card-title">@movie.Title</h5>
-                        <p class="card-text">
-                            <small class="text-muted">Released: @movie.ReleaseDate.Year</small>
-                        </p>
-                        <p class="card-text">
-                            <span class="badge bg-primary">@movie.AverageRating.ToString("0.0")</span>
-                            <small class="text-muted ml-2">(@movie.ReviewCount reviews)</small>
-                        </p>
-                        <p class="card-text">
-                            @foreach (var genre in movie.Genres)
-                            {
-                                <span class="badge bg-secondary me-1">@genre</span>
-                            }
-                        </p>
-                        <a href="/movie/@movie.Id" class="btn btn-primary">View Details</a>
+            var featuredMovie = movies.OrderByDescending(m => m.AverageRating).FirstOrDefault();
+            <div class="hero-section">
+                <div class="hero-backdrop" style="background-image: url('@featuredMovie.PosterUrl')"></div>
+                <div class="hero-content">
+                    <h1 class="hero-title">@featuredMovie.Title</h1>
+                    <div class="hero-meta">
+                        <span class="hero-year">@featuredMovie.ReleaseDate.Year</span>
+                        <span class="hero-rating">★ @featuredMovie.AverageRating.ToString("0.0")</span>
                     </div>
+                    <p class="hero-description">@(featuredMovie.Description?.Length > 200 ? featuredMovie.Description.Substring(0, 200) + "..." : featuredMovie.Description)</p>
+                    <a href="/movie/@featuredMovie.Id" class="btn-primary">Watch Now</a>
                 </div>
             </div>
         }
-    </div>
-}
+
+        <!-- Top Rated Section -->
+        <section class="content-section">
+            <h2 class="section-title">Top Rated</h2>
+            <div class="movie-slider">
+                @foreach (var movie in movies.OrderByDescending(m => m.AverageRating).Take(10))
+                {
+                    <div class="movie-item">
+                        <div class="movie-card">
+                            <img src="@movie.PosterUrl" class="movie-poster" alt="@movie.Title" />
+                            <div class="movie-info">
+                                <h3 class="movie-title">@movie.Title</h3>
+                                <div class="movie-meta">
+                                    <span class="movie-year">@movie.ReleaseDate.Year</span>
+                                    <span class="movie-rating">★ @movie.AverageRating.ToString("0.0")</span>
+                                </div>
+                                <a href="/movie/@movie.Id" class="btn-small">Details</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+
+        <!-- Drama Section -->
+        var dramaMovies = movies.Where(m => m.Genres.Contains("Drama")).ToList();
+        if (dramaMovies.Any())
+        {
+            <section class="content-section">
+                <h2 class="section-title">Drama</h2>
+                <div class="movie-slider">
+                    @foreach (var movie in dramaMovies)
+                    {
+                        <div class="movie-item">
+                            <div class="movie-card">
+                                <img src="@movie.PosterUrl" class="movie-poster" alt="@movie.Title" />
+                                <div class="movie-info">
+                                    <h3 class="movie-title">@movie.Title</h3>
+                                    <div class="movie-meta">
+                                        <span class="movie-year">@movie.ReleaseDate.Year</span>
+                                        <span class="movie-rating">★ @movie.AverageRating.ToString("0.0")</span>
+                                    </div>
+                                    <a href="/movie/@movie.Id" class="btn-small">Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </section>
+        }
+    }
+</div>
+
+<style>
+    .netflix-container {
+        background-color: #141414;
+        color: white;
+        padding-bottom: 50px;
+    }
+
+    .loading-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 300px;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 100px 20px;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        position: relative;
+        height: 600px;
+        overflow: hidden;
+        margin-bottom: 40px;
+    }
+
+    .hero-backdrop {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        filter: brightness(0.5);
+    }
+
+    .hero-content {
+        position: relative;
+        max-width: 600px;
+        padding: 60px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, transparent 100%);
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .hero-meta {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .hero-rating {
+        color: #FFD700;
+    }
+
+    .hero-description {
+        font-size: 1.1rem;
+        line-height: 1.5;
+        margin-bottom: 20px;
+        opacity: 0.9;
+    }
+
+    .btn-primary {
+        display: inline-block;
+        background-color: #E50914;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background-color 0.2s;
+        width: fit-content;
+    }
+
+        .btn-primary:hover {
+            background-color: #F40612;
+        }
+
+    /* Content Sections */
+    .content-section {
+        padding: 0 40px;
+        margin-bottom: 40px;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        position: relative;
+    }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background-color: #E50914;
+        }
+
+    /* Movie Sliders */
+    .movie-slider {
+        display: flex;
+        overflow-x: auto;
+        padding: 20px 0;
+        gap: 15px;
+        scrollbar-width: none;
+    }
+
+        .movie-slider::-webkit-scrollbar {
+            display: none;
+        }
+
+    .movie-item {
+        flex: 0 0 auto;
+        width: 200px;
+    }
+
+    .movie-card {
+        position: relative;
+        width: 100%;
+        border-radius: 6px;
+        overflow: hidden;
+        transition: transform 0.3s;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+        .movie-card:hover {
+            transform: scale(1.05);
+            z-index: 2;
+        }
+
+    .movie-poster {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+    }
+
+    .movie-info {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+        transform: translateY(60px);
+        transition: transform 0.3s;
+    }
+
+    .movie-card:hover .movie-info {
+        transform: translateY(0);
+    }
+
+    .movie-title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .movie-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+
+    .movie-rating {
+        color: #FFD700;
+    }
+
+    .btn-small {
+        display: inline-block;
+        background-color: #E50914;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 3px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+    }
+</style>
 
 @code {
     private List<MovieModel> movies;

@@ -59,6 +59,23 @@ builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IContentFilterService, ContentFilterService>();
 
+// Add HttpClient for client services
+builder.Services.AddHttpClient();
+
+// Register client services for server-side prerendering
+builder.Services.AddScoped(sp =>
+    new HttpClient
+    {
+        BaseAddress = new Uri(builder.Environment.IsDevelopment()
+        ? "http://localhost:5000/"
+        : builder.Configuration["ApplicationUrl"] ?? "/")
+    });
+
+// Register the client services
+builder.Services.AddScoped<CineScope.Client.ClientServices.MovieClientService>();
+builder.Services.AddScoped<CineScope.Client.ClientServices.UserClientService>();
+builder.Services.AddScoped<CineScope.Client.ClientServices.ReviewClientService>();
+
 // Set up detailed logging
 builder.Logging.AddConsole();
 builder.Logging.SetMinimumLevel(LogLevel.Debug);
@@ -92,6 +109,9 @@ app.UseStaticFiles(new StaticFileOptions
 app.UseBlazorFrameworkFiles();
 app.UseRouting();
 app.UseCors("AllowAll");
+
+// Add anti-forgery middleware (required for Blazor forms)
+app.UseAntiforgery();
 
 // Map controllers
 app.MapControllers();

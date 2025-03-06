@@ -1,55 +1,57 @@
-﻿@using Microsoft.AspNetCore.Components.Routing
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+﻿<nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
         <a class="navbar-brand" href="/">
-            <span class="text-danger fw-bold">CINE</span><span class="text-white">SCOPE</span>
+            <img src="images/cinescope-logo.png" alt="CineScope" class="logo-image" />
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
+            <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                        <i class="bi bi-house-door"></i> Home
-                    </NavLink>
+                    <a class="nav-link" href="/">Home</a>
                 </li>
                 <li class="nav-item">
-                    <NavLink class="nav-link" href="movies">
-                        <i class="bi bi-film"></i> Movies
-                    </NavLink>
+                    <a class="nav-link" href="/movies">Movies</a>
                 </li>
                 <li class="nav-item">
-                    <NavLink class="nav-link" href="top-rated">
-                        <i class="bi bi-star-fill"></i> Top Rated
-                    </NavLink>
-                </li>
-            </ul>
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <NavLink class="nav-link" href="login">
-                        <i class="bi bi-box-arrow-in-right"></i> Login
-                    </NavLink>
+                    <a class="nav-link" href="/top-rated">Top Rated</a>
                 </li>
                 <li class="nav-item">
-                    <NavLink class="nav-link" href="register">
-                        <i class="bi bi-person-plus"></i> Register
-                    </NavLink>
+                    <a class="nav-link" href="/login">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/register">Register</a>
                 </li>
             </ul>
         </div>
     </div>
 </nav>
 
-@code {
-    private bool collapseNavMenu = true;
-
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
+<style>
+    .navbar {
+        background-color: rgba(0, 0, 0, 0.9);
+        padding: 15px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
-}
+
+    .logo-image {
+        height: 40px;
+        transition: transform 0.3s ease;
+    }
+
+        .logo-image:hover {
+            transform: scale(1.05);
+        }
+
+    .nav-link {
+        color: rgba(255, 255, 255, 0.7);
+        margin: 0 10px;
+        font-weight: 500;
+        transition: color 0.3s;
+    }
+
+        .nav-link:hover {
+            color: #E50914;
+        }
+</style>
