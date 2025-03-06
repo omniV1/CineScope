@@ -121,6 +121,8 @@ app.MapRazorPages();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode();
+    
+
 
 // Initialize MongoDB
 var indexService = app.Services.GetRequiredService<MongoDBIndexService>();
