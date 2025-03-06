@@ -19,9 +19,8 @@ namespace CineScope.Client.ClientServices
         {
             try
             {
-                Console.WriteLine("Calling GetAllMoviesAsync");
-                var movies = await _httpClient.GetFromJsonAsync<List<MovieModel>>("api/test/movies");
-                Console.WriteLine($"Retrieved {movies?.Count ?? 0} movies");
+                // This is correct
+                var movies = await _httpClient.GetFromJsonAsync<List<MovieModel>>("api/movies");
                 return movies ?? new List<MovieModel>();
             }
             catch (Exception ex)
@@ -35,7 +34,8 @@ namespace CineScope.Client.ClientServices
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<MovieModel>($"api/test/movies/{id}");
+                // Changed from api/test/movies/{id} to api/movies/{id}
+                return await _httpClient.GetFromJsonAsync<MovieModel>($"api/movies/{id}");
             }
             catch (Exception ex)
             {
@@ -48,7 +48,8 @@ namespace CineScope.Client.ClientServices
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<MovieModel>>($"api/test/movies/top-rated?limit={limit}") ?? new List<MovieModel>();
+                // Changed from api/test/movies/top-rated to api/movies/top-rated
+                return await _httpClient.GetFromJsonAsync<List<MovieModel>>($"api/movies/top-rated?limit={limit}") ?? new List<MovieModel>();
             }
             catch (Exception ex)
             {
@@ -61,7 +62,8 @@ namespace CineScope.Client.ClientServices
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<ReviewModel>>($"api/test/movies/{movieId}/reviews") ?? new List<ReviewModel>();
+                // Changed from api/test/movies/{movieId}/reviews to api/reviews/movie/{movieId}
+                return await _httpClient.GetFromJsonAsync<List<ReviewModel>>($"api/reviews/movie/{movieId}") ?? new List<ReviewModel>();
             }
             catch (Exception ex)
             {

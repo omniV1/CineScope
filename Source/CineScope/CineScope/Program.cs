@@ -12,23 +12,33 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents(); // This should now work
+    .AddInteractiveWebAssemblyComponents();
 
 // Add controllers with explicit assembly scanning
 var mvcBuilder = builder.Services.AddControllers();
 mvcBuilder.AddApplicationPart(typeof(Program).Assembly);
+mvcBuilder.AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+});
+
+// Add Razor Pages (without runtime compilation since you're missing the package)
+builder.Services.AddRazorPages();
 
 // Configure CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
     {
-        builder.AllowAnyOrigin()
+        builder.WithOrigins("http://localhost:5000", "https://localhost:5001")
                .AllowAnyMethod()
-               .AllowAnyHeader();
+               .AllowAnyHeader()
+               .AllowCredentials();
     });
 });
 
+// Configure MongoDB conventions
 var conventionPack = new ConventionPack { new IgnoreExtraElementsConvention(true) };
 ConventionRegistry.Register("IgnoreExtraElements", conventionPack, type => true);
 
@@ -70,13 +80,13 @@ else
 }
 
 app.UseStaticFiles();
+app.UseBlazorFrameworkFiles(); // Serve Blazor WebAssembly files
 app.UseRouting();
 app.UseCors("AllowAll");
 app.UseAntiforgery();
 
+// Logging assemblies for debugging
 Console.WriteLine("Client Assembly: " + typeof(CineScope.Client._Imports).Assembly.FullName);
-
-// Then after all mapping is done
 foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
 {
     if (asm.FullName.Contains("CineScope"))
@@ -88,12 +98,6 @@ foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
 // Map controllers
 app.MapControllers();
 
-// Map Razor components - MODIFIED THIS SECTION
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode()
-    .AddInteractiveWebAssemblyRenderMode();
-   
-
 // Initialize MongoDB
 var indexService = app.Services.GetRequiredService<MongoDBIndexService>();
 indexService.CreateIndexesAsync().GetAwaiter().GetResult();
@@ -104,5 +108,8 @@ using (var scope = app.Services.CreateScope())
     var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeederService>();
     seeder.SeedDatabaseAsync().GetAwaiter().GetResult();
 }
+
+// This must be the last middleware in the pipeline
+app.MapFallbackToFile("index.html");
 
 app.Run();

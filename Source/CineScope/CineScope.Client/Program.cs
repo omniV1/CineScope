@@ -7,9 +7,13 @@ using CineScope.Client.ClientServices;
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 // Configure HttpClient
-builder.Services.AddScoped(sp => new HttpClient
+builder.Services.AddScoped(sp =>
 {
-    BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+    var httpClient = new HttpClient
+    {
+        BaseAddress = new Uri("http://localhost:5000/")
+    };
+    return httpClient;
 });
 
 // Register client services
