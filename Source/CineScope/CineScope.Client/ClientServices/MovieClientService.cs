@@ -44,16 +44,29 @@ namespace CineScope.Client.ClientServices
             }
         }
 
-        public async Task<List<MovieModel>> GetTopRatedMoviesAsync(int limit = 5)
+
+        public async Task<List<MovieModel>> GetTopRatedMoviesAsync(int limit = 10)
         {
             try
             {
-                // Changed from api/test/movies/top-rated to api/movies/top-rated
-                return await _httpClient.GetFromJsonAsync<List<MovieModel>>($"api/movies/top-rated?limit={limit}") ?? new List<MovieModel>();
+                return await _httpClient.GetFromJsonAsync<List<MovieModel>>($"api/movies/top-rated?limit={limit}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in GetTopRatedMoviesAsync: {ex.Message}");
+                Console.WriteLine($"Error getting top rated movies: {ex.Message}");
+                return new List<MovieModel>();
+            }
+        }
+
+        public async Task<List<MovieModel>> GetRecentMoviesAsync(int limit = 10)
+        {
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<List<MovieModel>>($"api/movies/recent?limit={limit}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error getting recent movies: {ex.Message}");
                 return new List<MovieModel>();
             }
         }

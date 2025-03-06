@@ -1,4 +1,252 @@
 ﻿@page "/"
+@using CineScope.Client.ClientServices
+@using CineScope.Shared.Models
+@inject MovieClientService MovieService
+@inject NavigationManager NavigationManager  // Add this line
 
-<h1>Hello from CineScope!</h1>
-<p>This is a test page.</p>
+
+<div class="home-container">
+    <!-- Hero Section -->
+    <section class="hero-section mb-5">
+        <div class="container-fluid p-0">
+            <div class="featured-movie position-relative">
+                @if (featuredMovie != null)
+                {
+                    <img src="@featuredMovie.PosterUrl" alt="@featuredMovie.Title" class="hero-image"
+                         onerror="this.src='images/default-hero.jpg';">
+                    <div class="hero-overlay"></div>
+                    <div class="hero-content container">
+                        <h1 class="display-4 fw-bold">@featuredMovie.Title</h1>
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="me-3 badge bg-danger fs-6">
+                                <i class="bi bi-star-fill me-1"></i>@featuredMovie.AverageRating.ToString("0.0")
+                            </span>
+                            <span class="text-light">@featuredMovie.ReleaseDate.Year</span>
+                            <span class="mx-2">•</span>
+                            <span class="text-light">@string.Join(", ", featuredMovie.Genres)</span>
+                        </div>
+                        <p class="lead mb-4">@(featuredMovie.Description.Length > 150 ? featuredMovie.Description.Substring(0, 150) + "..." : featuredMovie.Description)</p>
+                        <div class="hero-buttons">
+                            <a href="/movie/@featuredMovie.Id" class="btn btn-danger btn-lg me-2">
+                                <i class="bi bi-info-circle me-2"></i>View Details
+                            </a>
+                            <a href="/review/create/@featuredMovie.Id" class="btn btn-outline-light btn-lg">
+                                <i class="bi bi-pencil me-2"></i>Write Review
+                            </a>
+                        </div>
+                    </div>
+                }
+                else if (isLoading)
+                {
+                    <div class="hero-loading text-center py-5">
+                        <div class="spinner-border text-danger" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="hero-placeholder py-5 text-center">
+                        <h2>Welcome to CineScope</h2>
+                        <p>Your destination for movie reviews and ratings</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Rated Movies -->
+    <section class="movie-section container mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Top Rated Movies</h2>
+            <a href="/top-rated" class="text-danger text-decoration-none">View All <i class="bi bi-chevron-right"></i></a>
+        </div>
+
+        @if (topRatedMovies != null)
+        {
+            <div class="movie-row overflow-auto d-flex">
+                @foreach (var movie in topRatedMovies)
+                {
+                    <div class="movie-card me-3" style="min-width: 200px;" @onclick="@(() => NavigateToMovie(movie.Id))">
+                        <div class="position-relative">
+                            <img src="@movie.PosterUrl" alt="@movie.Title" class="rounded"
+                                 style="width: 200px; height: 300px; object-fit: cover;"
+                                 onerror="this.src='https://via.placeholder.com/200x300?text=No+Image';">
+                            <span class="position-absolute top-0 end-0 m-2 badge bg-danger rounded-pill">
+                                <i class="bi bi-star-fill"></i> @movie.AverageRating.ToString("0.0")
+                            </span>
+                        </div>
+                        <h6 class="mt-2">@movie.Title</h6>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="d-flex justify-content-center py-4">
+                <div class="spinner-border text-danger" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        }
+    </section>
+
+    <!-- Recently Added Movies -->
+    <section class="movie-section container mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Recently Added</h2>
+            <a href="/movies" class="text-danger text-decoration-none">View All <i class="bi bi-chevron-right"></i></a>
+        </div>
+
+        @if (recentMovies != null)
+        {
+            <div class="movie-row overflow-auto d-flex">
+                @foreach (var movie in recentMovies)
+                {
+                    <div class="movie-card me-3" style="min-width: 200px;" @onclick="@(() => NavigateToMovie(movie.Id))">
+                        <div class="position-relative">
+                            <img src="@movie.PosterUrl" alt="@movie.Title" class="rounded"
+                                 style="width: 200px; height: 300px; object-fit: cover;"
+                                 onerror="this.src='https://via.placeholder.com/200x300?text=No+Image';">
+                        </div>
+                        <h6 class="mt-2">@movie.Title</h6>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="d-flex justify-content-center py-4">
+                <div class="spinner-border text-danger" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        }
+    </section>
+
+    <!-- Genres Section -->
+    <section class="container mb-5">
+        <h2 class="mb-4">Browse by Genre</h2>
+        <div class="row g-3">
+            @foreach (var genre in genres)
+            {
+                <div class="col-6 col-md-4 col-lg-3">
+                    <a href="/genre/@genre" class="genre-card text-decoration-none">
+                        <div class="card bg-dark text-white h-100">
+                            <div class="card-body d-flex align-items-center justify-content-center">
+                                <h5 class="card-title m-0">@genre</h5>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </section>
+</div>
+
+<style>
+    .hero-section {
+        height: 70vh;
+        min-height: 500px;
+        overflow: hidden;
+    }
+
+    .featured-movie {
+        height: 100%;
+        width: 100%;
+    }
+
+    .hero-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(0.7);
+    }
+
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.3) 100%);
+    }
+
+    .hero-content {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        padding: 3rem 2rem;
+        max-width: 700px;
+    }
+
+    .movie-row {
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+    }
+
+        .movie-row::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
+        }
+
+    .genre-card .card {
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        height: 100px;
+        background-color: rgba(24, 24, 24, 0.8);
+        border: none;
+    }
+
+        .genre-card .card:hover {
+            transform: translateY(-5px);
+            background-color: #e50914;
+        }
+</style>
+
+@code {
+    private List<MovieModel> topRatedMovies;
+    private List<MovieModel> recentMovies;
+    private MovieModel featuredMovie;
+    private bool isLoading = true;
+    private List<string> genres = new List<string> {
+        "Action", "Drama", "Comedy", "Sci-Fi", "Horror",
+        "Romance", "Thriller", "Fantasy", "Animation", "Adventure"
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        isLoading = true;
+        try
+        {
+            var topRatedTask = MovieService.GetTopRatedMoviesAsync(10);
+            var recentMoviesTask = MovieService.GetRecentMoviesAsync(10);
+
+            await Task.WhenAll(topRatedTask, recentMoviesTask);
+
+            topRatedMovies = await topRatedTask;
+            recentMovies = await recentMoviesTask;
+
+            // Pick a featured movie (either the top rated or a random one)
+            featuredMovie = topRatedMovies.FirstOrDefault();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading data: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void NavigateToMovie(string id)
+    {
+        NavigationManager.NavigateTo($"/movie/{id}");
+    }
+
+}

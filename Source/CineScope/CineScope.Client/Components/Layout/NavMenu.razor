@@ -1,13 +1,13 @@
 ﻿<nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-        <a class="navbar-brand" href="/">
+        <a class="navbar-brand d-flex align-items-center" href="/">
             <img src="images/cinescope-logo.png" alt="CineScope" class="logo-image" />
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav ms-auto align-items-center">
                 <li class="nav-item">
                     <a class="nav-link" href="/">Home</a>
                 </li>
@@ -31,27 +31,64 @@
 <style>
     .navbar {
         background-color: rgba(0, 0, 0, 0.9);
-        padding: 15px 0;
+        padding: 12px 0;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
+    .navbar-brand {
+        margin-right: 2rem;
+    }
+
     .logo-image {
-        height: 40px;
+        height: 50px;
+        border-radius: 6px;
+        object-fit: contain;
         transition: transform 0.3s ease;
+        vertical-align: middle;
     }
 
         .logo-image:hover {
             transform: scale(1.05);
         }
 
-    .nav-link {
-        color: rgba(255, 255, 255, 0.7);
-        margin: 0 10px;
-        font-weight: 500;
-        transition: color 0.3s;
+    .navbar-nav {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
     }
 
-        .nav-link:hover {
-            color: #E50914;
+    .nav-item {
+        position: relative;
+    }
+
+    .nav-link {
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: 500;
+        padding: 8px 15px;
+        margin: 0 5px;
+        transition: all 0.3s;
+        border-radius: 4px;
+        text-align: center;
+    }
+
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            background-color: rgba(229, 9, 20, 0.8);
         }
+
+
+    .nav-link {
+        text-align: left;
+        padding: 12px 15px;
+    }
+
+    .navbar-collapse {
+        background-color: rgba(0, 0, 0, 0.95);
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
+
+    }
 </style>
+
