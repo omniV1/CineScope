@@ -1,48 +1,58 @@
-﻿@page "/login"
-@using CineScope.Client.ClientServices
-@using CineScope.Shared.Models
-@using CineScope.Client.Helpers
-@inject UserClientService UserService
-@inject NavigationManager NavigationManager
-@inject IJSRuntime JSRuntime
+﻿@page "/login"  // Defines the route URL path for this component
+@using CineScope.Client.ClientServices  // Import namespace for client-side service classes
+@using CineScope.Shared.Models  // Import namespace for shared model classes
+@using CineScope.Client.Helpers  // Import namespace for helper utilities
+@inject UserClientService UserService  // Inject the user service for authentication
+@inject NavigationManager NavigationManager  // Inject navigation manager for redirects
+@inject IJSRuntime JSRuntime  // Inject JavaScript runtime for interop operations
 
+<!-- Main authentication container with full viewport height -->
 <div class="auth-container">
+    <!-- Card container for the login form -->
     <div class="auth-card">
+        <!-- Header section with gradient background -->
         <div class="auth-header">
-            <h3>CINESCOPE</h3>
-            <p>Welcome back</p>
+            <h3>CINESCOPE</h3>  <!-- Application name -->
+            <p>Welcome back</p>  <!-- Welcoming message -->
         </div>
+        <!-- Main content area containing the form -->
         <div class="auth-body">
+            <!-- Conditional error message display -->
             @if (!string.IsNullOrEmpty(errorMessage))
             {
                 <div class="alert alert-danger">
-                    @errorMessage
+                    @errorMessage  <!-- Display error message to user -->
                 </div>
             }
 
+            <!-- Login form with data annotation validation -->
             <EditForm Model="@loginModel" OnValidSubmit="HandleLogin" FormName="login-form">
-                <DataAnnotationsValidator />
-
+                <DataAnnotationsValidator />  <!-- Enables validation based on data annotations -->
+                <!-- Username input field -->
                 <div class="form-group">
                     <label for="username" class="form-label">Username</label>
                     <InputText id="username" @bind-Value="loginModel.Username" class="form-control" />
-                    <ValidationMessage For="@(() => loginModel.Username)" class="validation-message" />
+                    <ValidationMessage For="@(() => loginModel.Username)" class="validation-message" />  <!-- Validation message for username -->
                 </div>
 
+                <!-- Password input field with type="password" for security -->
                 <div class="form-group">
                     <label for="password" class="form-label">Password</label>
                     <InputText type="password" id="password" @bind-Value="loginModel.Password" class="form-control" />
-                    <ValidationMessage For="@(() => loginModel.Password)" class="validation-message" />
+                    <ValidationMessage For="@(() => loginModel.Password)" class="validation-message" />  <!-- Validation message for password -->
                 </div>
 
+                <!-- Remember me checkbox -->
                 <div class="form-check">
                     <InputCheckbox id="rememberMe" @bind-Value="loginModel.RememberMe" class="form-check-input" />
                     <label class="form-check-label" for="rememberMe">Remember me</label>
                 </div>
 
+                <!-- Submit button with loading state -->
                 <button type="submit" class="auth-btn" disabled="@isLoggingIn">
                     @if (isLoggingIn)
                     {
+                        <!-- Show spinner when logging in -->
                         <div class="spinner-border-sm" role="status"></div>
                         <span> Logging in...</span>
                     }
@@ -53,11 +63,13 @@
                 </button>
             </EditForm>
 
+            <!-- Footer with links to registration and password recovery -->
             <div class="auth-footer">
                 <p>Don't have an account? <a href="/register">Register</a></p>
                 <a href="/forgot-password">Forgot Password?</a>
             </div>
 
+            <!-- Debug information panel - only shown in development -->
             @if (showDebugInfo)
             {
                 <div class="debug-info mt-4 p-3 border border-secondary rounded">
@@ -69,261 +81,302 @@
     </div>
 </div>
 
+<!-- Component-specific styles -->
 <style>
+    /* Full-height container with centered content and gradient background */
     .auth-container {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem;
-        background: linear-gradient(135deg, #141414, #333333);
-        position: relative;
-        overflow: hidden;
+        min-height: 100vh; /* Full viewport height */
+        display: flex; /* Flexbox for centering */
+        align-items: center; /* Vertical centering */
+        justify-content: center; /* Horizontal centering */
+        padding: 2rem; /* Padding around content */
+        background: linear-gradient(135deg, #141414, #333333); /* Dark gradient background */
+        position: relative; /* For positioning context */
+        overflow: hidden; /* Prevent scrollbars */
     }
 
+    /* Card styling with dark transparent background and subtle border */
     .auth-card {
-        width: 100%;
-        max-width: 450px;
-        background-color: rgba(30, 30, 30, 0.95);
-        border-radius: 8px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        overflow: hidden;
-        position: relative;
-        z-index: 2;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        width: 100%; /* Full width within container */
+        max-width: 450px; /* Maximum width on larger screens */
+        background-color: rgba(30, 30, 30, 0.95); /* Dark semi-transparent background */
+        border-radius: 8px; /* Rounded corners */
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); /* Depth shadow */
+        overflow: hidden; /* Keeps content within border radius */
+        position: relative; /* For z-index layering */
+        z-index: 2; /* Ensures card appears above background */
+        border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle light border */
     }
 
+    /* Header with Netflix-inspired gradient background */
     .auth-header {
-        background: linear-gradient(45deg, #E50914, #FF6B6B);
-        padding: 2rem;
-        text-align: center;
-        color: white;
-        position: relative;
-        overflow: hidden;
+        background: linear-gradient(45deg, #E50914, #FF6B6B); /* Red gradient */
+        padding: 2rem; /* Ample padding */
+        text-align: center; /* Center text */
+        color: white; /* White text */
+        position: relative; /* For potential overlays */
+        overflow: hidden; /* Contains background within bounds */
     }
 
-    .auth-header h3 {
-        font-size: 2rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    }
+        /* Header title styling */
+        .auth-header h3 {
+            font-size: 2rem; /* Large title */
+            font-weight: 700; /* Bold weight */
+            margin-bottom: 0.5rem; /* Space below */
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Text shadow for depth */
+        }
 
-    .auth-header p {
-        font-size: 1.1rem;
-        opacity: 0.9;
-    }
+        /* Header subtitle styling */
+        .auth-header p {
+            font-size: 1.1rem; /* Smaller than title */
+            opacity: 0.9; /* Slightly transparent */
+        }
 
+    /* Main content area styling */
     .auth-body {
-        padding: 2rem;
+        padding: 2rem; /* Consistent padding */
     }
 
+    /* Form group container styling */
     .form-group {
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.5rem; /* Space between form groups */
     }
 
+    /* Form labels */
     .form-label {
-        display: block;
-        margin-bottom: 0.5rem;
-        color: #ccc;
-        font-weight: 500;
+        display: block; /* Each label on its own line */
+        margin-bottom: 0.5rem; /* Space between label and input */
+        color: #ccc; /* Light gray text */
+        font-weight: 500; /* Medium weight */
     }
 
+    /* Form input fields */
     .form-control {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        background-color: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 4px;
-        color: white;
-        transition: all 0.3s ease;
+        width: 100%; /* Full width */
+        padding: 0.75rem 1rem; /* Ample padding */
+        background-color: rgba(255, 255, 255, 0.1); /* Subtle light background */
+        border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle light border */
+        border-radius: 4px; /* Rounded corners */
+        color: white; /* White text */
+        transition: all 0.3s ease; /* Smooth transition for interactivity */
     }
 
-    .form-control:focus {
-        outline: none;
-        border-color: #E50914;
-        background-color: rgba(255, 255, 255, 0.15);
-        box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.25);
-    }
+        /* Focus state for form inputs */
+        .form-control:focus {
+            outline: none; /* Remove default outline */
+            border-color: #E50914; /* Netflix red border */
+            background-color: rgba(255, 255, 255, 0.15); /* Slightly lighter background */
+            box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.25); /* Subtle red glow */
+        }
 
+    /* Checkbox container */
     .form-check {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
+        display: flex; /* Horizontal layout */
+        align-items: center; /* Vertical centering */
+        gap: 0.5rem; /* Space between checkbox and label */
+        margin-bottom: 1rem; /* Bottom margin */
     }
 
+    /* Checkbox styling */
     .form-check-input {
-        width: 1.2rem;
-        height: 1.2rem;
-        background-color: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 3px;
-        cursor: pointer;
+        width: 1.2rem; /* Custom width */
+        height: 1.2rem; /* Custom height */
+        background-color: rgba(255, 255, 255, 0.1); /* Subtle light background */
+        border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle light border */
+        border-radius: 3px; /* Slightly rounded corners */
+        cursor: pointer; /* Pointer cursor on hover */
     }
 
+    /* Checkbox label */
     .form-check-label {
-        color: #ccc;
-        cursor: pointer;
+        color: #ccc; /* Light gray text */
+        cursor: pointer; /* Pointer cursor on hover */
     }
 
+    /* Submit button styling */
     .auth-btn {
-        width: 100%;
-        padding: 1rem;
-        background-color: #E50914;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
+        width: 100%; /* Full width button */
+        padding: 1rem; /* Ample padding */
+        background-color: #E50914; /* Netflix red */
+        color: white; /* White text */
+        border: none; /* No border */
+        border-radius: 4px; /* Rounded corners */
+        font-size: 1rem; /* Standard text size */
+        font-weight: 600; /* Semi-bold weight */
+        cursor: pointer; /* Pointer cursor */
+        transition: all 0.3s ease; /* Smooth transition */
     }
 
-    .auth-btn:hover {
-        background-color: #F40612;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    }
+        /* Button hover state */
+        .auth-btn:hover {
+            background-color: #F40612; /* Slightly brighter red */
+            transform: translateY(-2px); /* Slight upward movement */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Shadow for depth */
+        }
 
-    .auth-btn:disabled {
-        background-color: rgba(229, 9, 20, 0.5);
-        cursor: not-allowed;
-        transform: none;
-    }
+        /* Button disabled state */
+        .auth-btn:disabled {
+            background-color: rgba(229, 9, 20, 0.5); /* Faded red */
+            cursor: not-allowed; /* Not-allowed cursor */
+            transform: none; /* No transform effect */
+        }
 
+    /* Footer section styling */
     .auth-footer {
-        text-align: center;
-        padding: 1rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        margin-top: 1rem;
+        text-align: center; /* Center text */
+        padding: 1rem; /* Consistent padding */
+        border-top: 1px solid rgba(255, 255, 255, 0.1); /* Subtle top border */
+        margin-top: 1rem; /* Space above footer */
     }
 
-    .auth-footer a {
-        color: #E50914;
-        text-decoration: none;
-        font-weight: 500;
-        transition: color 0.3s ease;
-    }
+        /* Footer links */
+        .auth-footer a {
+            color: #E50914; /* Netflix red */
+            text-decoration: none; /* No underline */
+            font-weight: 500; /* Medium weight */
+            transition: color 0.3s ease; /* Smooth color transition */
+        }
 
-    .auth-footer a:hover {
-        color: #FF6B6B;
-    }
+            /* Footer links hover state */
+            .auth-footer a:hover {
+                color: #FF6B6B; /* Lighter red on hover */
+            }
 
+    /* Validation error messages */
     .validation-message {
-        color: #FF6B6B;
-        font-size: 0.875rem;
-        margin-top: 0.25rem;
+        color: #FF6B6B; /* Light red */
+        font-size: 0.875rem; /* Smaller text */
+        margin-top: 0.25rem; /* Space above */
     }
 
+    /* Alert container */
     .alert {
-        padding: 1rem;
-        border-radius: 4px;
-        margin-bottom: 1.5rem;
+        padding: 1rem; /* Consistent padding */
+        border-radius: 4px; /* Rounded corners */
+        margin-bottom: 1.5rem; /* Space below */
     }
 
+    /* Error alert styling */
     .alert-danger {
-        background-color: rgba(220, 53, 69, 0.2);
-        border: 1px solid rgba(220, 53, 69, 0.3);
-        color: #ff8c94;
+        background-color: rgba(220, 53, 69, 0.2); /* Semi-transparent red */
+        border: 1px solid rgba(220, 53, 69, 0.3); /* Subtle red border */
+        color: #ff8c94; /* Light red text */
     }
 
+    /* Debug info panel */
     .debug-info {
-        background-color: rgba(0, 0, 0, 0.3);
+        background-color: rgba(0, 0, 0, 0.3); /* Semi-transparent black */
     }
 
+    /* Loading spinner */
     .spinner-border-sm {
-        width: 1rem;
-        height: 1rem;
-        border-width: 0.2em;
-        display: inline-block;
-        vertical-align: text-bottom;
-        border: 0.2em solid currentColor;
-        border-right-color: transparent;
-        border-radius: 50%;
+        width: 1rem; /* Small size */
+        height: 1rem; /* Small size */
+        border-width: 0.2em; /* Thin border */
+        display: inline-block; /* Inline display */
+        vertical-align: text-bottom; /* Text alignment */
+        border: 0.2em solid currentColor; /* Border inherits text color */
+        border-right-color: transparent; /* Transparent right border creates spinner effect */
+        border-radius: 50%; /* Circle shape */
     }
 
+    /* Utility classes for debug panel */
     .text-warning {
-        color: #ffc107 !important;
+        color: #ffc107 !important; /* Warning yellow */
     }
 
     .text-light {
-        color: #f8f9fa !important;
+        color: #f8f9fa !important; /* Light text */
     }
 
     .bg-dark {
-        background-color: #212529 !important;
+        background-color: #212529 !important; /* Dark background */
     }
 
     .mt-4 {
-        margin-top: 1.5rem !important;
+        margin-top: 1.5rem !important; /* Top margin */
     }
 
     .p-3 {
-        padding: 1rem !important;
+        padding: 1rem !important; /* Medium padding */
     }
 
     .p-2 {
-        padding: 0.5rem !important;
+        padding: 0.5rem !important; /* Small padding */
     }
 
     .border {
-        border: 1px solid !important;
+        border: 1px solid !important; /* Border */
     }
 
     .border-secondary {
-        border-color: #6c757d !important;
+        border-color: #6c757d !important; /* Gray border */
     }
 
     .rounded {
-        border-radius: 0.25rem !important;
+        border-radius: 0.25rem !important; /* Rounded corners */
     }
 </style>
 
 @code {
+    // Login form model bound to the EditForm
     private LoginModel loginModel = new();
+
+    // State tracking for form submission and errors
     private bool isLoggingIn = false;
     private string errorMessage = string.Empty;
+
+    // Debug information tracking
     private string debugInfo = string.Empty;
     private bool showDebugInfo = true; // Set to false in production
     private bool firstRender = true;
 
+    /// <summary>
+    /// Lifecycle method that runs when the component is first initialized
+    /// Sets up initial state and validates server connection
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         AppendDebug("Login page initialized");
-        
-        try {
+
+        try
+        {
             AppendDebug("Checking server connection...");
-            
-            // Use the helper but without JS calls during prerendering
+
+            // Use the helper for initialization without JS calls during prerendering
             await BlazorInitHelper.EnsureInitialized(JSRuntime, "Login Page", false);
-            
-            // Get base address without JS calls
+
+            // Get base address without JS calls to verify API connection
             string baseAddress = UserService.GetBaseAddress();
             AppendDebug($"Base address: {baseAddress}");
-            
-            // Force render cycle
+
+            // Force render cycle to update UI
             StateHasChanged();
-            
+
             AppendDebug("Login page ready for rendering");
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             AppendDebug($"Error during initialization: {ex.Message}");
         }
     }
-    
+
+    /// <summary>
+    /// Lifecycle method that runs after the component has been rendered in the browser
+    /// Used for JavaScript interop which is only safe after rendering
+    /// </summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             this.firstRender = false;
-            
+
             try
             {
-                // Now it's safe to make JS calls
+                // Now it's safe to make JS calls after first render
                 await JSRuntime.InvokeVoidAsync("console.log", "Login page rendered");
                 AppendDebug("Login page fully initialized and rendered");
-                
+
                 // Force another render to update UI with debug info
                 StateHasChanged();
             }
@@ -334,16 +387,21 @@
         }
     }
 
+    /// <summary>
+    /// Handles the login form submission
+    /// Validates inputs, sends authentication request, and handles response
+    /// </summary>
     private async Task HandleLogin()
     {
         try
         {
+            // Set loading state and clear previous errors
             isLoggingIn = true;
             errorMessage = string.Empty;
             AppendDebug($"Login attempt with username: {loginModel.Username}");
             StateHasChanged();
 
-            // Basic client-side validation
+            // Basic client-side validation before API call
             if (string.IsNullOrWhiteSpace(loginModel.Username))
             {
                 errorMessage = "Username is required";
@@ -358,35 +416,40 @@
                 return;
             }
 
+            // Send login request to server
             AppendDebug("Sending login request to server...");
             var response = await UserService.LoginAsync(loginModel.Username, loginModel.Password);
-            
+
             if (response != null)
             {
                 AppendDebug($"Login response received. Success: {response.Success}");
-                
+
                 if (response.Success)
                 {
+                    // Handle successful login
                     AppendDebug("Login successful, navigating to movies page");
                     await JSRuntime.InvokeVoidAsync("console.log", "Login successful", response);
-                    
-                    // Navigate to home page or dashboard
+
+                    // Navigate to main application page
                     NavigationManager.NavigateTo("/movies");
                 }
                 else
                 {
+                    // Display error from server
                     errorMessage = response.Message ?? "Invalid username or password";
                     AppendDebug($"Login failed: {errorMessage}");
                 }
             }
             else
             {
+                // Handle null response (server unreachable)
                 errorMessage = "Login failed. Please check your credentials and try again.";
                 AppendDebug("Login failed: No response received from server");
             }
         }
         catch (Exception ex)
         {
+            // Handle exceptions during login
             errorMessage = $"Login failed: {ex.Message}";
             AppendDebug($"Exception during login: {ex.Message}");
             AppendDebug($"Stack trace: {ex.StackTrace}");
@@ -394,11 +457,15 @@
         }
         finally
         {
+            // Reset loading state and update UI
             isLoggingIn = false;
             StateHasChanged();
         }
     }
-    
+
+    /// <summary>
+    /// Helper method to append timestamped debug information
+    /// </summary>
     private void AppendDebug(string message)
     {
         debugInfo += $"[{DateTime.Now.ToString("HH:mm:ss")}] {message}\n";

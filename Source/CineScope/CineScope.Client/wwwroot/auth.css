@@ -1,216 +1,319 @@
-/* Authentication Styles */
-/* These styles are used for Login and Registration pages */
+/* ==========================================================
+   Authentication Styles - CineScope
+   
+   These styles are specifically for Login and Registration pages
+   to create a consistent, modern, Netflix-inspired auth experience
+   ========================================================== */
 
+/* Main container for authentication pages
+   - Creates full-height centered layout
+   - Uses gradient background for depth
+   - Ensures content is properly contained */
 .auth-container {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    background: linear-gradient(135deg, rgba(20, 20, 20, 0.95), rgba(40, 40, 40, 0.9), rgba(30, 30, 30, 0.95));
-    position: relative;
-    overflow: hidden;
+    min-height: 100vh; /* Full viewport height */
+    display: flex; /* Enables centering */
+    align-items: center; /* Vertical centering */
+    justify-content: center; /* Horizontal centering */
+    padding: 2rem; /* Spacing around content */
+    background: linear-gradient(135deg, rgba(20, 20, 20, 0.95), rgba(40, 40, 40, 0.9), rgba(30, 30, 30, 0.95)); /* Dark gradient background */
+    position: relative; /* For positioning child elements */
+    overflow: hidden; /* Prevents scrollbars when not needed */
 }
 
+/* Authentication card containing form elements
+   - Width constraints for readability
+   - Dark semi-transparent background
+   - Subtle border and shadow for depth
+   - Smooth transitions for animations */
 .auth-card {
-    width: 100%;
-    max-width: 450px;
-    background-color: rgba(30, 30, 30, 0.95);
-    border-radius: 8px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
-    position: relative;
-    z-index: 2;
-    opacity: 1;
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%; /* Full width within container */
+    max-width: 450px; /* Maximum width for larger screens */
+    background-color: rgba(30, 30, 30, 0.95); /* Dark, semi-transparent background */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); /* Depth shadow */
+    overflow: hidden; /* Keeps all content within border radius */
+    position: relative; /* For z-index stacking */
+    z-index: 2; /* Ensure it's above container background */
+    opacity: 1; /* Fully visible by default */
+    transition: opacity 0.5s ease, transform 0.5s ease; /* Smooth transitions for animation effects */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle light border */
 }
 
+/* Header section for card title and subtitle
+   - Uses Netflix-inspired gradient red background
+   - Bold typography with subtle shadow for depth
+   - Centered content with consistent padding */
 .auth-header {
-    background: linear-gradient(45deg, #E50914, #FF6B6B);
-    padding: 2rem;
-    text-align: center;
-    color: white;
-    position: relative;
-    overflow: hidden;
+    background: linear-gradient(45deg, #E50914, #FF6B6B); /* Netflix-inspired red gradient */
+    padding: 2rem; /* Consistent padding */
+    text-align: center; /* Center text */
+    color: white; /* White text for contrast */
+    position: relative; /* For potential overlays */
+    overflow: hidden; /* Contains gradient within bounds */
 }
 
-.auth-header h3 {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
+    /* Main title in header
+   - Large, bold font for emphasis
+   - Text shadow for better readability on gradient */
+    .auth-header h3 {
+        font-size: 2rem; /* Large text size */
+        font-weight: 700; /* Bold weight */
+        margin-bottom: 0.5rem; /* Space before subtitle */
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Shadow for depth and readability */
+    }
 
-.auth-header p {
-    font-size: 1.1rem;
-    opacity: 0.9;
-}
+    /* Subtitle in header
+   - Smaller font with reduced opacity for hierarchy */
+    .auth-header p {
+        font-size: 1.1rem; /* Smaller than title */
+        opacity: 0.9; /* Slightly transparent */
+    }
 
+/* Main content area containing form elements
+   - Consistent padding around content */
 .auth-body {
-    padding: 2rem;
+    padding: 2rem; /* Ample padding for readability */
 }
 
+/* Container for each form input group
+   - Consistent bottom margin for spacing between inputs */
 .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.5rem; /* Space between form groups */
 }
 
+/* Labels for form inputs
+   - Light gray color for subtle appearance
+   - Block display for consistent layout */
 .form-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: #ccc;
-    font-weight: 500;
+    display: block; /* Each label on its own line */
+    margin-bottom: 0.5rem; /* Space between label and input */
+    color: #ccc; /* Light gray for subtle appearance */
+    font-weight: 500; /* Medium weight */
 }
 
+/* Form input fields
+   - Consistent styling with subtle backgrounds
+   - Dark mode friendly styling with light text
+   - Smooth transitions for focus effects */
 .form-control {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    color: white;
-    transition: all 0.3s ease;
+    width: 100%; /* Full width within container */
+    padding: 0.75rem 1rem; /* Ample padding for text */
+    background-color: rgba(255, 255, 255, 0.1); /* Subtle light background */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle light border */
+    border-radius: 4px; /* Rounded corners */
+    color: white; /* White text for dark background */
+    transition: all 0.3s ease; /* Smooth transition for focus state */
 }
 
-.form-control:focus {
-    outline: none;
-    border-color: #E50914;
-    background-color: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.25);
-}
+    /* Focus state for form inputs
+   - Red border and glow matching Netflix brand
+   - Slightly lighter background for visual cue
+   - No default browser outline */
+    .form-control:focus {
+        outline: none; /* Remove default browser outline */
+        border-color: #E50914; /* Netflix red border */
+        background-color: rgba(255, 255, 255, 0.15); /* Slightly lighter background */
+        box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.25); /* Subtle red glow */
+    }
 
+/* Container for checkbox elements
+   - Horizontal layout with aligned items
+   - Spacing between checkbox and label */
 .form-check {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+    display: flex; /* Horizontal layout */
+    align-items: center; /* Vertical alignment */
+    gap: 0.5rem; /* Space between elements */
+    margin-bottom: 1rem; /* Bottom margin */
 }
 
+/* Checkbox input styling
+   - Custom size and styling for consistency
+   - Subtle background matching form fields */
 .form-check-input {
-    width: 1.2rem;
-    height: 1.2rem;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 3px;
-    cursor: pointer;
+    width: 1.2rem; /* Custom width */
+    height: 1.2rem; /* Custom height */
+    background-color: rgba(255, 255, 255, 0.1); /* Subtle light background */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle light border */
+    border-radius: 3px; /* Slightly rounded corners */
+    cursor: pointer; /* Pointer cursor for interaction */
 }
 
+/* Checkbox label styling
+   - Light gray to match other form labels
+   - Pointer cursor to match checkbox */
 .form-check-label {
-    color: #ccc;
-    cursor: pointer;
+    color: #ccc; /* Light gray color */
+    cursor: pointer; /* Pointer cursor for interaction */
 }
 
+/* Primary action button styling
+   - Netflix red background with white text
+   - Full width with consistent padding
+   - Bold text for emphasis
+   - Smooth transitions for hover effects */
 .auth-btn {
-    width: 100%;
-    padding: 1rem;
-    background-color: #E50914;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    width: 100%; /* Full width within container */
+    padding: 1rem; /* Ample padding */
+    background-color: #E50914; /* Netflix red */
+    color: white; /* White text for contrast */
+    border: none; /* No border */
+    border-radius: 4px; /* Rounded corners */
+    font-size: 1rem; /* Standard text size */
+    font-weight: 600; /* Semi-bold weight */
+    cursor: pointer; /* Pointer cursor for interaction */
+    transition: all 0.3s ease; /* Smooth transition for hover */
 }
 
-.auth-btn:hover {
-    background-color: #F40612;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
+    /* Hover state for action button
+   - Slightly brighter red color
+   - Subtle lift effect with shadow
+   - Transform for movement effect */
+    .auth-btn:hover {
+        background-color: #F40612; /* Brighter red on hover */
+        transform: translateY(-2px); /* Subtle upward movement */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Shadow for depth */
+    }
 
-.auth-btn:disabled {
-    background-color: rgba(229, 9, 20, 0.5);
-    cursor: not-allowed;
-    transform: none;
-}
+    /* Disabled state for action button
+   - Faded red to indicate unavailable
+   - No hover effects
+   - Not-allowed cursor */
+    .auth-btn:disabled {
+        background-color: rgba(229, 9, 20, 0.5); /* Faded red color */
+        cursor: not-allowed; /* Not-allowed cursor */
+        transform: none; /* No transform effect */
+    }
 
+/* Footer section below form
+   - Centered text with subtle border
+   - Consistent spacing */
 .auth-footer {
-    text-align: center;
-    padding: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    margin-top: 1rem;
+    text-align: center; /* Center text */
+    padding: 1rem; /* Consistent padding */
+    border-top: 1px solid rgba(255, 255, 255, 0.1); /* Subtle light top border */
+    margin-top: 1rem; /* Space above footer */
 }
 
-.auth-footer a {
-    color: #E50914;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
+    /* Links within footer
+   - Netflix red color for visibility
+   - No underline for cleaner appearance
+   - Smooth transitions for hover */
+    .auth-footer a {
+        color: #E50914; /* Netflix red */
+        text-decoration: none; /* No underline */
+        font-weight: 500; /* Medium weight */
+        transition: color 0.3s ease; /* Smooth color transition */
+    }
 
-.auth-footer a:hover {
-    color: #FF6B6B;
-}
+        /* Hover state for footer links
+   - Lighter red for hover state */
+        .auth-footer a:hover {
+            color: #FF6B6B; /* Lighter red on hover */
+        }
 
+/* Validation error messages
+   - Light red color for errors
+   - Smaller text for subordinate appearance
+   - Consistent spacing */
 .validation-message {
-    color: #FF6B6B;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
+    color: #FF6B6B; /* Light red color */
+    font-size: 0.875rem; /* Smaller text */
+    margin-top: 0.25rem; /* Space after form field */
 }
 
+/* Muted text helper style
+   - Gray color for less emphasis
+   - Smaller text size
+   - Block display for line breaks */
 .text-muted {
-    color: #999 !important;
-    font-size: 0.85rem;
-    display: block;
-    margin-top: 0.25rem;
+    color: #999 !important; /* Gray color with override */
+    font-size: 0.85rem; /* Smaller text */
+    display: block; /* Block display */
+    margin-top: 0.25rem; /* Space above */
 }
 
+/* Alert container styling
+   - Consistent padding and border radius
+   - Margin for spacing from other elements */
 .alert {
-    padding: 1rem;
-    border-radius: 4px;
-    margin-bottom: 1.5rem;
+    padding: 1rem; /* Consistent padding */
+    border-radius: 4px; /* Rounded corners */
+    margin-bottom: 1.5rem; /* Space below alert */
 }
 
+/* Danger/error alert styling
+   - Semi-transparent red background
+   - Light red border and text
+   - Subtle appearance that doesn't overwhelm */
 .alert-danger {
-    background-color: rgba(220, 53, 69, 0.2);
-    border: 1px solid rgba(220, 53, 69, 0.3);
-    color: #ff8c94;
+    background-color: rgba(220, 53, 69, 0.2); /* Semi-transparent red */
+    border: 1px solid rgba(220, 53, 69, 0.3); /* Subtle red border */
+    color: #ff8c94; /* Light red text */
 }
 
+/* Success alert styling
+   - Semi-transparent green background
+   - Light green border and text
+   - Positive visual feedback */
 .alert-success {
-    background-color: rgba(40, 167, 69, 0.2);
-    border: 1px solid rgba(40, 167, 69, 0.3);
-    color: #8fffb4;
+    background-color: rgba(40, 167, 69, 0.2); /* Semi-transparent green */
+    border: 1px solid rgba(40, 167, 69, 0.3); /* Subtle green border */
+    color: #8fffb4; /* Light green text */
 }
 
+/* Small spinner for loading states
+   - Consistent sizing for inline use
+   - Animation for rotation effect
+   - Uses currentColor for flexible coloring */
 .spinner-border-sm {
-    width: 1rem;
-    height: 1rem;
-    border-width: 0.2em;
-    display: inline-block;
-    vertical-align: text-bottom;
-    border: 0.2em solid currentColor;
-    border-right-color: transparent;
-    border-radius: 50%;
-    animation: spinner-border 0.75s linear infinite;
+    width: 1rem; /* Small width */
+    height: 1rem; /* Small height */
+    border-width: 0.2em; /* Thin border */
+    display: inline-block; /* Inline with text */
+    vertical-align: text-bottom; /* Align with text */
+    border: 0.2em solid currentColor; /* Border using text color */
+    border-right-color: transparent; /* Transparent right side for spinner effect */
+    border-radius: 50%; /* Circle shape */
+    animation: spinner-border 0.75s linear infinite; /* Continuous rotation animation */
 }
 
+/* Spinner rotation animation
+   - Defines 360 degree rotation for spinner */
 @keyframes spinner-border {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
+    /* Full rotation */
 }
 
+/* Fade-in animation for elements
+   - Subtle entrance with opacity and movement
+   - Smooth natural feel */
 @keyframes fadeIn {
     from {
-        opacity: 0;
-        transform: translateY(10px);
+        opacity: 0; /* Start transparent */
+        transform: translateY(10px); /* Start slightly below final position */
     }
+
     to {
-        opacity: 1;
-        transform: translateY(0);
+        opacity: 1; /* End fully visible */
+        transform: translateY(0); /* End at natural position */
     }
 }
 
+/* Mobile responsive adjustments
+   - Adjusts card width and padding for smaller screens
+   - Ensures touch-friendly experience */
 @media (max-width: 576px) {
     .auth-card {
-        max-width: 100%;
+        max-width: 100%; /* Full width on small screens */
     }
-    
+
     .auth-header {
-        padding: 1.5rem;
+        padding: 1.5rem; /* Reduced padding */
     }
-    
+
     .auth-body {
-        padding: 1.5rem;
+        padding: 1.5rem; /* Reduced padding */
     }
-} 
+}

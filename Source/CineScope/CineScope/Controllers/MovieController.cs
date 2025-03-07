@@ -8,6 +8,9 @@ using System.Linq;
 
 namespace CineScope.Controllers
 {
+    /// <summary>
+    /// Controller for handling movie-related API endpoints
+    /// </summary>
     [ApiController]
     [Route("api/movies")]
     public class MovieController : ControllerBase
@@ -15,12 +18,21 @@ namespace CineScope.Controllers
         private readonly IMovieService _movieService;
         private readonly ILogger<MovieController> _logger;
 
+        /// <summary>
+        /// Constructor for MovieController
+        /// </summary>
+        /// <param name="movieService">Service for movie operations</param>
+        /// <param name="logger">Logger for recording errors and information</param>
         public MovieController(IMovieService movieService, ILogger<MovieController> logger)
         {
             _movieService = movieService;
             _logger = logger;
         }
 
+        /// <summary>
+        /// Retrieves all movies in the database
+        /// </summary>
+        /// <returns>List of all movies</returns>
         // GET: api/movies
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MovieModel>>> GetAllMovies()
@@ -37,6 +49,11 @@ namespace CineScope.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieves the highest rated movies
+        /// </summary>
+        /// <param name="limit">Maximum number of movies to return (default: 5)</param>
+        /// <returns>List of top rated movies</returns>
         // GET: api/movies/top-rated?limit=5
         [HttpGet("top-rated")]
         public async Task<ActionResult<IEnumerable<MovieModel>>> GetTopRatedMovies([FromQuery] int limit = 5)
@@ -53,6 +70,11 @@ namespace CineScope.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieves the most recently added movies
+        /// </summary>
+        /// <param name="limit">Maximum number of movies to return (default: 5)</param>
+        /// <returns>List of recent movies</returns>
         // GET: api/movies/recent?limit=5
         [HttpGet("recent")]
         public async Task<ActionResult<IEnumerable<MovieModel>>> GetRecentMovies([FromQuery] int limit = 5)
@@ -69,6 +91,11 @@ namespace CineScope.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieves a specific movie by its ID
+        /// </summary>
+        /// <param name="id">ID of the movie to retrieve</param>
+        /// <returns>The movie if found, NotFound response otherwise</returns>
         // GET: api/movies/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<MovieModel>> GetMovie(string id)
@@ -89,6 +116,11 @@ namespace CineScope.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieves movies that match a specific genre
+        /// </summary>
+        /// <param name="genre">Genre to filter by</param>
+        /// <returns>List of movies matching the specified genre</returns>
         // GET: api/movies/genre/{genre}
         [HttpGet("genre/{genre}")]
         public async Task<ActionResult<IEnumerable<MovieModel>>> GetMoviesByGenre(string genre)

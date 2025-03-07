@@ -6,94 +6,101 @@ using System.Threading.Tasks;
 
 namespace CineScope.Client.ClientServices
 {
+    /// <summary>
+    /// Client service for handling movie-related API requests
+    /// Used in Blazor WebAssembly to communicate with the server API
+    /// </summary>
     public class MovieClientService
     {
         private readonly HttpClient _httpClient;
 
+        /// <summary>
+        /// Constructor for MovieClientService
+        /// </summary>
+        /// <param name="httpClient">HttpClient instance configured with base address</param>
         public MovieClientService(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
 
+        /// <summary>
+        /// Retrieves all movies from the API
+        /// </summary>
+        /// <returns>List of all movies, or empty list if error occurs</returns>
         public async Task<List<MovieModel>> GetAllMoviesAsync()
         {
             try
             {
-                // This is correct
+                // Fetch all movies from the API endpoint
                 var movies = await _httpClient.GetFromJsonAsync<List<MovieModel>>("api/movies");
+
+                // Return the movies or an empty list if null
                 return movies ?? new List<MovieModel>();
             }
             catch (Exception ex)
             {
+                // Log error and return empty list to avoid null reference exceptions
                 Console.WriteLine($"Error in GetAllMoviesAsync: {ex.Message}");
                 return new List<MovieModel>();
             }
         }
 
+        /// <summary>
+        /// Retrieves a specific movie by its ID
+        /// </summary>
+        /// <param name="id">The ID of the movie to retrieve</param>
+        /// <returns>The movie if found, null otherwise</returns>
         public async Task<MovieModel?> GetMovieAsync(string id)
         {
             try
             {
-                // Changed from api/test/movies/{id} to api/movies/{id}
+                // Fetch specific movie by ID from the API
                 return await _httpClient.GetFromJsonAsync<MovieModel>($"api/movies/{id}");
             }
             catch (Exception ex)
             {
+                // Log error and return null to indicate failure
                 Console.WriteLine($"Error in GetMovieAsync: {ex.Message}");
                 return null;
             }
         }
 
-
+        /// <summary>
+        /// Retrieves the highest rated movies
+        /// </summary>
+        /// <param name="limit">Maximum number of movies to return (default: 10)</param>
+        /// <returns>List of top rated movies, or empty list if error occurs</returns>
         public async Task<List<MovieModel>> GetTopRatedMoviesAsync(int limit = 10)
         {
             try
             {
+                // Fetch top rated movies with specified limit
                 return await _httpClient.GetFromJsonAsync<List<MovieModel>>($"api/movies/top-rated?limit={limit}");
             }
             catch (Exception ex)
             {
+                // Log error and return empty list to avoid null reference exceptions
                 Console.WriteLine($"Error getting top rated movies: {ex.Message}");
                 return new List<MovieModel>();
             }
         }
 
+        /// <summary>
+        /// Retrieves the most recently added movies
+        /// </summary>
+        /// <param name="limit">Maximum number of movies to return (default: 10)</param>
+        /// <returns>List of recent movies, or empty list if error occurs</returns>
         public async Task<List<MovieModel>> GetRecentMoviesAsync(int limit = 10)
         {
             try
             {
+                // Fetch recent movies with specified limit
                 return await _httpClient.GetFromJsonAsync<List<MovieModel>>($"api/movies/recent?limit={limit}");
             }
             catch (Exception ex)
             {
+                // Log error and return empty list to avoid null reference exceptions
                 Console.WriteLine($"Error getting recent movies: {ex.Message}");
-                return new List<MovieModel>();
-            }
-        }
-
-        public async Task<List<ReviewModel>> GetMovieReviewsAsync(string movieId)
-        {
-            try
-            {
-                // Changed from api/test/movies/{movieId}/reviews to api/reviews/movie/{movieId}
-                return await _httpClient.GetFromJsonAsync<List<ReviewModel>>($"api/reviews/movie/{movieId}") ?? new List<ReviewModel>();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error in GetMovieReviewsAsync: {ex.Message}");
-                return new List<ReviewModel>();
-            }
-        }
-
-        public async Task<List<MovieModel>> GetRecentMoviesAsync(int limit = 5)
-        {
-            try
-            {
-                return await _httpClient.GetFromJsonAsync<List<MovieModel>>($"api/movies/recent?limit={limit}") ?? new List<MovieModel>();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error in GetRecentMoviesAsync: {ex.Message}");
                 return new List<MovieModel>();
             }
         }
