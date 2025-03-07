@@ -1,0 +1,128 @@
+﻿:root {
+    /* HBO Max inspired theme colors */
+    --hbo-dark-bg: #0f0f0f;
+    --hbo-dark-surface: #1a1a1a;
+    --hbo-dark-border: #2c2c2c;
+    --hbo-primary: #8534db; /* Signature HBO purple */
+    --hbo-secondary: #00c4f4; /* HBO cyan */
+    --hbo-success: #3bef9e;
+    --hbo-error: #ff3f5b;
+    --hbo-warning: #ffb527;
+    /* Custom font size variables */
+    --hbo-font-size-h1: 2.5rem;
+    --hbo-font-size-h2: 2rem;
+    --hbo-font-size-h3: 1.75rem;
+    --hbo-font-size-h4: 1.5rem;
+    --hbo-font-size-body: 1rem;
+}
+
+html, body {
+    background-color: var(--hbo-dark-bg);
+    color: white;
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+.mud-container, .mud-main-content {
+    background-color: var(--hbo-dark-bg);
+}
+
+/* Custom styles for movie cards */
+.movie-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    height: 100%;
+}
+
+    .movie-card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .movie-card .mud-card-media {
+        height: 300px;
+        background-size: cover;
+        background-position: center;
+    }
+
+.movie-card-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
+}
+
+/* Custom styling for the app bar */
+.cinescope-appbar {
+    background-color: rgba(15, 15, 15, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--hbo-dark-border);
+}
+
+/* Loading progress */
+.loading-progress-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: var(--hbo-dark-bg);
+    color: white;
+}
+
+/* Custom hero section */
+.hero-section {
+    position: relative;
+    height: 500px;
+    margin-bottom: 2rem;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.hero-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 2rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
+}
+
+.hero-title {
+    font-size: var(--hbo-font-size-h1);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.hero-description {
+    max-width: 700px;
+}
+
+/* Customize MudBlazor component colors */
+.mud-appbar.mud-appbar-dense.mud-elevation-1 {
+    background-color: var(--hbo-dark-bg);
+}
+
+.mud-drawer {
+    background-color: var(--hbo-dark-surface);
+    border-right: 1px solid var(--hbo-dark-border);
+}
+
+.mud-nav-link:not(.mud-nav-link-disabled) {
+    color: white;
+}
+
+.mud-nav-link:hover:not(.mud-nav-link-disabled) {
+    background-color: rgba(133, 52, 219, 0.1);
+}
+
+.mud-nav-link.active:not(.mud-nav-link-disabled) {
+    background-color: rgba(133, 52, 219, 0.2);
+    color: var(--hbo-primary);
+    border-right: 3px solid var(--hbo-primary);
+}

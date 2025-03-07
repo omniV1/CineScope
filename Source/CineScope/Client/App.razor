@@ -1,0 +1,91 @@
+﻿@using Microsoft.AspNetCore.Components.Routing
+@using MudBlazor
+
+<MudThemeProvider Theme="cineScopeTheme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-10 px-8">
+                <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">404 - Page Not Found</MudText>
+                <MudText Typo="Typo.body1" Align="Align.Center">The page you're looking for doesn't exist or has been moved.</MudText>
+                <MudButton Class="mt-5" Variant="Variant.Filled" Color="Color.Primary" Link="/" Size="Size.Large">Return Home</MudButton>
+            </MudContainer>
+        </LayoutView>
+    </NotFound>
+</Router>
+
+@code {
+    // Create custom HBO Max inspired theme
+    private MudTheme cineScopeTheme = new MudTheme()
+        {
+            Palette = new Palette()
+            {
+                Black = "#0f0f0f",
+                White = "#ffffff",
+                Primary = "#8534db", // HBO purple
+                Secondary = "#00c4f4", // HBO cyan
+                Success = "#3bef9e",
+                Error = "#ff3f5b",
+                Warning = "#ffb527",
+                Info = "#2196f3",
+                Background = "#0f0f0f",
+                BackgroundGrey = "#1a1a1a",
+                Surface = "#1a1a1a",
+                AppbarBackground = "#0f0f0f",
+                AppbarText = "#ffffff",
+                DrawerBackground = "#1a1a1a",
+                DrawerText = "#ffffff",
+                TextPrimary = "#ffffff",
+                TextSecondary = "#b3b3b3",
+                ActionDefault = "#ffffff",
+                ActionDisabled = "#636363",
+                ActionDisabledBackground = "#2c2c2c",
+                LinesDefault = "#2c2c2c",
+                LinesInputs = "#4a4a4a",
+                TableLines = "#2c2c2c",
+                TableStriped = "#2c2c2c"
+            },
+            Typography = new Typography()
+            {
+                Default = new Default()
+                {
+                    FontFamily = new[] { "Roboto", "Helvetica", "Arial", "sans-serif" },
+                    FontSize = "1rem",
+                    FontWeight = 400,
+                    LineHeight = 1.5,
+                    LetterSpacing = ".00938em"
+                },
+                H1 = new H1()
+                {
+                    FontSize = "2.5rem",
+                    FontWeight = 700,
+                    LineHeight = 1.167,
+                    LetterSpacing = "-.01562em"
+                },
+                H2 = new H2()
+                {
+                    FontSize = "2rem",
+                    FontWeight = 700,
+                    LineHeight = 1.2,
+                    LetterSpacing = "-.00833em"
+                }
+            // You can customize other typography settings as needed
+            },
+            Shadows = new Shadow(), // Keep default shadows
+            LayoutProperties = new LayoutProperties()
+            {
+                DefaultBorderRadius = "8px", // Slightly rounded corners like HBO Max
+                AppbarMinHeight = "64px",
+                DrawerMiniWidth = "56px",
+                DrawerWidth = "240px"
+            }
+        };
+}
