@@ -30,10 +30,10 @@ This document provides a comprehensive to-do list for completing the CineScope M
 > **Direction**: Follow the guide at [Test Tickets Help](https://github.com/omniV1/CineScope/blob/main/Documents/Help/test-tickets.md). Create tickets as child tasks of their respective user stories (SCRUM-19, SCRUM-27, SCRUM-34), maintaining a clean hierarchy in Jira.
 
 ### 3. Implement Test Classes in Code ⚠️
-- [ ] Create test classes for each functional area
-- [ ] Implement test methods matching the documented procedures
-- [ ] Include assertions that match pass/fail criteria
-- [ ] Ensure tests are independent and repeatable
+- [x] Create test classes for each functional area
+- [x] Implement test methods matching the documented procedures
+- [x] Include assertions that match pass/fail criteria
+- [x] Ensure tests are independent and repeatable
 - [ ] Add comments linking to Jira ticket IDs
 
 > **Direction**: Create one test class per functional area (e.g., `FeaturedMoviesTests.cs`). Each test method should implement the steps from the corresponding test procedure. Use meaningful method names and include setup/teardown code.
