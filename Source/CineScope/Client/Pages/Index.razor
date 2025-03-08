@@ -3,7 +3,7 @@
 
 <PageTitle>CineScope - Your Movie Resource</PageTitle>
 
-<div class="hero-section" style="background-image: url('https://m.media-amazon.com/images/M/MV5BNDkwY2I3ZWQtZGYxMC00N2QyLTg2MmQtZTU5ZTY0Y2M0YTY4XkEyXkFqcGdeQXVyMjMxOTE0ODA@._V1_.jpg'); background-size: cover; background-position: center;">
+<div class="hero-section" style="background-image: url('@heroBackgroundUrl'); background-size: cover; background-position: center;">
     <div class="hero-content">
         <MudText Typo="Typo.h1" Class="hero-title">Welcome to CineScope</MudText>
         <MudText Typo="Typo.subtitle1" Class="hero-description">
@@ -19,15 +19,15 @@
 <MudText Typo="Typo.h4" Class="mt-8 mb-4">Top Rated Movies</MudText>
 
 <MudGrid>
-    @foreach (var i in Enumerable.Range(1, 3))
+    @foreach (var movie in topRatedMovies)
     {
         <MudItem xs="12" sm="6" md="4">
             <MudCard Elevation="4" Class="movie-card">
-                <MudCardMedia Image="https://m.media-amazon.com/images/M/MV5BMDFkYTc0MGEtZmNhMC00ZDIzLWFmNTEtODM1ZmRlYWMwMWFmXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg" Height="300" />
+                <MudCardMedia Image="@movie.ImageUrl" Height="300" />
                 <MudCardContent Class="pt-3 pb-3">
-                    <MudText Typo="Typo.h5">The Shawshank Redemption</MudText>
-                    <MudText Typo="Typo.body2">Drama | 1994</MudText>
-                    <MudRating ReadOnly="true" SelectedValue="5" />
+                    <MudText Typo="Typo.h5">@movie.Title</MudText>
+                    <MudText Typo="Typo.body2">@movie.Genre | @movie.Year</MudText>
+                    <MudRating ReadOnly="true" SelectedValue="@movie.Rating" />
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
@@ -43,15 +43,15 @@
 <MudText Typo="Typo.h4" Class="mb-4">Recently Added</MudText>
 
 <MudGrid>
-    @foreach (var i in Enumerable.Range(1, 3))
+    @foreach (var movie in recentlyAddedMovies)
     {
         <MudItem xs="12" sm="6" md="4">
             <MudCard Elevation="4" Class="movie-card">
-                <MudCardMedia Image="https://m.media-amazon.com/images/M/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg" Height="300" />
+                <MudCardMedia Image="@movie.ImageUrl" Height="300" />
                 <MudCardContent Class="pt-3 pb-3">
-                    <MudText Typo="Typo.h5">The Godfather</MudText>
-                    <MudText Typo="Typo.body2">Crime, Drama | 1972</MudText>
-                    <MudRating ReadOnly="true" SelectedValue="4" />
+                    <MudText Typo="Typo.h5">@movie.Title</MudText>
+                    <MudText Typo="Typo.body2">@movie.Genre | @movie.Year</MudText>
+                    <MudRating ReadOnly="true" SelectedValue="@movie.Rating" />
                 </MudCardContent>
                 <MudCardActions>
                     <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
@@ -61,3 +61,72 @@
         </MudItem>
     }
 </MudGrid>
+
+@code {
+    private string heroBackgroundUrl = "https://m.media-amazon.com/images/M/MV5BNDkwY2I3ZWQtZGYxMC00N2QyLTg2MmQtZTU5ZTY0Y2M0YTY4XkEyXkFqcGdeQXVyMjMxOTE0ODA@._V1_.jpg";
+
+    private class MovieInfo
+    {
+        public string Title { get; set; }
+        public string Genre { get; set; }
+        public string Year { get; set; }
+        public int Rating { get; set; }
+        public string ImageUrl { get; set; }
+    }
+
+    private List<MovieInfo> topRatedMovies = new List<MovieInfo>
+    {
+        new MovieInfo
+        {
+            Title = "The Shawshank Redemption",
+            Genre = "Drama",
+            Year = "1994",
+            Rating = 5,
+            ImageUrl = "https://m.media-amazon.com/images/M/MV5BMDFkYTc0MGEtZmNhMC00ZDIzLWFmNTEtODM1ZmRlYWMwMWFmXkEyXkFqcGdeQXVyMTMxODk2OTU._V1_.jpg"
+        },
+        new MovieInfo
+        {
+            Title = "The Dark Knight",
+            Genre = "Action",
+            Year = "2008",
+            Rating = 5,
+            ImageUrl = "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg"
+        },
+        new MovieInfo
+        {
+            Title = "Pulp Fiction",
+            Genre = "Crime",
+            Year = "1994",
+            Rating = 5,
+            ImageUrl = "https://m.media-amazon.com/images/M/MV5BNGNhMDIzZTUtNTBlZi00MTRlLWFjM2ItYzViMjE3YzI5MjljXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg"
+        }
+    };
+
+    private List<MovieInfo> recentlyAddedMovies = new List<MovieInfo>
+    {
+        new MovieInfo
+        {
+            Title = "The Godfather",
+            Genre = "Crime, Drama",
+            Year = "1972",
+            Rating = 5,
+            ImageUrl = "https://m.media-amazon.com/images/M/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg"
+        },
+        new MovieInfo
+        {
+            Title = "Inception",
+            Genre = "Sci-Fi",
+            Year = "2010",
+            Rating = 4,
+            ImageUrl = "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg"
+        },
+        new MovieInfo
+        {
+            Title = "The Matrix",
+            Genre = "Sci-Fi",
+            Year = "1999",
+            Rating = 4,
+            ImageUrl = "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg"
+        }
+    };
+}

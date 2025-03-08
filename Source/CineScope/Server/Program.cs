@@ -1,5 +1,8 @@
+
+using CineScope.Server.Interfaces;
+using CineScope.Server.Services;
+
 using CineScope.Server.Data;
-using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,8 +15,8 @@ builder.Services.AddRazorPages();
 // Add MongoDB services
 builder.Services.Configure<MongoDbSettings>(
     builder.Configuration.GetSection(nameof(MongoDbSettings)));
-builder.Services.AddSingleton<MongoDbService>();
-
+builder.Services.AddSingleton<IMongoDbService, MongoDbService>();
+builder.Services.AddScoped<MovieService>();
 
 var app = builder.Build();
 

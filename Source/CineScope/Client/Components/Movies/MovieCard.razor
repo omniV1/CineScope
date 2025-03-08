@@ -1,0 +1,25 @@
+﻿@using CineScope.Shared.DTOs
+
+<MudCard Elevation="4" Class="movie-card my-4">
+    <MudCardMedia Image="@Movie.PosterUrl" Height="300" />
+    <MudCardContent Class="pt-3 pb-3">
+        <MudText Typo="Typo.h5">@Movie.Title</MudText>
+        <MudText Typo="Typo.body2">
+            @string.Join(", ", Movie.Genres) | @Movie.ReleaseDate.Year
+        </MudText>
+        <MudRating ReadOnly="true" SelectedValue="@((int)Math.Round(Movie.AverageRating))" />
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton Variant="Variant.Text" Color="Color.Primary" aria-label="Learn More">
+            Learn More
+        </MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Secondary">
+            Review
+        </MudButton>
+    </MudCardActions>
+</MudCard>
+
+@code {
+    [Parameter]
+    public MovieDto Movie { get; set; }
+}

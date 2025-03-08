@@ -1,9 +1,10 @@
 ﻿using MongoDB.Driver;
 using Microsoft.Extensions.Options;
+using CineScope.Server.Interfaces;
 
 namespace CineScope.Server.Data
 {
-    public class MongoDbService
+    public class MongoDbService : IMongoDbService  // Make sure this explicitly implements IMongoDbService
     {
         private readonly IMongoDatabase _database;
 
@@ -14,6 +15,7 @@ namespace CineScope.Server.Data
             _database = client.GetDatabase(settings.DatabaseName);
         }
 
+        // Explicitly implement the interface method
         public IMongoCollection<T> GetCollection<T>(string collectionName)
         {
             return _database.GetCollection<T>(collectionName);
