@@ -42,7 +42,7 @@ namespace CineScope.Tests.Unit
                     Id = "1",
                     MovieId = movieId,           // This review is for our target movie
                     UserId = "user1",            // Written by user1
-                    Rating = 4.5,                // 4.5 out of 5 stars
+                    Rating = 4,                // 4.5 out of 5 stars
                     Text = "Great movie!",       // Review content
                     CreatedAt = DateTime.UtcNow, // Created just now
                     Username = "User One"        // Display name of the reviewer
@@ -52,7 +52,7 @@ namespace CineScope.Tests.Unit
                     Id = "2",
                     MovieId = movieId,           // This review is also for our target movie
                     UserId = "user2",            // Written by a different user
-                    Rating = 5.0,                // Perfect 5-star rating
+                    Rating = 5,                // Perfect 5-star rating
                     Text = "Excellent film!",    // Different review content
                     CreatedAt = DateTime.UtcNow, // Created just now
                     Username = "User Two"        // Display name of the second reviewer
@@ -123,7 +123,7 @@ namespace CineScope.Tests.Unit
             {
                 MovieId = "movie123",          // The movie being reviewed
                 UserId = "user1",              // The user writing the review
-                Rating = 4.5,                  // 4.5 out of 5 stars
+                Rating = 4,                  // 4.5 out of 5 stars
                 Text = "Great movie!",         // Review content
                 CreatedAt = DateTime.UtcNow    // Created just now
             };
@@ -192,7 +192,7 @@ namespace CineScope.Tests.Unit
                 Id = reviewId,               // Same ID as the existing review
                 MovieId = "movie123",        // The movie being reviewed
                 UserId = "user1",            // The user who wrote the review
-                Rating = 5.0,                // Updated to a perfect 5-star rating
+                Rating = 5,                // Updated to a perfect 5-star rating
                 Text = "Updated review text!" // New review content
             };
 

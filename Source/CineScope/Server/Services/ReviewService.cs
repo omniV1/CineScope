@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CineScope.Server.Data;
 using CineScope.Server.Interfaces;
@@ -128,6 +129,48 @@ namespace CineScope.Server.Services
 
             // Return true if at least one document was deleted
             return result.DeletedCount > 0;
+        }
+
+        /// <summary>
+        /// Calculates updated average rating for a movie based on all reviews.
+        /// </summary>
+        /// <param name="movieId">The ID of the movie</param>
+        /// <returns>Success indicator</returns>
+        public async Task<bool> UpdateMovieAverageRatingAsync(string movieId)
+        {
+            try
+            {
+                // Get the reviews collection
+                var reviewsCollection = _mongoDbService.GetCollection<Review>(_settings.ReviewsCollectionName);
+
+                // Get all reviews for the movie
+                var reviews = await reviewsCollection.Find(r => r.MovieId == movieId).ToListAsync();
+
+                // Calculate average rating (rounded to 1 decimal place)
+                double averageRating = 0;
+                if (reviews.Count > 0)
+                {
+                    // Use double for precise calculation
+                    double totalRating = reviews.Sum(r => r.Rating);
+                    averageRating = Math.Round(totalRating / reviews.Count, 1);
+                }
+
+                // Get the movies collection
+                var moviesCollection = _mongoDbService.GetCollection<Movie>(_settings.MoviesCollectionName);
+
+                // Update the movie with the new average rating and review count
+                var update = Builders<Movie>.Update
+                    .Set(m => m.AverageRating, averageRating)
+                    .Set(m => m.ReviewCount, reviews.Count);
+
+                var result = await moviesCollection.UpdateOneAsync(m => m.Id == movieId, update);
+
+                return result.ModifiedCount > 0;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

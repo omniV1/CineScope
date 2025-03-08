@@ -24,54 +24,63 @@ namespace CineScope.Server.Models
         /// The title of the movie as it appears to users.
         /// Used for display and search functionality.
         /// </summary>
+        [BsonElement("title")]
         public string Title { get; set; } = string.Empty;
 
         /// <summary>
         /// Detailed synopsis or summary of the movie's plot.
         /// Provides users with information about the movie's content.
         /// </summary>
+        [BsonElement("description")]
         public string Description { get; set; } = string.Empty;
 
         /// <summary>
         /// The official release date of the movie.
         /// Used for sorting, filtering, and display purposes.
         /// </summary>
+        [BsonElement("releaseDate")]
         public DateTime ReleaseDate { get; set; }
 
         /// <summary>
         /// List of genres that categorize this movie (e.g., "Action", "Comedy").
         /// Used for filtering and recommendation features.
         /// </summary>
+        [BsonElement("genres")]
         public List<string> Genres { get; set; } = new List<string>();
 
         /// <summary>
         /// The primary director of the movie.
         /// Used for display and search functionality.
         /// </summary>
+        [BsonElement("director")]
         public string Director { get; set; } = string.Empty;
 
         /// <summary>
         /// List of primary actors appearing in the movie.
         /// Used for display and search functionality.
         /// </summary>
+        [BsonElement("actors")]
         public List<string> Actors { get; set; } = new List<string>();
 
         /// <summary>
         /// URL reference to the movie's poster image.
         /// Displayed in movie lists and detail views.
         /// </summary>
+        [BsonElement("posterUrl")]
         public string PosterUrl { get; set; } = string.Empty;
 
         /// <summary>
         /// Calculated average rating based on user reviews.
         /// Defaults to 0 for movies with no reviews yet.
         /// </summary>
+        [BsonElement("averageRating")]
         public double AverageRating { get; set; } = 0;
 
         /// <summary>
         /// Counter tracking the total number of reviews for this movie.
         /// Used for sorting, filtering, and display purposes.
         /// </summary>
+        [BsonElement("reviewCount")]
         public int ReviewCount { get; set; } = 0;
     }
 }

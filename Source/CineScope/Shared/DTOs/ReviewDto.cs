@@ -26,7 +26,7 @@ namespace CineScope.Shared.DTOs
         /// <summary>
         /// Numerical rating given by the user, typically on a scale (e.g., 1-5 stars).
         /// </summary>
-        public double Rating { get; set; }
+        public int Rating { get; set; }
 
         /// <summary>
         /// The user's written review text.

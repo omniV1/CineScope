@@ -44,14 +44,31 @@ namespace CineScope.Server.Services
         /// <returns>A list of all movies converted to DTOs</returns>
         public async Task<List<MovieDto>> GetAllMoviesAsync()
         {
-            // Get the movies collection
-            var collection = _mongoDbService.GetCollection<Movie>(_settings.MoviesCollectionName);
+            try
+            {
+                // Get the movies collection
+                var collection = _mongoDbService.GetCollection<Movie>(_settings.MoviesCollectionName);
 
-            // Retrieve all movies from the database (no filter)
-            var movies = await collection.Find(_ => true).ToListAsync();
+                Console.WriteLine($"Attempting to fetch movies from collection: {_settings.MoviesCollectionName}");
 
-            // Convert each movie model to DTO before returning
-            return movies.Select(MapToDto).ToList();
+                // Retrieve all movies from the database (no filter)
+                var movies = await collection.Find(_ => true).ToListAsync();
+
+                Console.WriteLine($"Found {movies.Count} movies in the database");
+
+                // Convert each movie model to DTO before returning
+                var movieDtos = movies.Select(MapToDto).ToList();
+
+                Console.WriteLine($"Returning {movieDtos.Count} movie DTOs");
+
+                return movieDtos;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetAllMoviesAsync: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                throw;
+            }
         }
 
         /// <summary>

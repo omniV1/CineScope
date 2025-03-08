@@ -138,6 +138,9 @@ namespace CineScope.Server.Controllers
             // Create the review in the database
             var createdReview = await _reviewService.CreateReviewAsync(review);
 
+            // Update the movie's average rating
+            await _reviewService.UpdateMovieAverageRatingAsync(review.MovieId);
+
             // Map back to DTO and return
             return CreatedAtAction(nameof(GetReviewById), new { id = createdReview.Id }, MapToDto(createdReview));
         }
@@ -185,7 +188,11 @@ namespace CineScope.Server.Controllers
             var success = await _reviewService.UpdateReviewAsync(id, existingReview);
 
             if (success)
+            {
+                // Update the movie's average rating
+                await _reviewService.UpdateMovieAverageRatingAsync(existingReview.MovieId);
                 return NoContent();
+            }
             else
                 return BadRequest("Failed to update review");
         }
@@ -215,7 +222,11 @@ namespace CineScope.Server.Controllers
             var success = await _reviewService.DeleteReviewAsync(id);
 
             if (success)
+            {
+                // Update the movie's average rating
+                await _reviewService.UpdateMovieAverageRatingAsync(existingReview.MovieId);
                 return NoContent();
+            }
             else
                 return BadRequest("Failed to delete review");
         }

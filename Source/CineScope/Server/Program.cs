@@ -25,11 +25,15 @@ builder.Services.Configure<MongoDbSettings>(
 /// </summary>
 builder.Services.AddSingleton<IMongoDbService, MongoDbService>();
 
-/// <summary>
-/// Register MovieService as a scoped service.
+/// Register services as scoped services.
 /// Scoped services are created once per HTTP request.
 /// </summary>
 builder.Services.AddScoped<MovieService>();
+builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ReviewService>();
+builder.Services.AddScoped<ContentFilterService>();
+builder.Services.AddScoped<UserService>();
 
 /// <summary>
 /// Build the application from the configured services.

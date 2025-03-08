@@ -15,6 +15,7 @@ using System.Text.Json;
 using System.Text;
 using Moq.Protected;
 using System.Threading;
+using CineScope.Client.Pages.Movies;
 
 namespace CineScope.Tests.Unit
 {
@@ -58,7 +59,7 @@ namespace CineScope.Tests.Unit
             genreDropdown.Click();
 
             // Find and click the "Action" genre option
-            var actionOption = cut.Find(".mud-list-item").FirstElement;
+            var actionOption = cut.FindAll(".mud-list-item")[0];
             actionOption.Click();
 
             // Assert - Only action movies should be visible
@@ -127,7 +128,7 @@ namespace CineScope.Tests.Unit
             // Act - Apply genre filter for Action
             var genreDropdown = cut.Find("button[aria-label='Select Genre']");
             genreDropdown.Click();
-            var actionOption = cut.Find(".mud-list-item").FirstElement;
+            var actionOption = cut.FindAll(".mud-list-item")[0];
             actionOption.Click();
 
             // Then apply rating filter for 5 stars
