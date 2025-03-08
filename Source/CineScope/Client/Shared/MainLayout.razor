@@ -5,19 +5,17 @@
 <MudLayout>
     <!-- Application header bar -->
     <MudAppBar Elevation="1" Dense="true" Class="cinescope-appbar">
-        <!-- Menu toggle button for the navigation drawer -->
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
 
-        <!-- Application title -->
-        <MudText Typo="Typo.h5" Class="ml-3">CineScope</MudText>
+        <!-- Logo and title -->
+        <div class="d-flex align-center">
+            <img src="/images/cinescope-logo.png" alt="CineScope" height="40" class="mr-2" />
+            <MudText Typo="Typo.h5" Class="ml-2">CineScope</MudText>
+        </div>
 
-        <!-- Spacer to push the following elements to the right -->
         <MudSpacer />
 
-        <!-- Search button -->
         <MudIconButton Icon="@Icons.Material.Filled.Search" Color="Color.Inherit" />
-
-        <!-- User account button -->
         <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" />
     </MudAppBar>
 

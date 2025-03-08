@@ -21,13 +21,13 @@
         <MudText Typo="Typo.body2">
             @string.Join(", ", Movie.Genres ?? new List<string>()) | @Movie.ReleaseDate.Year
         </MudText>
-        <MudRating ReadOnly="true" SelectedValue="@((int)Math.Round(Movie.AverageRating))" />
+        <MudRating ReadOnly="true" SelectedValue="@((int)Math.Round(Movie.AverageRating))" Color="Color.Primary" />
     </MudCardContent>
     <MudCardActions>
         <MudButton Variant="Variant.Text" Color="Color.Primary" aria-label="Learn More">
             Learn More
         </MudButton>
-        <MudButton Variant="Variant.Text" Color="Color.Secondary">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary">
             Review
         </MudButton>
     </MudCardActions>
