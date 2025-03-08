@@ -1,10 +1,22 @@
 ﻿@using MudBlazor
 
+<!-- Navigation menu for the application -->
 <MudNavMenu>
+    <!-- Home link -->
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+
+    <!-- Movies link -->
     <MudNavLink Href="movies" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Movie">Movies</MudNavLink>
+
+    <!-- Top Rated link -->
     <MudNavLink Href="top-rated" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Star">Top Rated</MudNavLink>
+
+    <!-- Divider between main navigation and authentication -->
     <MudDivider Class="my-2" />
+
+    <!-- Login link -->
     <MudNavLink Href="login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Login">Login</MudNavLink>
+
+    <!-- Register link -->
     <MudNavLink Href="register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonAdd">Register</MudNavLink>
 </MudNavMenu>

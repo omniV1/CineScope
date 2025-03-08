@@ -2,15 +2,22 @@
 @using MudBlazor
 @using System.Threading.Tasks
 
+<!-- MudBlazor theme provider with custom CineScope theme -->
 <MudThemeProvider Theme="cineScopeTheme" />
+
+<!-- MudBlazor dialog provider for displaying dialogs -->
 <MudDialogProvider />
+
+<!-- MudBlazor snackbar provider for toast notifications -->
 <MudSnackbarProvider />
 
 @if (!_loaded)
 {
+    <!-- Loading screen displayed while the application initializes -->
     <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #0f0f0f; color: white;">
         <div style="text-align: center;">
             <h1 style="color: #8534db; margin-bottom: 20px;">CineScope</h1>
+            <!-- MudBlazor circular progress indicator -->
             <div class="mud-progress-circular mud-default-text" role="progressbar" style="height: 40px; width: 40px; margin: 20px auto;">
                 <svg class="mud-progress-circular-svg" viewBox="22 22 44 44">
                     <circle class="mud-progress-circular-circle-indeterminate" cx="44" cy="44" r="20" fill="none" stroke-width="3" stroke="#8534db"></circle>
@@ -22,18 +29,22 @@
 }
 else
 {
+    <!-- Router component for client-side navigation -->
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
+            <!-- Render the matched route with the default layout -->
             <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            <!-- Set focus on the h1 element when navigating -->
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
         </Found>
         <NotFound>
+            <!-- Custom 404 page for routes that don't match any component -->
             <PageTitle>Not found</PageTitle>
             <LayoutView Layout="@typeof(MainLayout)">
                 <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-10 px-8">
                     <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">404 - Page Not Found</MudText>
                     <MudText Typo="Typo.body1" Align="Align.Center">The page you're looking for doesn't exist or has been moved.</MudText>
-                    <MudButton Class="mt-5" Variant="Variant.Filled" Color="Color.Primary" Link="/" Size="Size.Large">Return Home</MudButton>
+                    <MudButton Class="mt-5" Variant="Variant.Filled" Color="Color.Primary" Href="/" Size="Size.Large">Return Home</MudButton>
                 </MudContainer>
             </LayoutView>
         </NotFound>
@@ -41,12 +52,17 @@ else
 }
 
 @code {
+    /// <summary>
+    /// Tracks whether the application has completed initial loading.
+    /// </summary>
     private bool _loaded = false;
 
-    // Create custom HBO Max inspired theme
+    /// <summary>
+    /// Custom theme definition for CineScope with HBO Max inspired colors.
+    /// </summary>
     private MudTheme cineScopeTheme = new MudTheme()
         {
-            Palette = new Palette()
+            PaletteDark = new PaletteDark()
             {
                 Black = "#0f0f0f",
                 White = "#ffffff",
@@ -100,10 +116,14 @@ else
             }
         };
 
+    /// <summary>
+    /// Initialization method called when the component is first rendered.
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         // Simulate a short delay to ensure all resources are loaded
         await Task.Delay(500);
+        // Set loaded to true to display the main application
         _loaded = true;
     }
 }

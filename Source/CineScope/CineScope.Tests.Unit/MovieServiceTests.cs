@@ -14,13 +14,26 @@ using Xunit;
 
 namespace CineScope.Tests.Unit
 {
+    /// <summary>
+    /// Contains unit tests for the MovieService component.
+    /// These tests verify that the service correctly interacts with the database
+    /// and processes movie data.
+    /// </summary>
     public class MovieServiceTests
     {
+        /// <summary>
+        /// Tests that the GetAllMoviesAsync method returns all movies from the database.
+        /// 
+        /// This test verifies that:
+        /// - The service correctly queries the database
+        /// - The service properly maps database models to DTOs
+        /// - All movies from the database are included in the result
+        /// </summary>
         [Fact]
         public async Task GetAllMovies_ShouldReturnAllMovies()
         {
-            // Arrange
-            // Create test data - a list of sample movies
+            // Arrange - Set up test data and dependencies
+            // Create a list of sample movies to be returned from the database
             var movies = new List<Movie>
             {
                 new Movie
@@ -44,14 +57,16 @@ namespace CineScope.Tests.Unit
             // Create a mock MongoDB collection
             var mockCollection = new Mock<IMongoCollection<Movie>>();
 
-            // Set up the Find method to return our test movies
+            // Set up the cursor to return our sample movies
             var mockCursor = new Mock<IAsyncCursor<Movie>>();
             mockCursor.Setup(c => c.Current).Returns(movies);
             mockCursor
                 .SetupSequence(c => c.MoveNextAsync(It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true)
-                .ReturnsAsync(false);
+                .ReturnsAsync(true)   // First call returns true (has results)
+                .ReturnsAsync(false); // Second call returns false (no more results)
 
+            // Configure the collection's FindAsync method to return our cursor
+            // This simulates querying the database and getting our test movies
             mockCollection
                 .Setup(c => c.FindAsync(
                     It.IsAny<FilterDefinition<Movie>>(),
@@ -59,27 +74,29 @@ namespace CineScope.Tests.Unit
                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(mockCursor.Object);
 
-            // Create a mock database service that returns our mock collection
+            // Mock the database service to return our collection
             var mockMongoDbService = new Mock<IMongoDbService>();
             mockMongoDbService
                 .Setup(s => s.GetCollection<Movie>(It.IsAny<string>()))
                 .Returns(mockCollection.Object);
 
-            // Mock the settings
+            // Mock the settings to provide the collection name
             var mockSettings = new Mock<IOptions<MongoDbSettings>>();
             mockSettings.Setup(s => s.Value).Returns(new MongoDbSettings
             {
                 MoviesCollectionName = "Movies"
             });
 
-            // Create the service to test
+            // Create the service with our mocked dependencies
             var movieService = new MovieService(mockMongoDbService.Object, mockSettings.Object);
 
-            // Act
+            // Act - Call the method being tested
             var result = await movieService.GetAllMoviesAsync();
 
-            // Assert
+            // Assert - Verify the results match our expectations
             Assert.Equal(2, result.Count);  // We should get both movies
+
+            // Verify the movie titles are mapped correctly
             Assert.Equal("The Shawshank Redemption", result[0].Title);
             Assert.Equal("The Godfather", result[1].Title);
         }

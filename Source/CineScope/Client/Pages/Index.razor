@@ -1,34 +1,49 @@
 ﻿@page "/"
 @using MudBlazor
 
+<!-- Page title for browser tab -->
 <PageTitle>CineScope - Your Movie Resource</PageTitle>
 
+<!-- Hero banner section -->
 <div class="hero-section" style="background-image: url('@heroBackgroundUrl'); background-size: cover; background-position: center;">
     <div class="hero-content">
+        <!-- Main heading -->
         <MudText Typo="Typo.h1" Class="hero-title">Welcome to CineScope</MudText>
+        
+        <!-- Subheading -->
         <MudText Typo="Typo.subtitle1" Class="hero-description">
             Discover, review, and discuss your favorite movies with fellow film enthusiasts.
             CineScope provides a platform to share your thoughts and explore new cinematic experiences.
         </MudText>
+        
+        <!-- Call to action button -->
         <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Class="mt-4">
             Explore Movies
         </MudButton>
     </div>
 </div>
 
+<!-- Top Rated Movies section heading -->
 <MudText Typo="Typo.h4" Class="mt-8 mb-4">Top Rated Movies</MudText>
 
+<!-- Top Rated Movies grid -->
 <MudGrid>
     @foreach (var movie in topRatedMovies)
     {
         <MudItem xs="12" sm="6" md="4">
+            <!-- Movie card -->
             <MudCard Elevation="4" Class="movie-card">
+                <!-- Movie poster -->
                 <MudCardMedia Image="@movie.ImageUrl" Height="300" />
+                
+                <!-- Movie details -->
                 <MudCardContent Class="pt-3 pb-3">
                     <MudText Typo="Typo.h5">@movie.Title</MudText>
                     <MudText Typo="Typo.body2">@movie.Genre | @movie.Year</MudText>
                     <MudRating ReadOnly="true" SelectedValue="@movie.Rating" />
                 </MudCardContent>
+                
+                <!-- Card actions -->
                 <MudCardActions>
                     <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
                     <MudButton Variant="Variant.Text" Color="Color.Secondary">Review</MudButton>
@@ -38,21 +53,30 @@
     }
 </MudGrid>
 
+<!-- Divider between sections -->
 <MudDivider Class="my-8" />
 
+<!-- Recently Added section heading -->
 <MudText Typo="Typo.h4" Class="mb-4">Recently Added</MudText>
 
+<!-- Recently Added Movies grid -->
 <MudGrid>
     @foreach (var movie in recentlyAddedMovies)
     {
         <MudItem xs="12" sm="6" md="4">
+            <!-- Movie card -->
             <MudCard Elevation="4" Class="movie-card">
+                <!-- Movie poster -->
                 <MudCardMedia Image="@movie.ImageUrl" Height="300" />
+                
+                <!-- Movie details -->
                 <MudCardContent Class="pt-3 pb-3">
                     <MudText Typo="Typo.h5">@movie.Title</MudText>
                     <MudText Typo="Typo.body2">@movie.Genre | @movie.Year</MudText>
                     <MudRating ReadOnly="true" SelectedValue="@movie.Rating" />
                 </MudCardContent>
+                
+                <!-- Card actions -->
                 <MudCardActions>
                     <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
                     <MudButton Variant="Variant.Text" Color="Color.Secondary">Review</MudButton>
@@ -63,17 +87,27 @@
 </MudGrid>
 
 @code {
+    /// <summary>
+    /// URL for the hero section background image.
+    /// </summary>
     private string heroBackgroundUrl = "https://m.media-amazon.com/images/M/MV5BNDkwY2I3ZWQtZGYxMC00N2QyLTg2MmQtZTU5ZTY0Y2M0YTY4XkEyXkFqcGdeQXVyMjMxOTE0ODA@._V1_.jpg";
 
+    /// <summary>
+    /// Class representing movie information for display.
+    /// </summary>
     private class MovieInfo
     {
-        public string Title { get; set; }
-        public string Genre { get; set; }
-        public string Year { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Genre { get; set; } = string.Empty;
+        public string Year { get; set; } = string.Empty;
         public int Rating { get; set; }
-        public string ImageUrl { get; set; }
+        public string ImageUrl { get; set; } = string.Empty;
     }
 
+    /// <summary>
+    /// Sample data for top rated movies.
+    /// In production, this would be loaded from the API.
+    /// </summary>
     private List<MovieInfo> topRatedMovies = new List<MovieInfo>
     {
         new MovieInfo
@@ -102,6 +136,10 @@
         }
     };
 
+    /// <summary>
+    /// Sample data for recently added movies.
+    /// In production, this would be loaded from the API.
+    /// </summary>
     private List<MovieInfo> recentlyAddedMovies = new List<MovieInfo>
     {
         new MovieInfo
