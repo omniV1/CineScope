@@ -3,6 +3,7 @@
 @using System.Net.Http.Json
 @inject HttpClient Http
 @inject ISnackbar Snackbar
+@using CineScope.Client.Components.Movies
 
 <PageTitle>CineScope - Movies</PageTitle>
 
@@ -102,32 +103,32 @@
             </MudItem>
         }
 
-        <!-- Movie Results -->
-        <MudItem xs="12">
-            @if (isLoading)
+      <MudItem xs="12">
+    @if (isLoading)
+    {
+        <div class="d-flex justify-center my-8">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+        </div>
+    }
+    else if (displayedMovies.Count == 0)
+    {
+        <MudAlert Severity="Severity.Info" Class="my-4">
+            No movies found. Try adjusting your search or filters.
+        </MudAlert>
+    }
+    else
+    {
+        <MudText Class="mb-4">Found @displayedMovies.Count movies</MudText>
+        <MudGrid>
+            @foreach (var movie in displayedMovies)
             {
-                <div class="d-flex justify-center my-8">
-                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
-                </div>
+                <MudItem xs="12" sm="6" md="4" lg="3">
+                    <MovieCard Movie="@movie" />
+                </MudItem>
             }
-            else if (displayedMovies.Count == 0)
-            {
-                <MudAlert Severity="Severity.Info" Class="my-4">
-                    No movies found. Try adjusting your search or filters.
-                </MudAlert>
-            }
-            else
-            {
-                <MudGrid>
-                    @foreach (var movie in displayedMovies)
-                    {
-                        <MudItem xs="12" sm="6" md="4" lg="3">
-                            <MovieCard Movie="@movie" />
-                        </MudItem>
-                    }
-                </MudGrid>
-            }
-        </MudItem>
+        </MudGrid>
+    }
+</MudItem>
     </MudGrid>
 </MudContainer>
 
@@ -164,54 +165,47 @@
         try
         {
             isLoading = true;
-            
-            // Build query parameters based on active filters
-            var queryParams = new List<string>();
-            
-            if (!string.IsNullOrEmpty(selectedGenre))
-                queryParams.Add($"genre={selectedGenre}");
-            
-            if (minimumRating > 1)
-                queryParams.Add($"minRating={minimumRating}");
-            
-            if (!string.IsNullOrEmpty(searchTerm))
-                queryParams.Add($"search={Uri.EscapeDataString(searchTerm)}");
-            
-            // Add sorting parameter
-            if (!string.IsNullOrEmpty(CurrentSortOption))
-                queryParams.Add($"sort={CurrentSortOption}");
-            
-            // Build the query string
-            var queryString = queryParams.Count > 0 
-                ? "?" + string.Join("&", queryParams) 
-                : string.Empty;
-            
-            // API call
-            var response = await Http.GetAsync($"api/Movie{queryString}");
-            
+            Console.WriteLine("Loading movies...");
+
+            // API call with correct URL
+            var response = await Http.GetAsync("/api/Movie");
+
+            Console.WriteLine($"Response status: {response.StatusCode}");
+
             if (response.IsSuccessStatusCode)
             {
                 // Parse movies from response
+                var content = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Response content: {content}");
+
                 allMovies = await response.Content.ReadFromJsonAsync<List<MovieDto>>() ?? new List<MovieDto>();
                 displayedMovies = allMovies;
+
+                Console.WriteLine($"Loaded {displayedMovies.Count} movies");
             }
             else
             {
-                // Handle API error
-                Snackbar.Add("Failed to load movies. Please try again.", Severity.Error);
+                // Show the error details
+                var error = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error from server: {error}");
+                Snackbar.Add($"Failed to load movies: {error}", Severity.Error);
+
                 allMovies = new List<MovieDto>();
                 displayedMovies = new List<MovieDto>();
             }
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"Exception: {ex.Message}");
             Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+
             allMovies = new List<MovieDto>();
             displayedMovies = new List<MovieDto>();
         }
         finally
         {
             isLoading = false;
+            StateHasChanged(); // Make sure UI refreshes
         }
     }
 

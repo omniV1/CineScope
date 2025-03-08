@@ -28,7 +28,6 @@ builder.Services.AddSingleton<IMongoDbService, MongoDbService>();
 /// Register services as scoped services.
 /// Scoped services are created once per HTTP request.
 /// </summary>
-builder.Services.AddScoped<MovieService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ReviewService>();

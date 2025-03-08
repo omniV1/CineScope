@@ -1,11 +1,25 @@
 ﻿@using CineScope.Shared.DTOs
 
 <MudCard Elevation="4" Class="movie-card my-4">
-    <MudCardMedia Image="@Movie.PosterUrl" Height="300" />
+    @if (!string.IsNullOrEmpty(Movie.PosterUrl) && (Movie.PosterUrl.StartsWith("http://") || Movie.PosterUrl.StartsWith("https://")))
+    {
+        <MudCardMedia Image="@Movie.PosterUrl" Height="300" />
+    }
+    else
+    {
+        <div style="height: 300px; background-color: #f0f0f0; display: flex; justify-content: center; align-items: center; text-align: center; padding: 20px; color: #666;">
+            <div>
+                <div>Missing Poster for:</div>
+                <h3>@Movie.Title</h3>
+                <p>ID: @Movie.Id</p>
+            </div>
+        </div>
+    }
+
     <MudCardContent Class="pt-3 pb-3">
         <MudText Typo="Typo.h5">@Movie.Title</MudText>
         <MudText Typo="Typo.body2">
-            @string.Join(", ", Movie.Genres) | @Movie.ReleaseDate.Year
+            @string.Join(", ", Movie.Genres ?? new List<string>()) | @Movie.ReleaseDate.Year
         </MudText>
         <MudRating ReadOnly="true" SelectedValue="@((int)Math.Round(Movie.AverageRating))" />
     </MudCardContent>
@@ -20,6 +34,61 @@
 </MudCard>
 
 @code {
-    [Parameter] 
+    [Parameter]
     public MovieDto Movie { get; set; } = new MovieDto();
+
+    private Dictionary<string, string> fallbackPosters = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        // Twilight series
+        {"Twilight", "https://i.pinimg.com/originals/13/e0/e0/13e0e0b749d4c05a4fd08027fc7fe61a.jpg"},
+        {"The Twilight Saga: New Moon", "https://flxt.tmsimg.com/assets/p3386593_p_v8_ar.jpg"},
+        {"The Twilight Saga: Eclipse", "https://m.media-amazon.com/images/S/pv-target-images/1cf9ab0068bd90e05d59d76049574bb48d67d060df553d7b82b4fae75d655db1.jpg"},
+        {"The Twilight Saga: Breaking Dawn - Part 1", "https://static.wikia.nocookie.net/twilightsaga/images/c/c2/BD1_Poster.jpeg/revision/latest?cb=20200216231438"},
+        {"The Twilight Saga: Breaking Dawn - Part 2", "https://m.media-amazon.com/images/I/71mYRR7eRbL._AC_UF894,1000_QL80_.jpg"},
+
+        // Add other movie posters that need fallbacks
+        {"The Shawshank Redemption", "https://m.media-amazon.com/images/M/MV5BNDE3ODcxYzMtY2YzZC00NmNlLWJiNDMtZDViZWM2MzIxZDYwXkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_.jpg"},
+        {"The Godfather", "https://m.media-amazon.com/images/M/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg"},
+        {"Pulp Fiction", "https://m.media-amazon.com/images/M/MV5BNGNhMDIzZTUtNTBlZi00MTRlLWFjM2ItYzViMjE3YzI5MjljXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg"},
+        {"The Dark Knight", "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg"},
+        {"Inception", "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg"},
+        {"Interstellar", "https://m.media-amazon.com/images/M/MV5BZjdkOTU3MDktN2IxOS00OGEyLWFmMjktY2FiMmZkNWIyODZiXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg"},
+        {"The Matrix", "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg"},
+        {"The Avengers", "https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTEtODM1ZmRlYWMwMWFmXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg"},
+        {"Joker", "https://m.media-amazon.com/images/M/MV5BNGVjNWI4ZGUtNzE0MS00YTJmLWE0ZDctN2ZiYTk2YmI3NTYyXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg"},
+        {"Parasite", "https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_.jpg"},
+        {"Get Out", "https://m.media-amazon.com/images/M/MV5BMjUxMDQwNjcyNl5BMl5BanBnXkFtZTgwNzcwMzc0MTI@._V1_.jpg"},
+        {"Spirited Away", "https://m.media-amazon.com/images/M/MV5BMjlmZmI5MDctNDE2YS00YWE0LWE5ZWItZWE0Y2Y1YzVkODNiXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg"},
+        {"The Social Network", "https://m.media-amazon.com/images/M/MV5BOGUyZDUxZjEtMmIzMC00MzlmLTg4MGItYWEyNDY1MzNhYTA0XkEyXkFqcGdeQXVyNTAyODkwOQ@@._V1_.jpg"}
+    };
+
+    private string GetPosterUrl()
+    {
+        // First check if we have a fallback for this movie
+        if (!string.IsNullOrEmpty(Movie.Title) && fallbackPosters.TryGetValue(Movie.Title, out string fallbackUrl))
+        {
+            return fallbackUrl;
+        }
+
+        // Check if the URL from the database seems valid
+        if (!string.IsNullOrEmpty(Movie.PosterUrl) &&
+            (Movie.PosterUrl.StartsWith("http://") || Movie.PosterUrl.StartsWith("https://")))
+        {
+            return Movie.PosterUrl;
+        }
+
+        // Fallback for specific movie genres
+        if (Movie.Genres != null && Movie.Genres.Any())
+        {
+            if (Movie.Genres.Contains("Action"))
+                return "https://cdn.pixabay.com/photo/2015/03/11/01/43/movie-667986_1280.jpg";
+            if (Movie.Genres.Contains("Drama"))
+                return "https://cdn.pixabay.com/photo/2016/01/22/08/01/theater-1155201_1280.jpg";
+            if (Movie.Genres.Contains("Sci-Fi"))
+                return "https://cdn.pixabay.com/photo/2017/07/15/19/42/manipulation-2507330_1280.jpg";
+        }
+
+        // Default fallback image
+        return "https://via.placeholder.com/300x450?text=" + Uri.EscapeDataString(Movie.Title ?? "No Title");
+    }
 }

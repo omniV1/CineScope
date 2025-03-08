@@ -1,5 +1,9 @@
 ﻿@page "/"
 @using MudBlazor
+@using CineScope.Shared.DTOs
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
 
 <!-- Page title for browser tab -->
 <PageTitle>CineScope - Your Movie Resource</PageTitle>
@@ -9,15 +13,16 @@
     <div class="hero-content">
         <!-- Main heading -->
         <MudText Typo="Typo.h1" Class="hero-title">Welcome to CineScope</MudText>
-        
+
         <!-- Subheading -->
         <MudText Typo="Typo.subtitle1" Class="hero-description">
             Discover, review, and discuss your favorite movies with fellow film enthusiasts.
             CineScope provides a platform to share your thoughts and explore new cinematic experiences.
         </MudText>
-        
+
         <!-- Call to action button -->
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Class="mt-4">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Class="mt-4"
+                   Href="/movies">
             Explore Movies
         </MudButton>
     </div>
@@ -26,32 +31,48 @@
 <!-- Top Rated Movies section heading -->
 <MudText Typo="Typo.h4" Class="mt-8 mb-4">Top Rated Movies</MudText>
 
-<!-- Top Rated Movies grid -->
-<MudGrid>
-    @foreach (var movie in topRatedMovies)
-    {
-        <MudItem xs="12" sm="6" md="4">
-            <!-- Movie card -->
-            <MudCard Elevation="4" Class="movie-card">
-                <!-- Movie poster -->
-                <MudCardMedia Image="@movie.ImageUrl" Height="300" />
-                
-                <!-- Movie details -->
-                <MudCardContent Class="pt-3 pb-3">
-                    <MudText Typo="Typo.h5">@movie.Title</MudText>
-                    <MudText Typo="Typo.body2">@movie.Genre | @movie.Year</MudText>
-                    <MudRating ReadOnly="true" SelectedValue="@movie.Rating" />
-                </MudCardContent>
-                
-                <!-- Card actions -->
-                <MudCardActions>
-                    <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
-                    <MudButton Variant="Variant.Text" Color="Color.Secondary">Review</MudButton>
-                </MudCardActions>
-            </MudCard>
-        </MudItem>
-    }
-</MudGrid>
+@if (isLoadingTopRated)
+{
+    <div class="d-flex justify-center my-4">
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    </div>
+}
+else if (topRatedMovies.Count == 0)
+{
+    <MudAlert Severity="Severity.Info">No top rated movies found.</MudAlert>
+}
+else
+{
+    <!-- Top Rated Movies grid -->
+    <MudGrid>
+        @foreach (var movie in topRatedMovies)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <!-- Movie card -->
+                <MudCard Elevation="4" Class="movie-card">
+                    <!-- Movie poster -->
+                    <MudCardMedia Image="@movie.PosterUrl" Height="300" />
+
+                    <!-- Movie details -->
+                    <MudCardContent Class="pt-3 pb-3">
+                        <MudText Typo="Typo.h5">@movie.Title</MudText>
+                        <MudText Typo="Typo.body2">
+                            @string.Join(", ", movie.Genres ?? new List<string>()) | @movie.ReleaseDate.Year
+                        </MudText>
+                        <MudRating ReadOnly="true" SelectedValue="@((int)Math.Round(movie.AverageRating))" />
+                    </MudCardContent>
+
+                    <!-- Card actions -->
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary"
+                                   Href="@($"/movie/{movie.Id}")">Learn More</MudButton>
+                        <MudButton Variant="Variant.Text" Color="Color.Secondary">Review</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+}
 
 <!-- Divider between sections -->
 <MudDivider Class="my-8" />
@@ -59,32 +80,48 @@
 <!-- Recently Added section heading -->
 <MudText Typo="Typo.h4" Class="mb-4">Recently Added</MudText>
 
-<!-- Recently Added Movies grid -->
-<MudGrid>
-    @foreach (var movie in recentlyAddedMovies)
-    {
-        <MudItem xs="12" sm="6" md="4">
-            <!-- Movie card -->
-            <MudCard Elevation="4" Class="movie-card">
-                <!-- Movie poster -->
-                <MudCardMedia Image="@movie.ImageUrl" Height="300" />
-                
-                <!-- Movie details -->
-                <MudCardContent Class="pt-3 pb-3">
-                    <MudText Typo="Typo.h5">@movie.Title</MudText>
-                    <MudText Typo="Typo.body2">@movie.Genre | @movie.Year</MudText>
-                    <MudRating ReadOnly="true" SelectedValue="@movie.Rating" />
-                </MudCardContent>
-                
-                <!-- Card actions -->
-                <MudCardActions>
-                    <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
-                    <MudButton Variant="Variant.Text" Color="Color.Secondary">Review</MudButton>
-                </MudCardActions>
-            </MudCard>
-        </MudItem>
-    }
-</MudGrid>
+@if (isLoadingRecent)
+{
+    <div class="d-flex justify-center my-4">
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    </div>
+}
+else if (recentlyAddedMovies.Count == 0)
+{
+    <MudAlert Severity="Severity.Info">No recently added movies found.</MudAlert>
+}
+else
+{
+    <!-- Recently Added Movies grid -->
+    <MudGrid>
+        @foreach (var movie in recentlyAddedMovies)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <!-- Movie card -->
+                <MudCard Elevation="4" Class="movie-card">
+                    <!-- Movie poster -->
+                    <MudCardMedia Image="@movie.PosterUrl" Height="300" />
+
+                    <!-- Movie details -->
+                    <MudCardContent Class="pt-3 pb-3">
+                        <MudText Typo="Typo.h5">@movie.Title</MudText>
+                        <MudText Typo="Typo.body2">
+                            @string.Join(", ", movie.Genres ?? new List<string>()) | @movie.ReleaseDate.Year
+                        </MudText>
+                        <MudRating ReadOnly="true" SelectedValue="@((int)Math.Round(movie.AverageRating))" />
+                    </MudCardContent>
+
+                    <!-- Card actions -->
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary"
+                                   Href="@($"/movie/{movie.Id}")">Learn More</MudButton>
+                        <MudButton Variant="Variant.Text" Color="Color.Secondary">Review</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+}
 
 @code {
     /// <summary>
@@ -92,79 +129,96 @@
     /// </summary>
     private string heroBackgroundUrl = "https://m.media-amazon.com/images/M/MV5BNDkwY2I3ZWQtZGYxMC00N2QyLTg2MmQtZTU5ZTY0Y2M0YTY4XkEyXkFqcGdeQXVyMjMxOTE0ODA@._V1_.jpg";
 
+    private List<MovieDto> topRatedMovies = new List<MovieDto>();
+    private List<MovieDto> recentlyAddedMovies = new List<MovieDto>();
+
+    private bool isLoadingTopRated = true;
+    private bool isLoadingRecent = true;
+
     /// <summary>
-    /// Class representing movie information for display.
+    /// Initialize component and load movie data from the API.
     /// </summary>
-    private class MovieInfo
+    protected override async Task OnInitializedAsync()
     {
-        public string Title { get; set; } = string.Empty;
-        public string Genre { get; set; } = string.Empty;
-        public string Year { get; set; } = string.Empty;
-        public int Rating { get; set; }
-        public string ImageUrl { get; set; } = string.Empty;
+        await LoadTopRatedMovies();
+        await LoadRecentMovies();
     }
 
     /// <summary>
-    /// Sample data for top rated movies.
-    /// In production, this would be loaded from the API.
+    /// Loads the top rated movies from the API.
     /// </summary>
-    private List<MovieInfo> topRatedMovies = new List<MovieInfo>
+    private async Task LoadTopRatedMovies()
     {
-        new MovieInfo
+        try
         {
-            Title = "The Shawshank Redemption",
-            Genre = "Drama",
-            Year = "1994",
-            Rating = 5,
-            ImageUrl = "https://m.media-amazon.com/images/M/MV5BMDFkYTc0MGEtZmNhMC00ZDIzLWFmNTEtODM1ZmRlYWMwMWFmXkEyXkFqcGdeQXVyMTMxODk2OTU._V1_.jpg"
-        },
-        new MovieInfo
-        {
-            Title = "The Dark Knight",
-            Genre = "Action",
-            Year = "2008",
-            Rating = 5,
-            ImageUrl = "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg"
-        },
-        new MovieInfo
-        {
-            Title = "Pulp Fiction",
-            Genre = "Crime",
-            Year = "1994",
-            Rating = 5,
-            ImageUrl = "https://m.media-amazon.com/images/M/MV5BNGNhMDIzZTUtNTBlZi00MTRlLWFjM2ItYzViMjE3YzI5MjljXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg"
+            isLoadingTopRated = true;
+
+            // Call the API to get all movies
+            var response = await Http.GetAsync("/api/Movie");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var allMovies = await response.Content.ReadFromJsonAsync<List<MovieDto>>() ?? new List<MovieDto>();
+
+                // Take the top 3 highest rated movies
+                topRatedMovies = allMovies
+                    .OrderByDescending(m => m.AverageRating)
+                    .Take(3)
+                    .ToList();
+
+                Console.WriteLine($"Loaded {topRatedMovies.Count} top rated movies");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to load top rated movies: {response.StatusCode}");
+            }
         }
-    };
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading top rated movies: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingTopRated = false;
+        }
+    }
 
     /// <summary>
-    /// Sample data for recently added movies.
-    /// In production, this would be loaded from the API.
+    /// Loads the recently added movies from the API.
     /// </summary>
-    private List<MovieInfo> recentlyAddedMovies = new List<MovieInfo>
+    private async Task LoadRecentMovies()
     {
-        new MovieInfo
+        try
         {
-            Title = "The Godfather",
-            Genre = "Crime, Drama",
-            Year = "1972",
-            Rating = 5,
-            ImageUrl = "https://m.media-amazon.com/images/M/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg"
-        },
-        new MovieInfo
-        {
-            Title = "Inception",
-            Genre = "Sci-Fi",
-            Year = "2010",
-            Rating = 4,
-            ImageUrl = "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg"
-        },
-        new MovieInfo
-        {
-            Title = "The Matrix",
-            Genre = "Sci-Fi",
-            Year = "1999",
-            Rating = 4,
-            ImageUrl = "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg"
+            isLoadingRecent = true;
+
+            // Call the API to get all movies
+            var response = await Http.GetAsync("/api/Movie");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var allMovies = await response.Content.ReadFromJsonAsync<List<MovieDto>>() ?? new List<MovieDto>();
+
+                // Take the 3 most recent movies based on release date
+                recentlyAddedMovies = allMovies
+                    .OrderByDescending(m => m.ReleaseDate)
+                    .Take(3)
+                    .ToList();
+
+                Console.WriteLine($"Loaded {recentlyAddedMovies.Count} recent movies");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to load recent movies: {response.StatusCode}");
+            }
         }
-    };
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading recent movies: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingRecent = false;
+        }
+    }
 }

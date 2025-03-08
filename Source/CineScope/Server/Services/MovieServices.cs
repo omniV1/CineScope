@@ -67,7 +67,7 @@ namespace CineScope.Server.Services
             {
                 Console.WriteLine($"Error in GetAllMoviesAsync: {ex.Message}");
                 Console.WriteLine($"Stack trace: {ex.StackTrace}");
-                throw;
+                throw; // Re-throw to propagate to controller
             }
         }
 
@@ -173,19 +173,27 @@ namespace CineScope.Server.Services
         /// <returns>A MovieDto representation of the Movie</returns>
         private MovieDto MapToDto(Movie movie)
         {
-            return new MovieDto
+            try
             {
-                Id = movie.Id,
-                Title = movie.Title,
-                Description = movie.Description,
-                ReleaseDate = movie.ReleaseDate,
-                Genres = movie.Genres,
-                Director = movie.Director,
-                Actors = movie.Actors,
-                PosterUrl = movie.PosterUrl,
-                AverageRating = movie.AverageRating,
-                ReviewCount = movie.ReviewCount
-            };
+                return new MovieDto
+                {
+                    Id = movie.Id,
+                    Title = movie.Title ?? string.Empty,
+                    Description = movie.Description ?? string.Empty,
+                    ReleaseDate = movie.ReleaseDate,
+                    Genres = movie.Genres ?? new List<string>(),
+                    Director = movie.Director ?? string.Empty,
+                    Actors = movie.Actors ?? new List<string>(),
+                    PosterUrl = movie.PosterUrl ?? string.Empty,
+                    AverageRating = movie.AverageRating,
+                    ReviewCount = movie.ReviewCount
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error mapping movie {movie.Id}: {ex.Message}");
+                throw;
+            }
         }
 
         /// <summary>
