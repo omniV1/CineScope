@@ -133,7 +133,7 @@ The following table outlines the key functional requirements being tested:
    2. If not, fail
 
    3. If rating filter works correctly:
-      1. Only movies with 4+ star ratings are displayed, pass
+      1. Only movies with Pulp in the title are displayed, pass
       2. Filter indicator shows active filters, pass
       
       ![Search Wireframe](https://github.com/omniV1/CineScope/blob/Owen-Dev/Documents/Images/Search-Movie.png)
