@@ -14,12 +14,20 @@
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using Microsoft.AspNetCore.Components.WebAssembly.Http
 
+@* Authentication and authorization *@
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+
 @* JavaScript interop services *@
 @using Microsoft.JSInterop
+
+@* Local storage for JWT tokens *@
+@using Blazored.LocalStorage
 
 @* Application-specific namespaces *@
 @using CineScope.Client
 @using CineScope.Client.Shared
+@using CineScope.Client.Components.Reviews
 
 @* MudBlazor UI component library *@
 @using MudBlazor

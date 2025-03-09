@@ -1,7 +1,7 @@
 ﻿@page "/login"
 @using CineScope.Shared.Auth
-@using System.Net.Http.Json
-@inject HttpClient Http
+@using CineScope.Client.Services
+@inject AuthService AuthService
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 
@@ -69,7 +69,7 @@
 
     /// <summary>
     /// Handles the login form submission.
-    /// Validates the form and calls the authentication API.
+    /// Uses the AuthService for authentication.
     /// </summary>
     private async Task HandleLogin()
     {
@@ -87,32 +87,21 @@
             isLoading = true;
             errorMessage = string.Empty;
 
-            // Send login request to the API
-            var response = await Http.PostAsJsonAsync("api/Auth/login", loginRequest);
+            // Use the AuthService to login
+            var result = await AuthService.Login(loginRequest);
 
-            if (response.IsSuccessStatusCode)
+            if (result.Success)
             {
-                // Parse successful response
-                var result = await response.Content.ReadFromJsonAsync<AuthResponse>();
-
-                // TODO: In a real app, store the token and user data in local storage or auth state provider
-                // For example:
-                // await LocalStorage.SetItemAsync("authToken", result.Token);
-                // await AuthStateProvider.NotifyUserAuthentication(result.Token);
-
                 // Show success message
-                Snackbar.Add("Login successful", Severity.Success);
+                Snackbar.Add("Login successful! Welcome to CineScope.", Severity.Success);
 
                 // Redirect to home page
                 NavigationManager.NavigateTo("/");
             }
             else
             {
-                // Handle error response
-                var error = await response.Content.ReadFromJsonAsync<AuthResponse>();
-                errorMessage = error?.Message ?? "Login failed. Please try again.";
-
-                // Show error notification
+                // Handle error
+                errorMessage = result.Message ?? "Login failed. Please try again.";
                 Snackbar.Add(errorMessage, Severity.Error);
             }
         }

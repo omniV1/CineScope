@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using MudBlazor
 @using CineScope.Shared.DTOs
+@using CineScope.Client.Components.Movies
 @using System.Net.Http.Json
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
@@ -43,36 +44,12 @@ else if (topRatedMovies.Count == 0)
 }
 else
 {
-    <!-- Top Rated Movies grid -->
+    <!-- Top Rated Movies grid with MovieCard component -->
     <MudGrid>
         @foreach (var movie in topRatedMovies)
         {
             <MudItem xs="12" sm="6" md="4">
-                <!-- Movie card -->
-                <MudCard Elevation="4" Class="movie-card" Style="height: 100%;">
-                    <!-- Movie poster with standardized aspect ratio -->
-                    <div class="poster-container" style="position: relative; width: 100%; padding-top: 150%; overflow: hidden;">
-                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
-                            <img src="@GetPosterUrl(movie)" style="width: 100%; height: 100%; object-fit: cover;" alt="@movie.Title" />
-                        </div>
-                    </div>
-
-                    <!-- Movie details -->
-                    <MudCardContent Class="pt-3 pb-3">
-                        <MudText Typo="Typo.h5" Style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@movie.Title</MudText>
-                        <MudText Typo="Typo.body2" Style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            @string.Join(", ", movie.Genres ?? new List<string>()) | @movie.ReleaseDate.Year
-                        </MudText>
-                        <MudRating ReadOnly="true" SelectedValue="@((int)Math.Round(movie.AverageRating))" />
-                    </MudCardContent>
-
-                    <!-- Card actions -->
-                    <MudCardActions>
-                        <MudButton Variant="Variant.Text" Color="Color.Primary"
-                                   Href="@($"/movie/{movie.Id}")">Learn More</MudButton>
-                        <MudButton Variant="Variant.Text" Color="Color.Secondary">Review</MudButton>
-                    </MudCardActions>
-                </MudCard>
+                <MovieCard Movie="@movie" />
             </MudItem>
         }
     </MudGrid>
@@ -96,36 +73,12 @@ else if (recentlyAddedMovies.Count == 0)
 }
 else
 {
-    <!-- Recently Added Movies grid -->
+    <!-- Recently Added Movies grid with MovieCard component -->
     <MudGrid>
         @foreach (var movie in recentlyAddedMovies)
         {
             <MudItem xs="12" sm="6" md="4">
-                <!-- Movie card -->
-                <MudCard Elevation="4" Class="movie-card" Style="height: 100%;">
-                    <!-- Movie poster with standardized aspect ratio -->
-                    <div class="poster-container" style="position: relative; width: 100%; padding-top: 150%; overflow: hidden;">
-                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
-                            <img src="@GetPosterUrl(movie)" style="width: 100%; height: 100%; object-fit: cover;" alt="@movie.Title" />
-                        </div>
-                    </div>
-
-                    <!-- Movie details -->
-                    <MudCardContent Class="pt-3 pb-3">
-                        <MudText Typo="Typo.h5" Style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@movie.Title</MudText>
-                        <MudText Typo="Typo.body2" Style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            @string.Join(", ", movie.Genres ?? new List<string>()) | @movie.ReleaseDate.Year
-                        </MudText>
-                        <MudRating ReadOnly="true" SelectedValue="@((int)Math.Round(movie.AverageRating))" />
-                    </MudCardContent>
-
-                    <!-- Card actions -->
-                    <MudCardActions>
-                        <MudButton Variant="Variant.Text" Color="Color.Primary"
-                                   Href="@($"/movie/{movie.Id}")">Learn More</MudButton>
-                        <MudButton Variant="Variant.Text" Color="Color.Secondary">Review</MudButton>
-                    </MudCardActions>
-                </MudCard>
+                <MovieCard Movie="@movie" />
             </MudItem>
         }
     </MudGrid>
@@ -143,7 +96,6 @@ else
     private bool isLoadingTopRated = true;
     private bool isLoadingRecent = true;
 
-  
     /// <summary>
     /// Initialize component and load movie data from the API.
     /// </summary>
@@ -229,34 +181,5 @@ else
         {
             isLoadingRecent = false;
         }
-    }
-
-    /// <summary>
-    /// Gets a poster URL for a movie, with fallbacks for missing posters
-    /// </summary>
-    private string GetPosterUrl(MovieDto movie)
-    {
-        
-
-        // Check if the URL from the database seems valid
-        if (!string.IsNullOrEmpty(movie.PosterUrl) &&
-            (movie.PosterUrl.StartsWith("http://") || movie.PosterUrl.StartsWith("https://")))
-        {
-            return movie.PosterUrl;
-        }
-
-        // Fallback for specific movie genres
-        if (movie.Genres != null && movie.Genres.Any())
-        {
-            if (movie.Genres.Contains("Action"))
-                return "https://cdn.pixabay.com/photo/2015/03/11/01/43/movie-667986_1280.jpg";
-            if (movie.Genres.Contains("Drama"))
-                return "https://cdn.pixabay.com/photo/2016/01/22/08/01/theater-1155201_1280.jpg";
-            if (movie.Genres.Contains("Sci-Fi"))
-                return "https://cdn.pixabay.com/photo/2017/07/15/19/42/manipulation-2507330_1280.jpg";
-        }
-
-        // Default fallback image
-        return "https://via.placeholder.com/300x450?text=" + Uri.EscapeDataString(movie.Title ?? "No Title");
     }
 }

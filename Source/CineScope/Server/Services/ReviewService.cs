@@ -44,11 +44,17 @@ namespace CineScope.Server.Services
         /// <returns>A list of reviews for the specified movie</returns>
         public async Task<List<Review>> GetReviewsByMovieIdAsync(string movieId)
         {
+            Console.WriteLine($"Querying database for reviews with movieId: {movieId}");
+
             // Get the reviews collection
             var collection = _mongoDbService.GetCollection<Review>(_settings.ReviewsCollectionName);
 
             // Find all reviews for the specified movie
-            return await collection.Find(r => r.MovieId == movieId).ToListAsync();
+            var filter = Builders<Review>.Filter.Eq(r => r.MovieId, movieId);
+            var reviews = await collection.Find(filter).ToListAsync();
+
+            Console.WriteLine($"Found {reviews.Count} reviews in database");
+            return reviews;
         }
 
         /// <summary>

@@ -3,12 +3,24 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using CineScope.Client;
 using MudBlazor;
 using MudBlazor.Services;
+using Microsoft.AspNetCore.Components.Authorization;
+using CineScope.Client.Services;
+using Blazored.LocalStorage;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+// Add Blazored LocalStorage for JWT token storage
+builder.Services.AddBlazoredLocalStorage();
+
+// Add Authentication Services
+builder.Services.AddScoped<AuthStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<AuthStateProvider>());
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddAuthorizationCore();
 
 // Add MudBlazor services with configuration
 builder.Services.AddMudServices(config => {

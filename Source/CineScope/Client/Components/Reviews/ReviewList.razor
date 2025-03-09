@@ -19,11 +19,11 @@
         <!-- Filter and Sort Controls -->
         <div class="d-flex justify-space-between align-center mb-4 flex-wrap gap-2">
             <!-- Review Count -->
-            <MudText Typo="Typo.body2">Showing @Reviews.Count review@(Reviews.Count != 1 ? "s" : "")</MudText>
+            <MudText Typo="Typo.body2">Showing @displayedReviews.Count review@(displayedReviews.Count != 1 ? "s" : "")</MudText>
 
             <div class="d-flex gap-2">
                 <!-- Filter Button -->
-                <MudMenu Icon="@Icons.Material.Filled.FilterList" Label="Filter" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">
+                <MudMenu Icon="@Icons.Material.Filled.FilterList" Label="Filter" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
                     <MudMenuItem OnClick="@(() => FilterReviews("all"))">All Ratings</MudMenuItem>
                     <MudMenuItem OnClick="@(() => FilterReviews("positive"))">Positive (4-5 ★)</MudMenuItem>
                     <MudMenuItem OnClick="@(() => FilterReviews("neutral"))">Neutral (3 ★)</MudMenuItem>
@@ -31,7 +31,7 @@
                 </MudMenu>
 
                 <!-- Sort Button -->
-                <MudMenu Icon="@Icons.Material.Filled.Sort" Label="Sort" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">
+                <MudMenu Icon="@Icons.Material.Filled.Sort" Label="Sort" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
                     <MudMenuItem OnClick="@(() => SortReviews("newest"))">Newest First</MudMenuItem>
                     <MudMenuItem OnClick="@(() => SortReviews("oldest"))">Oldest First</MudMenuItem>
                     <MudMenuItem OnClick="@(() => SortReviews("highest"))">Highest Rated</MudMenuItem>
@@ -99,7 +99,7 @@
                                     Edit
                                 </MudButton>
                                 <MudButton Variant="Variant.Text" Color="Color.Error"
-                                           OnClick="@(() => DeleteReviewAsync(review.Id))">
+                                           OnClick="@(() => OnReviewDeleted.InvokeAsync(review.Id))">
                                     Delete
                                 </MudButton>
                             </MudCardActions>
@@ -247,64 +247,6 @@
             "lowest" => filteredReviews.OrderBy(r => r.Rating).ToList(),
             _ => filteredReviews.OrderByDescending(r => r.CreatedAt).ToList() // "newest" sort
         };
-    }
-
-    /// <summary>
-    /// Deletes a review after confirmation.
-    /// </summary>
-    /// <param name="reviewId">The ID of the review to delete</param>
-    private async Task DeleteReviewAsync(string reviewId)
-    {
-        // Show confirmation dialog
-        bool confirmed = await ShowDeleteConfirmationDialog();
-
-        if (!confirmed)
-            return;
-
-        try
-        {
-            isLoading = true;
-
-            // Delete the review through the API
-            var response = await Http.DeleteAsync($"api/Review/{reviewId}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                // Remove the review from the lists
-                Reviews.RemoveAll(r => r.Id == reviewId);
-                displayedReviews.RemoveAll(r => r.Id == reviewId);
-
-                // Show success message
-                Snackbar.Add("Review deleted successfully", Severity.Success);
-
-                // Notify parent component
-                await OnReviewDeleted.InvokeAsync(reviewId);
-            }
-            else
-            {
-                var error = await response.Content.ReadAsStringAsync();
-                Snackbar.Add($"Failed to delete review: {error}", Severity.Error);
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            isLoading = false;
-        }
-    }
-
-    /// <summary>
-    /// Shows a confirmation dialog before deleting a review.
-    /// </summary>
-    /// <returns>True if the user confirms deletion, false otherwise</returns>
-    private Task<bool> ShowDeleteConfirmationDialog()
-    {
-        // In a real implementation, this would show a MudBlazor dialog
-        // For this implementation we'll just return true to simulate confirmation
-        return Task.FromResult(true);
     }
 
     /// <summary>

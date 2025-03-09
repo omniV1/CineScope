@@ -1,7 +1,9 @@
 ﻿@using CineScope.Shared.DTOs
+@using CineScope.Client.Services
 @using System.Net.Http.Json
 @inject HttpClient Http
 @inject ISnackbar Snackbar
+@inject AuthService AuthService
 
 <MudCard Elevation="3" Class="create-review-form mb-4">
     <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
@@ -11,7 +13,7 @@
             <!-- Rating selection -->
             <div class="d-flex flex-column gap-2 mb-4">
                 <MudText Typo="Typo.subtitle1">Your Rating</MudText>
-                <MudRating @bind-Value="review.Rating" MaxValue="5" Size="Size.Large" />
+                <MudRating @bind-Value="ratingValue" MaxValue="5" Size="Size.Large" />
             </div>
 
             <!-- Review text -->
@@ -42,7 +44,7 @@
             <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="@Reset">Reset</MudButton>
             <MudSpacer />
             <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                       Disabled="@(!success || isLoading)" OnClick="@SubmitReview">
+                       Disabled="@(!success || isLoading || review.Rating == 0)" OnClick="@SubmitReview">
                 @if (isLoading)
                 {
                     <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
@@ -72,6 +74,12 @@
     public string MovieId { get; set; } = string.Empty;
 
     /// <summary>
+    /// The ID of the current user creating the review.
+    /// </summary>
+    [Parameter]
+    public string CurrentUserId { get; set; } = string.Empty;
+
+    /// <summary>
     /// Event callback triggered when a review is successfully submitted.
     /// </summary>
     [Parameter]
@@ -88,13 +96,34 @@
         };
 
     /// <summary>
-    /// Initializes the component.
-    /// Sets up the review with the movie ID.
+    /// Rating value for the star rating control.
+    /// We use this separate property because MudRating works with int but our ReviewDto needs the right type.
     /// </summary>
-    protected override void OnInitialized()
+    private int ratingValue = 0;
+
+    /// <summary>
+    /// Initializes the component.
+    /// Sets up the review with the movie ID and current user ID.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
     {
         // Set the movie ID from parameter
         review.MovieId = MovieId;
+
+        // Set the user ID from parameter or get current user
+        if (string.IsNullOrEmpty(CurrentUserId))
+        {
+            var user = await AuthService.GetCurrentUser();
+            if (user != null)
+            {
+                review.UserId = user.Id;
+                review.Username = user.Username;
+            }
+        }
+        else
+        {
+            review.UserId = CurrentUserId;
+        }
     }
 
     /// <summary>
@@ -149,6 +178,13 @@
             return;
         }
 
+        // Check if user has selected a rating
+        if (ratingValue == 0)
+        {
+            errorMessage = "Please select a rating";
+            return;
+        }
+
         try
         {
             // Set loading state
@@ -163,6 +199,24 @@
                 isLoading = false;
                 return;
             }
+
+            // Ensure we have a user ID
+            if (string.IsNullOrEmpty(review.UserId))
+            {
+                var user = await AuthService.GetCurrentUser();
+                if (user == null)
+                {
+                    errorMessage = "You must be logged in to submit a review.";
+                    Snackbar.Add(errorMessage, Severity.Error);
+                    isLoading = false;
+                    return;
+                }
+                review.UserId = user.Id;
+                review.Username = user.Username;
+            }
+
+            // Set the rating from the MudRating component
+            review.Rating = ratingValue;
 
             // Set current date/time
             review.CreatedAt = DateTime.Now;
@@ -213,6 +267,7 @@
     private void Reset()
     {
         review.Rating = 0;
+        ratingValue = 0;
         review.Text = string.Empty;
         errorMessage = string.Empty;
         contentWarning = null;

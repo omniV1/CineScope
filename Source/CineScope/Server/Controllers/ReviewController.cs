@@ -5,6 +5,7 @@ using CineScope.Server.Services;
 using CineScope.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace CineScope.Server.Controllers
 {
@@ -46,15 +47,20 @@ namespace CineScope.Server.Controllers
         [HttpGet("movie/{movieId}")]
         public async Task<ActionResult<List<ReviewDto>>> GetReviewsByMovieId(string movieId)
         {
+            // Ensure movieId is in a valid format for MongoDB
+            if (!ObjectId.TryParse(movieId, out _))
+            {
+                return BadRequest("Invalid movie ID format");
+            }
+
             // Get reviews from service
             var reviews = await _reviewService.GetReviewsByMovieIdAsync(movieId);
 
+            // Log the count for debugging
+            Console.WriteLine($"Found {reviews.Count} reviews for movie {movieId}");
+
             // Map to DTOs
-            var reviewDtos = new List<ReviewDto>();
-            foreach (var review in reviews)
-            {
-                reviewDtos.Add(MapToDto(review));
-            }
+            var reviewDtos = reviews.Select(MapToDto).ToList();
 
             return Ok(reviewDtos);
         }

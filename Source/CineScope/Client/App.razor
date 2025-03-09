@@ -6,7 +6,7 @@
 <MudThemeProvider Theme="cineScopeTheme" IsDarkMode="true" />
 
 <!-- MudBlazor dialog provider for displaying dialogs -->
-<MudDialogProvider />
+<MudDialogProvider FullWidth="true" MaxWidth="MaxWidth.ExtraLarge" />
 
 <!-- MudBlazor snackbar provider for toast notifications -->
 <MudSnackbarProvider />
@@ -16,11 +16,11 @@
     <!-- Loading screen displayed while the application initializes -->
     <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #0f0f0f; color: white;">
         <div style="text-align: center;">
-            <h1 style="color: #8534db; margin-bottom: 20px;">CineScope</h1>
+            <h1 style="color: #E50914; margin-bottom: 20px;">CineScope</h1>
             <!-- MudBlazor circular progress indicator -->
             <div class="mud-progress-circular mud-default-text" role="progressbar" style="height: 40px; width: 40px; margin: 20px auto;">
                 <svg class="mud-progress-circular-svg" viewBox="22 22 44 44">
-                    <circle class="mud-progress-circular-circle-indeterminate" cx="44" cy="44" r="20" fill="none" stroke-width="3" stroke="#8534db"></circle>
+                    <circle class="mud-progress-circular-circle-indeterminate" cx="44" cy="44" r="20" fill="none" stroke-width="3" stroke="#E50914"></circle>
                 </svg>
             </div>
             <p>Loading your cinematic experience...</p>
@@ -29,26 +29,28 @@
 }
 else
 {
-    <!-- Router component for client-side navigation -->
-    <Router AppAssembly="@typeof(App).Assembly">
-        <Found Context="routeData">
-            <!-- Render the matched route with the default layout -->
-            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-            <!-- Set focus on the h1 element when navigating -->
-            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-        </Found>
-        <NotFound>
-            <!-- Custom 404 page for routes that don't match any component -->
-            <PageTitle>Not found</PageTitle>
-            <LayoutView Layout="@typeof(MainLayout)">
-                <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-10 px-8">
-                    <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">404 - Page Not Found</MudText>
-                    <MudText Typo="Typo.body1" Align="Align.Center">The page you're looking for doesn't exist or has been moved.</MudText>
-                    <MudButton Class="mt-5" Variant="Variant.Filled" Color="Color.Primary" Href="/" Size="Size.Large">Return Home</MudButton>
-                </MudContainer>
-            </LayoutView>
-        </NotFound>
-    </Router>
+    <CascadingAuthenticationState>
+        <!-- Router component for client-side navigation -->
+        <Router AppAssembly="@typeof(App).Assembly">
+            <Found Context="routeData">
+                <!-- Render the matched route with the authentication layout -->
+                <RouteView RouteData="@routeData" DefaultLayout="@typeof(AuthenticationLayout)" />
+                <!-- Set focus on the h1 element when navigating -->
+                <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+            </Found>
+            <NotFound>
+                <!-- Custom 404 page for routes that don't match any component -->
+                <PageTitle>Not found</PageTitle>
+                <LayoutView Layout="@typeof(AuthenticationLayout)">
+                    <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-10 px-8">
+                        <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">404 - Page Not Found</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center">The page you're looking for doesn't exist or has been moved.</MudText>
+                        <MudButton Class="mt-5" Variant="Variant.Filled" Color="Color.Primary" Href="/" Size="Size.Large">Return Home</MudButton>
+                    </MudContainer>
+                </LayoutView>
+            </NotFound>
+        </Router>
+    </CascadingAuthenticationState>
 }
 
 @code {
@@ -61,34 +63,34 @@ else
     /// Custom theme definition for CineScope with HBO Max inspired colors.
     /// </summary>
     private MudTheme cineScopeTheme = new MudTheme()
-                {
-                    PaletteDark = new PaletteDark()
-                    {
-                        Black = "#0f0f0f",
-                        White = "#ffffff",
-                        Primary = "#E50914", // Updated to logo red
-                        Secondary = "#f5f5f1", // Off-white for contrast
-                        Success = "#3bef9e",
-                        Error = "#ff3f5b",
-                        Warning = "#ffb527",
-                        Info = "#2196f3",
-                        Background = "#0f0f0f",
-                        BackgroundGrey = "#1a1a1a",
-                        Surface = "#1a1a1a",
-                        AppbarBackground = "#0f0f0f",
-                        AppbarText = "#ffffff",
-                        DrawerBackground = "#1a1a1a",
-                        DrawerText = "#ffffff",
-                        TextPrimary = "#ffffff",
-                        TextSecondary = "#b3b3b3",
-                        ActionDefault = "#ffffff",
-                        ActionDisabled = "#636363",
-                        ActionDisabledBackground = "#2c2c2c",
-                        LinesDefault = "#2c2c2c",
-                        LinesInputs = "#4a4a4a",
-                        TableLines = "#2c2c2c",
-                        TableStriped = "#2c2c2c"
-                    },
+        {
+            PaletteDark = new PaletteDark()
+            {
+                Black = "#0f0f0f",
+                White = "#ffffff",
+                Primary = "#E50914", // Updated to logo red
+                Secondary = "#f5f5f1", // Off-white for contrast
+                Success = "#3bef9e",
+                Error = "#ff3f5b",
+                Warning = "#ffb527",
+                Info = "#2196f3",
+                Background = "#0f0f0f",
+                BackgroundGrey = "#1a1a1a",
+                Surface = "#1a1a1a",
+                AppbarBackground = "#0f0f0f",
+                AppbarText = "#ffffff",
+                DrawerBackground = "#1a1a1a",
+                DrawerText = "#ffffff",
+                TextPrimary = "#ffffff",
+                TextSecondary = "#b3b3b3",
+                ActionDefault = "#ffffff",
+                ActionDisabled = "#636363",
+                ActionDisabledBackground = "#2c2c2c",
+                LinesDefault = "#2c2c2c",
+                LinesInputs = "#4a4a4a",
+                TableLines = "#2c2c2c",
+                TableStriped = "#2c2c2c"
+            },
             Typography = new Typography()
             {
                 Default = new Default()
@@ -137,5 +139,4 @@ else
             StateHasChanged();
         }
     }
-}
 }

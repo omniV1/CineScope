@@ -1,4 +1,5 @@
 ﻿@using CineScope.Shared.DTOs
+@inject NavigationManager NavigationManager
 
 <MudCard Elevation="4" Class="movie-card my-4" Style="height: 100%;">
     <div class="poster-container" style="position: relative; width: 100%; padding-top: 150%; overflow: hidden;">
@@ -24,13 +25,15 @@
         <MudText Typo="Typo.body2" Style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
             @string.Join(", ", Movie.Genres ?? new List<string>()) | @Movie.ReleaseDate.Year
         </MudText>
-        <MudRating ReadOnly="true" SelectedValue="@((int)Math.Round(Movie.AverageRating))" Color="Color.Primary" />
+        <MudRating ReadOnly="true" Value="@Movie.AverageRating" Color="Color.Primary" />
     </MudCardContent>
     <MudCardActions>
-        <MudButton Variant="Variant.Text" Color="Color.Primary" aria-label="Learn More">
+        <MudButton Variant="Variant.Text" Color="Color.Primary"
+                   OnClick="@(() => GoToMovieDetails())" aria-label="Learn More">
             Learn More
         </MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                   OnClick="@(() => GoToWriteReview())">
             Review
         </MudButton>
     </MudCardActions>
@@ -40,11 +43,25 @@
     [Parameter]
     public MovieDto Movie { get; set; } = new MovieDto();
 
+    /// <summary>
+    /// Navigates to the movie details page
+    /// </summary>
+    private void GoToMovieDetails()
+    {
+        NavigationManager.NavigateTo($"/movie/{Movie.Id}");
+    }
+
+    /// <summary>
+    /// Navigates to the movie details page with the review form open
+    /// </summary>
+    private void GoToWriteReview()
+    {
+        // Navigate to movie details with a query parameter to open the review form
+        NavigationManager.NavigateTo($"/movie/{Movie.Id}?action=review");
+    }
 
     private string GetPosterUrl()
     {
-       
-
         // Check if the URL from the database seems valid
         if (!string.IsNullOrEmpty(Movie.PosterUrl) &&
             (Movie.PosterUrl.StartsWith("http://") || Movie.PosterUrl.StartsWith("https://")))

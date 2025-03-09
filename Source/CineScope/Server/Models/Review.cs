@@ -37,7 +37,7 @@ namespace CineScope.Server.Models
         /// Numerical rating given by the user, typically on a scale (e.g., 1-5 stars).
         /// Used to calculate the movie's average rating.
         /// </summary>
-        public int Rating { get; set; }   
+        public int Rating { get; set; }
 
         /// <summary>
         /// The user's written review text.
