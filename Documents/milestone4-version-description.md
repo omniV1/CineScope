@@ -8,6 +8,19 @@ Grand Canyon University: CST-326
 
 March 9, 2025
 
+
+
+### Project Links
+[Jira Backlog](https://cinescopedev.atlassian.net/jira/software/projects/SCRUM/boards/1/backlog?atlOrigin=eyJpIjoiM2MxNTc1MmE1OTRmNDk4MmI4M2JkY2U2NmE5MmUwYWIiLCJwIjoiaiJ9)
+
+[Source code](https://github.com/omniV1/CineScope/tree/main/Source)
+
+[Unit Test code](https://github.com/omniV1/CineScope/tree/main/Source/CineScope/CineScope.Tests.Unit)
+
+[Integration Test code](https://github.com/omniV1/CineScope/tree/main/Source/CineScope/CineScope.Tests.Integration)
+
+[MongoDb](https://github.com/omniV1/CineScope/tree/main/Source/CineScope/CineScope.Tests.Integration)
+
 ---
 
 A Version Description Document is used to identify the contents of a delivery. For this class, a scaled version of this is used to provide artifacts of your management process and to develop a SELF-SCAN FUNCTIONAL SPEC.
@@ -32,7 +45,7 @@ This Version Description Document summarizes the current delivery and project st
 
 ### Scope of Delivery
 
-This document covers the planning and preparation for Sprint 1 (February 24, 2025 - March 9, 2025), which focuses on the implementation of:
+This document covers the planning and preparation for Sprint 1, which focuses on the implementation of:
 
 1. Featured Movies Display (SCRUM-19)
 2. User Authentication (SCRUM-27)
@@ -70,7 +83,7 @@ The system allows users to browse movies, read and write reviews, and interact w
 
 ### Current Velocity
 
-The team is currently in Sprint 1 (February 24 - March 9, 2025) with a planned velocity of 14 story points across 3 user stories. Test procedures will be added as child tasks to each user story but have not yet been created in Jira.
+The team is currently in Sprint 1 with a planned velocity of 14 story points across 3 user stories. Test procedures are added as child tasks to each user story an have been created in Jira.
 
 ### Burndown Chart Summary
 
@@ -125,7 +138,7 @@ To mitigate the risk of taking on an excessive number of tasks beyond scheduled 
 
 3. **Test Procedure Development**: We have created comprehensive test procedures for each functional area, which will be added as formal tasks in Jira. This ensures that testing is allocated proper time and resources rather than being rushed at the end of the sprint.
 
-4. **Daily Progress Tracking**: We will monitor progress through daily standups, tracking completion of tasks against our burndown chart to identify delays early.
+4. **Daily Progress Tracking**: We will monitor progress through Bi-weekly (Mon and Fri) standups, tracking completion of tasks against our burndown chart to identify delays early.
 
 5. **Buffer Allocation**: We have deliberately kept our total sprint commitment (14 story points) below our theoretical maximum capacity, providing a buffer for unexpected complexities or technical debt.
 
@@ -134,11 +147,11 @@ To mitigate the risk of taking on an excessive number of tasks beyond scheduled 
 | Metric | Current Sprint (Sprint 1) | Next Sprint (Projected) |
 |--------|---------------------------|-------------------------|
 | Team Size | 4 developers | 4 developers |
-| Sprint Duration | 2 weeks (Feb 24 - Mar 9) | 1 week (Mar 9 - Mar 16) |
+| Sprint Duration | 2 weeks  | 2 weeks  |
 | Planned Story Points | 14 | 14-16 (to be determined) |
 | Story Points per Team Member | 3.5 | 3.5-4 |
 | User Stories | 3 | 3-4 (to be determined) |
-| Test Tasks | Planned (not yet in Jira) | Will be included in initial planning |
+| Test Tasks | 10 | Will be updated as edge cases are identified |
 
 This capacity management approach is based on industry standards that suggest an individual can effectively manage 3-5 story points per week, depending on complexity. Our current allocation aligns with this guideline while providing room for the additional test tasks that will be created.
 
@@ -196,9 +209,9 @@ Based on our Jira backlog, the following work is planned for upcoming sprints:
 
 | Milestone | Target Completion | Key Deliverables |
 |-----------|-------------------|------------------|
-| Sprint 1 Completion | March 9, 2025 | Featured Movies, Authentication, Review Management |
-| Sprint 2 Completion | March 16, 2025 | Review Filtering |
-| Sprint 3 Completion | March 23, 2025 | Genre-Based Movie Browsing |
-| Final Project Delivery | March 30, 2025 | Complete CineScope Platform |
+| Sprint 1 Completion | (Due date)| Featured Movies, Authentication, Review Management |
+| Sprint 2 Completion |(Due date)| | Review Filtering |
+| Sprint 3 Completion | (Due date)| | Genre-Based Movie Browsing |
+| Final Project Delivery | (Due date)| | Complete CineScope Platform |
 
 All test procedures have been developed in advance of implementation to ensure proper test coverage and quality assurance throughout the development process.
