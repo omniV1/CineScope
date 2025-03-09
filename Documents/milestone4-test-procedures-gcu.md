@@ -1,4 +1,4 @@
-# SELF-SCAN FUNCTIONAL SPEC
+# Version Description Document
 
 Version Description Document for CineScope Movie Review Platform
 
