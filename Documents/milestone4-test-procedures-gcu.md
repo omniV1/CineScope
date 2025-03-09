@@ -126,7 +126,7 @@ The following table outlines the key functional requirements being tested:
    | 1 | Click on "Categories" dropdown | Menu expands with genre options |
    | 2 | Select a specific genre (e.g., "Action") | Movies filtered by selected genre |
    | 3 | Click on "Filters" button | Filter panel opens |
-   | 4 | Set rating filter to "4+ stars" | Filter applied |
+   | 4 | Set rating filter to "Pulp" | Filter applied |
    | 5 | Click "Apply" button | Results updated with both filters |
 
 2. [Pass/Fail](#passfail)
