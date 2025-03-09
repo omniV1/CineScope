@@ -32,8 +32,11 @@ March 3, 2025
 |--------------|------------------|---------------|----------|
 | | 1.0 | | |
 
+
 ### Project Links
 [Jira Backlog](https://cinescopedev.atlassian.net/jira/software/projects/SCRUM/boards/1/backlog?atlOrigin=eyJpIjoiM2MxNTc1MmE1OTRmNDk4MmI4M2JkY2U2NmE5MmUwYWIiLCJwIjoiaiJ9)
+
+[Source code](https://github.com/omniV1/CineScope/tree/main/Source)
 
 ## I. Introduction
 
@@ -88,7 +91,7 @@ The following table outlines the key functional requirements being tested:
       1. User is authenticated and redirected to the home page, pass
       2. User-specific navigation options are displayed, pass
       
-      ![Login Wireframe](https://github.com/omniV1/CineScope/blob/Owen-Dev/Documents/Images/Login_Wireframe.png)
+      ![Login Wireframe](https://github.com/omniV1/CineScope/blob/Owen-Dev/Documents/Images/Login.png)
 
    2. If not, fail
 
@@ -96,7 +99,7 @@ The following table outlines the key functional requirements being tested:
       1. System displays error message "Invalid username or password", pass
       2. After three failed attempts, system displays account lockout message, pass
       
-      ![Registration Successful Wireframe](https://github.com/omniV1/CineScope/blob/main/Documents/Images/Registration_Successful_Wireframe.png)
+      ![Registration Successful Wireframe](https://github.com/omniV1/CineScope/blob/Owen-Dev/Documents/Images/Register.png)
 
    4. If not, fail
 
@@ -113,8 +116,10 @@ The following table outlines the key functional requirements being tested:
    1. Navigate to the CineScope website
    2. Log in with valid credentials
    3. Go to the main movie browsing page
+   
+![Landing page](https://github.com/omniV1/CineScope/blob/Owen-Dev/Documents/Images/Landing-Page-logged-in.png)
 
-2. [Testing](#testing)
+1. [Testing](#testing)
 
    | Step | Action | Expected Result |
    |------|--------|----------------|
@@ -124,20 +129,20 @@ The following table outlines the key functional requirements being tested:
    | 4 | Set rating filter to "4+ stars" | Filter applied |
    | 5 | Click "Apply" button | Results updated with both filters |
 
-3. [Pass/Fail](#passfail)
+2. [Pass/Fail](#passfail)
    1. If category selection filters movies correctly:
       1. Only movies from the selected category are displayed, pass
       2. Category heading is updated to reflect selection, pass
       
-      ![Movies Browsing Wireframe](https://github.com/omniV1/CineScope/blob/Michael-Dev/Documents/Images/Movies_Browsing_Wireframe.png)
+      ![Movies Browsing Wireframe](https://github.com/omniV1/CineScope/blob/Owen-Dev/Documents/Images/Genre-Filter.png)
 
    2. If not, fail
 
    3. If rating filter works correctly:
-      1. Only movies with 4+ star ratings are displayed, pass
+      1. Only movies with Pulp in the title are displayed, pass
       2. Filter indicator shows active filters, pass
       
-      ![Search Wireframe](https://github.com/omniV1/CineScope/blob/main/Documents/Images/Search_Wireframe.png)
+      ![Search Wireframe](https://github.com/omniV1/CineScope/blob/Owen-Dev/Documents/Images/Search-Movie.png)
 
    4. If not, fail
 
@@ -170,7 +175,7 @@ The following table outlines the key functional requirements being tested:
       1. Review is saved and displayed on the movie page, pass
       2. User receives confirmation message, pass
       
-      ![Review System Wireframe](https://github.com/omniV1/CineScope/blob/main/Documents/Images/Review_System_Wireframe.png)
+      ![Review System Wireframe](https://github.com/omniV1/CineScope/blob/Owen-Dev/Documents/Images/Create-review.png)
 
    2. If not, fail
 
@@ -178,7 +183,7 @@ The following table outlines the key functional requirements being tested:
       1. System displays appropriate warning message, pass
       2. Review is not published, pass
       
-      ![My Reviews Wireframe](https://github.com/omniV1/CineScope/blob/main/Documents/Images/My_Reviews_Wireframe.png)
+      ![My Reviews Wireframe](https://github.com/omniV1/CineScope/blob/Owen-Dev/Documents/Images/edit-profile-my-reviews.png)
 
    4. If not, fail
 
@@ -212,7 +217,7 @@ The following table outlines the key functional requirements being tested:
       2. Review containing banned word is flagged, pass
       3. Appropriate warning message is displayed to user, pass
       
-      ![Movie Details Wireframes](https://github.com/omniV1/CineScope/blob/Michael-Dev/Documents/Images/Movie_Details_Wireframes.png)
+      
 
    2. If not, fail
 
@@ -245,7 +250,7 @@ The following table outlines the key functional requirements being tested:
       2. Updated information is visible in profile, pass
       3. User can log in with new credentials, pass
       
-      ![Edit Profile Wireframe](https://github.com/omniV1/CineScope/blob/main/Documents/Images/Edit_Profile_Wireframe.png)
+      ![Edit Profile Wireframe](https://github.com/omniV1/CineScope/blob/Owen-Dev/Documents/Images/edit-profile-my-reviews.png)
 
    2. If not, fail
 

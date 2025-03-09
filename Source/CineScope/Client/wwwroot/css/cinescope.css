@@ -1,0 +1,111 @@
+﻿:root {
+    /* CineScope logo-inspired theme colors */
+    --cinescope-red: #E50914;
+    --cinescope-dark-red: #B8050F;
+    --cinescope-black: #0f0f0f;
+    --cinescope-dark-bg: #121212;
+    --cinescope-light-text: #f5f5f1;
+    --cinescope-success: #3bef9e;
+    --cinescope-error: #ff3f5b;
+    --cinescope-warning: #ffb527;
+    /* Custom font size variables */
+    --cinescope-font-size-h1: 2.5rem;
+    --cinescope-font-size-h2: 2rem;
+    --cinescope-font-size-h3: 1.75rem;
+    --cinescope-font-size-h4: 1.5rem;
+    --cinescope-font-size-body: 1rem;
+}
+
+html, body {
+    background-color: var(--cinescope-black);
+    color: white;
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+/* Header/Navigation styling */
+.cinescope-appbar {
+    background-color: rgba(15, 15, 15, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--cinescope-dark-red);
+}
+
+/* Custom movie cards with red accents */
+.movie-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    height: 100%;
+    border-bottom: 3px solid var(--cinescope-red);
+}
+
+    .movie-card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 8px 16px rgba(229, 9, 20, 0.3);
+    }
+
+/* Custom hero section with red gradient overlay */
+.hero-section {
+    position: relative;
+    height: 500px;
+    margin-bottom: 2rem;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.hero-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 2rem;
+    background: linear-gradient(to top, rgba(15, 15, 15, 0.9) 0%, rgba(229, 9, 20, 0.4) 120%, transparent 100%);
+}
+
+.mud-button-filled.mud-button-filled-primary {
+    background-color: #E50914 !important;
+}
+
+    .mud-button-filled.mud-button-filled-primary:hover {
+        background-color: #B8050F !important;
+    }
+
+.mud-button-text.mud-button-text-primary {
+    color: #E50914 !important;
+}
+
+.mud-button-outlined.mud-button-outlined-primary {
+    color: #E50914 !important;
+    border-color: #E50914 !important;
+}
+
+/* Override rating colors */
+.mud-rating .mud-rating-item.mud-primary {
+    color: #E50914 !important;
+}
+
+/* Override navigation styles */
+.mud-nav-link.active:not(.mud-nav-link-disabled) {
+    background-color: rgba(229, 9, 20, 0.1) !important;
+    color: #E50914 !important;
+    border-right: 3px solid #E50914 !important;
+}
+
+/* Custom section headers with red underline */
+.section-title {
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+    .section-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background-color: var(--cinescope-red);
+    }

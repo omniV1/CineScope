@@ -1,0 +1,421 @@
+﻿@page "/profile"
+@using CineScope.Shared.DTOs
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@* In a real implementation, this would be protected by authentication *@
+@* [Authorize] *@
+
+<PageTitle>CineScope - My Profile</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-6">
+    <MudGrid>
+        <MudItem xs="12">
+            <MudText Typo="Typo.h4">Profile Management</MudText>
+            <MudText Typo="Typo.subtitle1">Update your account information</MudText>
+        </MudItem>
+    </MudGrid>
+
+    <MudDivider Class="my-6" />
+
+    @if (isLoading)
+    {
+        <MudProgressCircular Indeterminate="true" Size="Size.Large" Class="my-8" />
+    }
+    else
+    {
+        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+            <MudCard Elevation="3" Class="pa-4">
+                <MudCardContent>
+                    <MudGrid>
+                        <!-- Profile Details Section -->
+                        <MudItem xs="12" md="6">
+                            <MudText Typo="Typo.h6" Class="mb-4">Account Details</MudText>
+
+                            <MudTextField @bind-Value="user.Username" Label="Username"
+                                          Variant="Variant.Outlined" Class="mb-4"
+                                          Disabled="@(!isEditing)"
+                                          Required="true" RequiredError="Username is required" />
+
+                            <MudTextField @bind-Value="user.Email" Label="Email"
+                                          Variant="Variant.Outlined" Class="mb-4"
+                                          Disabled="@(!isEditing)"
+                                          Required="true" RequiredError="Email is required" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <!-- Only show password fields in edit mode -->
+                            @if (isEditing)
+                            {
+                                <MudText Typo="Typo.h6" Class="mb-4">Change Password</MudText>
+
+                                <MudTextField @bind-Value="currentPassword" Label="Current Password"
+                                              Variant="Variant.Outlined" InputType="InputType.Password"
+                                              HelperText="Required to change password" Class="mb-4" />
+
+                                <MudTextField @bind-Value="newPassword" Label="New Password"
+                                              Variant="Variant.Outlined" InputType="InputType.Password"
+                                              HelperText="Leave blank to keep current password" Class="mb-4" />
+
+                                <MudTextField @bind-Value="confirmPassword" Label="Confirm New Password"
+                                              Variant="Variant.Outlined" InputType="InputType.Password"
+                                              HelperText="Must match new password" Class="mb-4" />
+                            }
+                            else
+                            {
+                                <!-- Profile stats when not editing -->
+                                <MudText Typo="Typo.h6" Class="mb-4">Profile Statistics</MudText>
+
+                                <MudPaper Elevation="0" Class="pa-4 mb-2" Style="background-color:var(--mud-palette-background-grey)">
+                                    <MudText><b>Member Since:</b> @user.CreatedAt.ToString("MMMM dd, yyyy")</MudText>
+                                </MudPaper>
+
+                                <MudPaper Elevation="0" Class="pa-4 mb-2" Style="background-color:var(--mud-palette-background-grey)">
+                                    <MudText><b>Reviews Posted:</b> @reviewCount</MudText>
+                                </MudPaper>
+                            }
+                        </MudItem>
+                    </MudGrid>
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <MudAlert Severity="Severity.Error" Class="mt-4">@errorMessage</MudAlert>
+                    }
+                </MudCardContent>
+
+                <MudCardActions>
+                    @if (isEditing)
+                    {
+                        <MudButton Variant="Variant.Text" Color="Color.Secondary"
+                                   OnClick="@CancelEdit">Cancel</MudButton>
+                        <MudSpacer />
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                                   Disabled="@(!success || isSaving)" OnClick="@SaveChanges">
+                            @if (isSaving)
+                            {
+                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                <MudText Class="ms-2">Saving</MudText>
+                            }
+                            else
+                            {
+                                <MudText>Save Changes</MudText>
+                            }
+                        </MudButton>
+                    }
+                    else
+                    {
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                                   OnClick="@EnableEdit">Edit Profile</MudButton>
+                    }
+                </MudCardActions>
+            </MudCard>
+        </MudForm>
+    }
+
+    <MudDivider Class="my-6" />
+
+    <!-- User's Reviews Section -->
+    <MudGrid>
+        <MudItem xs="12">
+            <MudText Typo="Typo.h4">My Reviews</MudText>
+        </MudItem>
+
+        <MudItem xs="12">
+            @if (userReviews == null)
+            {
+                <MudProgressCircular Indeterminate="true" />
+            }
+            else if (userReviews.Count == 0)
+            {
+                <MudAlert Severity="Severity.Info">You haven't posted any reviews yet.</MudAlert>
+            }
+            else
+            {
+                <MudList Dense="false" DisableGutters="false" Class="pa-0">
+                    @foreach (var review in userReviews)
+                    {
+                        <MudListItem>
+                            <MudCard Elevation="2" Class="mb-4">
+                                <MudCardContent>
+                                    <div class="d-flex justify-space-between align-center">
+                                        <MudText Typo="Typo.h6">@review.MovieTitle</MudText>
+                                        <MudRating ReadOnly="true" SelectedValue="@((int)review.Rating)" />
+                                    </div>
+                                    <MudText Typo="Typo.body2">Posted on @review.CreatedAt.ToString("MMM dd, yyyy")</MudText>
+                                    <MudText Typo="Typo.body1" Class="mt-2">@review.Text</MudText>
+                                </MudCardContent>
+                                <MudCardActions>
+                                    <MudButton Variant="Variant.Text" Color="Color.Primary"
+                                               Href="@($"/movie/{review.MovieId}")">View Movie</MudButton>
+                                    <MudButton Variant="Variant.Text" Color="Color.Secondary"
+                                               OnClick="@(() => EditReview(review))">Edit</MudButton>
+                                    <MudButton Variant="Variant.Text" Color="Color.Error"
+                                               OnClick="@(() => DeleteReview(review.Id))">Delete</MudButton>
+                                </MudCardActions>
+                            </MudCard>
+                        </MudListItem>
+                    }
+                </MudList>
+            }
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private MudForm form;
+    private bool success;
+    private string[] errors = { };
+    private string errorMessage = string.Empty;
+    private bool isLoading = true;
+    private bool isEditing = false;
+    private bool isSaving = false;
+
+    // User profile data
+    private UserProfileDto user = new UserProfileDto();
+    private string currentPassword = string.Empty;
+    private string newPassword = string.Empty;
+    private string confirmPassword = string.Empty;
+
+    // User reviews
+    private List<UserReviewDto> userReviews = null;
+    private int reviewCount = 0;
+
+    /// <summary>
+    /// Initializes the component and loads user data.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUserProfile();
+        await LoadUserReviews();
+    }
+
+    /// <summary>
+    /// Loads the user profile data from the API.
+    /// </summary>
+    private async Task LoadUserProfile()
+    {
+        try
+        {
+            isLoading = true;
+
+            // In a real implementation, this would use the authenticated user's ID
+            // var response = await Http.GetAsync($"api/User/profile");
+
+            // For demo purposes, we'll create mock data
+            user = new UserProfileDto
+                {
+                    Id = "user123",
+                    Username = "cinefan42",
+                    Email = "user@example.com",
+                    CreatedAt = new DateTime(2023, 9, 15)
+                };
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Failed to load profile data";
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Loads the user's reviews from the API.
+    /// </summary>
+    private async Task LoadUserReviews()
+    {
+        try
+        {
+            // In a real implementation, this would call the API
+            // var response = await Http.GetAsync($"api/Review/user/{user.Id}");
+
+            // For demo purposes, we'll create mock data
+            userReviews = new List<UserReviewDto>
+            {
+                new UserReviewDto
+                {
+                    Id = "review1",
+                    MovieId = "movie1",
+                    MovieTitle = "The Shawshank Redemption",
+                    Rating = 5,
+                    Text = "An absolute masterpiece that stands the test of time. The performances are incredible, and the story is deeply moving.",
+                    CreatedAt = DateTime.Now.AddMonths(-2)
+                },
+                new UserReviewDto
+                {
+                    Id = "review2",
+                    MovieId = "movie2",
+                    MovieTitle = "The Dark Knight",
+                    Rating = 5,
+                    Text = "Heath Ledger's Joker is one of the greatest villain performances of all time. This film redefined what superhero movies could be.",
+                    CreatedAt = DateTime.Now.AddMonths(-1)
+                }
+            };
+
+            reviewCount = userReviews.Count;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading reviews: {ex.Message}", Severity.Warning);
+        }
+    }
+
+    /// <summary>
+    /// Enables edit mode for the profile.
+    /// </summary>
+    private void EnableEdit()
+    {
+        isEditing = true;
+        // Reset password fields
+        currentPassword = string.Empty;
+        newPassword = string.Empty;
+        confirmPassword = string.Empty;
+    }
+
+    /// <summary>
+    /// Cancels edit mode and reverts changes.
+    /// </summary>
+    private async Task CancelEdit()
+    {
+        isEditing = false;
+        errorMessage = string.Empty;
+        // Reload original data
+        await LoadUserProfile();
+    }
+
+    /// <summary>
+    /// Saves profile changes to the database.
+    /// </summary>
+    private async Task SaveChanges()
+    {
+        await form.Validate();
+
+        if (!success)
+        {
+            return;
+        }
+
+        // Validate password if attempting to change it
+        if (!string.IsNullOrEmpty(newPassword))
+        {
+            if (string.IsNullOrEmpty(currentPassword))
+            {
+                errorMessage = "Current password is required to change password";
+                return;
+            }
+
+            if (newPassword != confirmPassword)
+            {
+                errorMessage = "New password and confirmation do not match";
+                return;
+            }
+        }
+
+        try
+        {
+            isSaving = true;
+
+            // Create request object
+            var updateRequest = new UpdateProfileRequest
+                {
+                    Username = user.Username,
+                    Email = user.Email,
+                    CurrentPassword = currentPassword,
+                    NewPassword = newPassword
+                };
+
+            // In a real implementation, this would call the API
+            // var response = await Http.PutAsJsonAsync("api/User/profile", updateRequest);
+
+            // For demo purposes, we'll just simulate a successful update
+            await Task.Delay(1000); // Simulate API call
+
+            Snackbar.Add("Profile updated successfully", Severity.Success);
+            isEditing = false;
+            errorMessage = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Failed to update profile";
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    /// <summary>
+    /// Opens the review edit dialog.
+    /// </summary>
+    private void EditReview(UserReviewDto review)
+    {
+        // In a real implementation, this would open a dialog or navigate to edit page
+        Snackbar.Add("Review editing would open here", Severity.Info);
+    }
+
+    /// <summary>
+    /// Deletes a review after confirmation.
+    /// </summary>
+    private async Task DeleteReview(string reviewId)
+    {
+        // In a real implementation, this would show a confirmation dialog
+        bool confirmed = true; // Simulate confirmation
+
+        if (confirmed)
+        {
+            try
+            {
+                // In a real implementation, this would call the API
+                // var response = await Http.DeleteAsync($"api/Review/{reviewId}");
+
+                // For demo purposes, we'll just remove from the local list
+                userReviews.RemoveAll(r => r.Id == reviewId);
+                reviewCount = userReviews.Count;
+
+                Snackbar.Add("Review deleted successfully", Severity.Success);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error deleting review: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Data model for user profile information.
+    /// </summary>
+    private class UserProfileDto
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+    }
+
+    /// <summary>
+    /// Data model for a user's review with movie title.
+    /// </summary>
+    private class UserReviewDto
+    {
+        public string Id { get; set; } = string.Empty;
+        public string MovieId { get; set; } = string.Empty;
+        public string MovieTitle { get; set; } = string.Empty;
+        public double Rating { get; set; }
+        public string Text { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+    }
+
+    /// <summary>
+    /// Data model for profile update request.
+    /// </summary>
+    private class UpdateProfileRequest
+    {
+        public string Username { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string CurrentPassword { get; set; } = string.Empty;
+        public string NewPassword { get; set; } = string.Empty;
+    }
+}

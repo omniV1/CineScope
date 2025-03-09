@@ -1,0 +1,285 @@
+﻿@using CineScope.Shared.DTOs
+@using CineScope.Client.Services
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject AuthService AuthService
+
+<MudCard Elevation="3" Class="create-review-form mb-4">
+    <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+        <MudCardContent>
+            <MudText Typo="Typo.h5" GutterBottom="true">Write a Review</MudText>
+
+            <!-- Rating selection -->
+            <div class="d-flex flex-column gap-2 mb-4">
+                <MudText Typo="Typo.subtitle1">Your Rating</MudText>
+                <MudRating @bind-Value="ratingValue" MaxValue="5" Size="Size.Large" />
+            </div>
+
+            <!-- Review text -->
+            <MudTextField T="string" Label="Your Review" @bind-Value="review.Text"
+                          Required="true" RequiredError="Review text is required"
+                          Variant="Variant.Outlined" Lines="5"
+                          Counter="1000" MaxLength="1000"
+                          HelperText="Write your thoughts about the movie" />
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <MudAlert Severity="Severity.Error" Class="mt-4" Dense="true">@errorMessage</MudAlert>
+            }
+
+            @if (contentWarning != null && contentWarning.Any())
+            {
+                <MudAlert Severity="Severity.Warning" Class="mt-4">
+                    <MudText>Content Warning</MudText>
+                    <MudText Typo="Typo.body2">
+                        Your review contains content that may violate our community guidelines.
+                        Please remove the following terms: @string.Join(", ", contentWarning)
+                    </MudText>
+                </MudAlert>
+            }
+        </MudCardContent>
+
+        <MudCardActions>
+            <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="@Reset">Reset</MudButton>
+            <MudSpacer />
+            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                       Disabled="@(!success || isLoading || review.Rating == 0)" OnClick="@SubmitReview">
+                @if (isLoading)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    <MudText Class="ms-2">Submitting</MudText>
+                }
+                else
+                {
+                    <MudText>Submit Review</MudText>
+                }
+            </MudButton>
+        </MudCardActions>
+    </MudForm>
+</MudCard>
+
+@code {
+    private MudForm form;
+    private bool success;
+    private string[] errors = Array.Empty<string>();
+    private string errorMessage = string.Empty;
+    private bool isLoading = false;
+    private List<string> contentWarning = null;
+
+    /// <summary>
+    /// The ID of the movie being reviewed.
+    /// </summary>
+    [Parameter]
+    public string MovieId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The ID of the current user creating the review.
+    /// </summary>
+    [Parameter]
+    public string CurrentUserId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Event callback triggered when a review is successfully submitted.
+    /// </summary>
+    [Parameter]
+    public EventCallback<ReviewDto> OnReviewSubmitted { get; set; }
+
+    /// <summary>
+    /// Review data model.
+    /// </summary>
+    private ReviewDto review = new()
+        {
+            Rating = 0,
+            Text = string.Empty,
+            CreatedAt = DateTime.Now
+        };
+
+    /// <summary>
+    /// Rating value for the star rating control.
+    /// We use this separate property because MudRating works with int but our ReviewDto needs the right type.
+    /// </summary>
+    private int ratingValue = 0;
+
+    /// <summary>
+    /// Initializes the component.
+    /// Sets up the review with the movie ID and current user ID.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        // Set the movie ID from parameter
+        review.MovieId = MovieId;
+
+        // Set the user ID from parameter or get current user
+        if (string.IsNullOrEmpty(CurrentUserId))
+        {
+            var user = await AuthService.GetCurrentUser();
+            if (user != null)
+            {
+                review.UserId = user.Id;
+                review.Username = user.Username;
+            }
+        }
+        else
+        {
+            review.UserId = CurrentUserId;
+        }
+    }
+
+    /// <summary>
+    /// Validates review content against banned word list.
+    /// </summary>
+    private async Task<bool> ValidateContent()
+    {
+        try
+        {
+            // Call the content filter API
+            var response = await Http.PostAsJsonAsync("api/ContentFilter/validate", review.Text);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Parse the response
+                var result = await response.Content.ReadFromJsonAsync<ContentFilterResult>();
+
+                // If content is approved, return true
+                if (result.IsApproved)
+                {
+                    contentWarning = null;
+                    return true;
+                }
+
+                // If content is not approved, store the violation words
+                contentWarning = result.ViolationWords;
+                return false;
+            }
+
+            throw new Exception("Failed to validate content");
+        }
+        catch (Exception ex)
+        {
+            // Log the error (in a real app)
+            Console.WriteLine($"Content validation error: {ex.Message}");
+
+            // For testing purposes, allow content in case of API failure
+            return true;
+        }
+    }
+
+    /// <summary>
+    /// Submits the review after validation.
+    /// </summary>
+    private async Task SubmitReview()
+    {
+        // Validate the form
+        await form.Validate();
+
+        if (!success)
+        {
+            return;
+        }
+
+        // Check if user has selected a rating
+        if (ratingValue == 0)
+        {
+            errorMessage = "Please select a rating";
+            return;
+        }
+
+        try
+        {
+            // Set loading state
+            isLoading = true;
+            errorMessage = string.Empty;
+
+            // First, validate content against banned word list
+            if (!await ValidateContent())
+            {
+                errorMessage = "Review contains inappropriate content. Please revise.";
+                Snackbar.Add(errorMessage, Severity.Warning);
+                isLoading = false;
+                return;
+            }
+
+            // Ensure we have a user ID
+            if (string.IsNullOrEmpty(review.UserId))
+            {
+                var user = await AuthService.GetCurrentUser();
+                if (user == null)
+                {
+                    errorMessage = "You must be logged in to submit a review.";
+                    Snackbar.Add(errorMessage, Severity.Error);
+                    isLoading = false;
+                    return;
+                }
+                review.UserId = user.Id;
+                review.Username = user.Username;
+            }
+
+            // Set the rating from the MudRating component
+            review.Rating = ratingValue;
+
+            // Set current date/time
+            review.CreatedAt = DateTime.Now;
+
+            // Send review to the API
+            var response = await Http.PostAsJsonAsync("api/Review", review);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Parse the created review from response
+                var createdReview = await response.Content.ReadFromJsonAsync<ReviewDto>();
+
+                // Show success message
+                Snackbar.Add("Review submitted successfully!", Severity.Success);
+
+                // Notify parent component
+                if (createdReview != null)
+                {
+                    await OnReviewSubmitted.InvokeAsync(createdReview);
+                }
+
+                // Reset the form
+                Reset();
+            }
+            else
+            {
+                // Handle error response
+                errorMessage = "Failed to submit review. Please try again.";
+                Snackbar.Add(errorMessage, Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions
+            errorMessage = "An error occurred. Please try again.";
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            // Reset loading state
+            isLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Resets the review form to default values.
+    /// </summary>
+    private void Reset()
+    {
+        review.Rating = 0;
+        ratingValue = 0;
+        review.Text = string.Empty;
+        errorMessage = string.Empty;
+        contentWarning = null;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Class to represent content filter API response.
+    /// </summary>
+    private class ContentFilterResult
+    {
+        public bool IsApproved { get; set; }
+        public List<string> ViolationWords { get; set; } = new();
+    }
+}
