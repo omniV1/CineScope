@@ -17,19 +17,19 @@
                 <MudGrid>
                     <!-- Search Box -->
                     <MudItem xs="12" sm="6" md="4">
-                        <MudTextField @bind-Value="searchTerm" Label="Search Movies" 
-                                     Variant="Variant.Outlined" Adornment="Adornment.End"
-                                     AdornmentIcon="@Icons.Material.Filled.Search" 
-                                     IconSize="Size.Medium" aria-label="Search Movies" 
-                                     OnKeyDown="@HandleSearchKeyDown" 
-                                     Class="mt-0" />
+                        <MudTextField @bind-Value="searchTerm" Label="Search Movies"
+                                      Variant="Variant.Outlined" Adornment="Adornment.End"
+                                      AdornmentIcon="@Icons.Material.Filled.Search"
+                                      IconSize="Size.Medium" aria-label="Search Movies"
+                                      OnKeyDown="@HandleSearchKeyDown"
+                                      Class="mt-0" />
                     </MudItem>
 
                     <!-- Genre Filter -->
                     <MudItem xs="12" sm="6" md="2">
                         <MudSelect T="string" Label="Genre" Variant="Variant.Outlined"
-                                 @bind-Value="selectedGenre" Dense="true" 
-                                 aria-label="Select Genre" Class="mt-0">
+                                   Value="@selectedGenre" ValueChanged="@OnGenreChanged"
+                                   Dense="true" aria-label="Select Genre" Class="mt-0">
                             <MudSelectItem Value="@string.Empty">All Genres</MudSelectItem>
                             @foreach (var genre in genres)
                             {
@@ -41,8 +41,8 @@
                     <!-- Filter Button -->
                     <MudItem xs="6" sm="4" md="2">
                         <MudButton FullWidth="true" Variant="Variant.Outlined" Color="Color.Primary"
-                                 OnClick="@ShowFilterDialog" StartIcon="@Icons.Material.Filled.FilterList"
-                                 aria-label="Filter Options" Class="mt-1">
+                                   OnClick="@ShowFilterDialog" StartIcon="@Icons.Material.Filled.FilterList"
+                                   aria-label="Filter Options" Class="mt-1">
                             Filters
                         </MudButton>
                     </MudItem>
@@ -50,8 +50,8 @@
                     <!-- Sort Button -->
                     <MudItem xs="6" sm="4" md="2">
                         <MudMenu Label="Sort" Variant="Variant.Outlined" FullWidth="true"
-                              EndIcon="@Icons.Material.Filled.Sort" aria-label="Sort Options"
-                              Class="mt-1">
+                                 EndIcon="@Icons.Material.Filled.Sort" aria-label="Sort Options"
+                                 Class="mt-1">
                             <MudMenuItem OnClick="@(() => ApplySort("date_desc"))">
                                 Newest First
                             </MudMenuItem>
@@ -67,7 +67,7 @@
                     <!-- Search Button -->
                     <MudItem xs="12" sm="4" md="2">
                         <MudButton FullWidth="true" Variant="Variant.Filled" Color="Color.Primary"
-                                 OnClick="@SearchMovies" aria-label="Search" Class="mt-1">
+                                   OnClick="@SearchMovies" aria-label="Search" Class="mt-1">
                             Search
                         </MudButton>
                     </MudItem>
@@ -94,8 +94,8 @@
                                 Rating: @minimumRating+ Stars
                             </MudChip>
                         }
-                        <MudButton Variant="Variant.Text" Color="Color.Error" 
-                                 OnClick="@ClearAllFilters" Size="Size.Small">
+                        <MudButton Variant="Variant.Text" Color="Color.Error"
+                                   OnClick="@ClearAllFilters" Size="Size.Small">
                             Clear All
                         </MudButton>
                     </div>
@@ -103,49 +103,49 @@
             </MudItem>
         }
 
-      <MudItem xs="12">
-    @if (isLoading)
-    {
-        <div class="d-flex justify-center my-8">
-            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
-        </div>
-    }
-    else if (displayedMovies.Count == 0)
-    {
-        <MudAlert Severity="Severity.Info" Class="my-4">
-            No movies found. Try adjusting your search or filters.
-        </MudAlert>
-    }
-    else
-    {
-        <MudText Class="mb-4">Found @displayedMovies.Count movies</MudText>
-        <MudGrid>
-            @foreach (var movie in displayedMovies)
+        <MudItem xs="12">
+            @if (isLoading)
             {
-                <MudItem xs="12" sm="6" md="4" lg="3">
-                    <MovieCard Movie="@movie" />
-                </MudItem>
+                <div class="d-flex justify-center my-8">
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+                </div>
             }
-        </MudGrid>
-    }
-</MudItem>
+            else if (displayedMovies.Count == 0)
+            {
+                <MudAlert Severity="Severity.Info" Class="my-4">
+                    No movies found. Try adjusting your search or filters.
+                </MudAlert>
+            }
+            else
+            {
+                <MudText Class="mb-4">Found @displayedMovies.Count movies</MudText>
+                <MudGrid>
+                    @foreach (var movie in displayedMovies)
+                    {
+                        <MudItem xs="12" sm="6" md="4" lg="3">
+                            <MovieCard Movie="@movie" />
+                        </MudItem>
+                    }
+                </MudGrid>
+            }
+        </MudItem>
     </MudGrid>
 </MudContainer>
 
 @code {
     // State for movies and display
-    private List<MovieDto> allMovies = new List<MovieDto>();
-    private List<MovieDto> displayedMovies = new List<MovieDto>();
+    private List<MovieDto> allMovies = new();
+    private List<MovieDto> displayedMovies = new();
     private bool isLoading = true;
-    
+
     // Filter/search state
     private string searchTerm = string.Empty;
     private string selectedGenre = string.Empty;
     private int minimumRating = 1;
     public string CurrentSortOption { get; private set; } = "date_desc"; // Default sort
-    
+
     // Available options
-    private List<string> genres = new List<string> { 
+    private List<string> genres = new() {
         "Action", "Comedy", "Drama", "Horror", "Sci-Fi", "Thriller", "Romance", "Animation"
     };
 
@@ -159,27 +159,70 @@
 
     /// <summary>
     /// Loads movies from the API with current filter parameters
+    /// This updated method properly handles genre filtering and other criteria
     /// </summary>
     private async Task LoadMovies()
     {
         try
         {
             isLoading = true;
-            Console.WriteLine("Loading movies...");
+            Console.WriteLine("Loading movies with filters...");
 
-            // API call with correct URL
-            var response = await Http.GetAsync("/api/Movie");
+            // Build the query parameters based on current filters
+            var queryParams = new List<string>();
+
+            // Add genre filter if selected
+            if (!string.IsNullOrEmpty(selectedGenre))
+            {
+                queryParams.Add($"genre={Uri.EscapeDataString(selectedGenre)}");
+            }
+
+            // Add minimum rating filter if set above 1
+            if (minimumRating > 1)
+            {
+                queryParams.Add($"minRating={minimumRating}");
+            }
+
+            // Add search term if provided
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                queryParams.Add($"search={Uri.EscapeDataString(searchTerm)}");
+            }
+
+            // Add sort parameter
+            queryParams.Add($"sort={CurrentSortOption}");
+
+            // Build the full URL with query parameters
+            string url = "/api/Movie";
+            if (queryParams.Any())
+            {
+                url += "?" + string.Join("&", queryParams);
+            }
+
+            Console.WriteLine($"API request URL: {url}");
+
+            // Make the API call
+            var response = await Http.GetAsync(url);
 
             Console.WriteLine($"Response status: {response.StatusCode}");
 
             if (response.IsSuccessStatusCode)
             {
                 // Parse movies from response
-                var content = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Response content: {content}");
+                allMovies = await response.Content.ReadFromJsonAsync<List<MovieDto>>() ?? new();
 
-                allMovies = await response.Content.ReadFromJsonAsync<List<MovieDto>>() ?? new List<MovieDto>();
-                displayedMovies = allMovies;
+                // For this implementation, let's handle the case where we're in development
+                // and the server doesn't implement genre filtering yet
+                if (IsDevelopmentEnvironment() && !string.IsNullOrEmpty(selectedGenre))
+                {
+                    Console.WriteLine($"Development environment: Applying genre filter '{selectedGenre}' client-side");
+                    allMovies = allMovies
+                        .Where(m => m.Genres != null && m.Genres.Contains(selectedGenre, StringComparer.OrdinalIgnoreCase))
+                        .ToList();
+                }
+
+                // Apply all client-side filters
+                ApplyClientSideFilters();
 
                 Console.WriteLine($"Loaded {displayedMovies.Count} movies");
             }
@@ -190,8 +233,8 @@
                 Console.WriteLine($"Error from server: {error}");
                 Snackbar.Add($"Failed to load movies: {error}", Severity.Error);
 
-                allMovies = new List<MovieDto>();
-                displayedMovies = new List<MovieDto>();
+                // If the API fails, we can still try to filter the movies we already have
+                ApplyClientSideFilters();
             }
         }
         catch (Exception ex)
@@ -199,14 +242,24 @@
             Console.WriteLine($"Exception: {ex.Message}");
             Snackbar.Add($"Error: {ex.Message}", Severity.Error);
 
-            allMovies = new List<MovieDto>();
-            displayedMovies = new List<MovieDto>();
+            // If an exception occurs, we can still try to filter the movies we already have
+            ApplyClientSideFilters();
         }
         finally
         {
             isLoading = false;
             StateHasChanged(); // Make sure UI refreshes
         }
+    }
+
+    /// <summary>
+    /// Checks if we're in a development environment
+    /// </summary>
+    private bool IsDevelopmentEnvironment()
+    {
+        // In a real application, you would use configuration to check this
+        // For this demo, we'll return true to ensure our client-side filtering works
+        return true;
     }
 
     /// <summary>
@@ -217,12 +270,12 @@
         // In a full implementation, this would open a dialog with additional filter options
         // For this test sample, we'll set minimum rating directly
         var options = new DialogOptions { CloseOnEscapeKey = true };
-        
+
         var parameters = new DialogParameters
-        {
-            ["CurrentRating"] = minimumRating
-        };
-        
+            {
+                ["CurrentRating"] = minimumRating
+            };
+
         // This would be implemented in a real app with a dialog component
         // Instead, we'll just simulate setting the minimum rating for testing
         SetRatingFilter(4); // For testing, set to 4 stars
@@ -234,6 +287,7 @@
     public void SetRatingFilter(int rating)
     {
         minimumRating = rating;
+        ApplyClientSideFilters();
     }
 
     /// <summary>
@@ -242,6 +296,15 @@
     private async Task ApplySort(string sortOption)
     {
         CurrentSortOption = sortOption;
+        await LoadMovies();
+    }
+
+    /// <summary>
+    /// Handles genre selection change
+    /// </summary>
+    private async Task OnGenreChanged(string genre)
+    {
+        selectedGenre = genre;
         await LoadMovies();
     }
 
@@ -291,5 +354,59 @@
         minimumRating = 1;
         searchTerm = string.Empty;
         await LoadMovies();
+    }
+
+    /// <summary>
+    /// Applies client-side filtering to the movies list
+    /// This is a fallback in case the API doesn't support all our filter options
+    /// </summary>
+    private void ApplyClientSideFilters()
+    {
+        // Start with all movies
+        var filteredMovies = allMovies;
+
+        // Apply genre filter
+        if (!string.IsNullOrEmpty(selectedGenre))
+        {
+            filteredMovies = filteredMovies
+                .Where(m => m.Genres != null && m.Genres.Contains(selectedGenre))
+                .ToList();
+        }
+
+        // Apply rating filter
+        if (minimumRating > 1)
+        {
+            filteredMovies = filteredMovies
+                .Where(m => m.AverageRating >= minimumRating)
+                .ToList();
+        }
+
+        // Apply search term filter
+        if (!string.IsNullOrEmpty(searchTerm))
+        {
+            filteredMovies = filteredMovies
+                .Where(m => m.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        // Apply sort
+        filteredMovies = ApplySorting(filteredMovies);
+
+        // Update displayed movies
+        displayedMovies = filteredMovies;
+    }
+
+    /// <summary>
+    /// Applies sorting to the movies list
+    /// </summary>
+    private List<MovieDto> ApplySorting(List<MovieDto> movies)
+    {
+        return CurrentSortOption switch
+        {
+            "date_desc" => movies.OrderByDescending(m => m.ReleaseDate).ToList(),
+            "rating_desc" => movies.OrderByDescending(m => m.AverageRating).ToList(),
+            "title_asc" => movies.OrderBy(m => m.Title).ToList(),
+            _ => movies // Default sort
+        };
     }
 }

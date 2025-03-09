@@ -1,5 +1,344 @@
-﻿<h3>MovieDetails</h3>
+﻿@page "/movie/{MovieId}"
+@using CineScope.Shared.DTOs
+@using CineScope.Client.Components.Reviews
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+<PageTitle>@(movie?.Title ?? "Movie Details") - CineScope</PageTitle>
+
+@if (isLoading)
+{
+    <div class="d-flex justify-center my-8">
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+    </div>
+}
+else if (movie == null)
+{
+    <MudAlert Severity="Severity.Error" Class="my-4">
+        Movie not found or an error occurred while loading the data.
+    </MudAlert>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/movies">
+        Back to Movies
+    </MudButton>
+}
+else
+{
+    <!-- Movie Details Section -->
+    <MudGrid>
+        <!-- Movie Poster -->
+        <MudItem xs="12" sm="4" md="3">
+            <MudCard Elevation="3" Class="movie-poster-card">
+                <MudCardMedia Image="@GetPosterUrl()" Height="450" />
+            </MudCard>
+        </MudItem>
+
+        <!-- Movie Info -->
+        <MudItem xs="12" sm="8" md="9">
+            <div class="mb-4">
+                <div class="d-flex justify-space-between align-center flex-wrap gap-2">
+                    <div>
+                        <MudText Typo="Typo.h3">@movie.Title</MudText>
+                        <MudText Typo="Typo.subtitle1" Class="mt-1">
+                            @movie.ReleaseDate.Year • @string.Join(", ", movie.Genres ?? new List<string>())
+                        </MudText>
+                    </div>
+
+                    <div class="d-flex align-center">
+                        <MudRating ReadOnly="true" Value="@((int)Math.Round(movie.AverageRating))" Size="Size.Large" />
+                        <MudText Typo="Typo.h5" Class="ml-2">@movie.AverageRating.ToString("0.0")</MudText>
+                    </div>
+                </div>
+
+                <MudDivider Class="my-3" />
+
+                <!-- Movie Description -->
+                <MudText Typo="Typo.body1" Class="mt-4">@movie.Description</MudText>
+
+                <!-- Additional Details -->
+                <MudGrid Class="mt-4">
+                    @if (!string.IsNullOrEmpty(movie.Director))
+                    {
+                        <MudItem xs="12" sm="6">
+                            <MudText Typo="Typo.subtitle2">Director</MudText>
+                            <MudText Typo="Typo.body1">@movie.Director</MudText>
+                        </MudItem>
+                    }
+
+                    @if (movie.Actors != null && movie.Actors.Any())
+                    {
+                        <MudItem xs="12" sm="6">
+                            <MudText Typo="Typo.subtitle2">Cast</MudText>
+                            <MudText Typo="Typo.body1">@string.Join(", ", movie.Actors)</MudText>
+                        </MudItem>
+                    }
+                </MudGrid>
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-3 mt-6">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                               OnClick="@(() => showReviewForm = !showReviewForm)"
+                               StartIcon="@(showReviewForm ? Icons.Material.Filled.Close : Icons.Material.Filled.RateReview)">
+                        @(showReviewForm ? "Cancel Review" : "Write a Review")
+                    </MudButton>
+
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                               Href="/movies"
+                               StartIcon="@Icons.Material.Filled.ArrowBack">
+                        Back to Movies
+                    </MudButton>
+                </div>
+            </div>
+        </MudItem>
+    </MudGrid>
+
+    <!-- Review Form Section (Conditionally Displayed) -->
+    @if (showReviewForm)
+    {
+        <MudDivider Class="my-6" />
+        <CreateReview MovieId="@MovieId" OnReviewSubmitted="HandleReviewSubmitted" />
+    }
+
+    <!-- Reviews Section -->
+    <MudDivider Class="my-6" />
+
+    @if (isLoadingReviews)
+    {
+        <div class="d-flex justify-center my-4">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Medium" />
+        </div>
+    }
+    else
+    {
+        <ReviewList Reviews="@reviews" MovieId="@MovieId"
+                    Title="Reviews"
+                    ShowActions="true"
+                    CurrentUserId="@currentUserId"
+                    OnEditReview="HandleEditReview"
+                    OnReviewDeleted="HandleReviewDeleted" />
+    }
+}
 
 @code {
+    /// <summary>
+    /// The ID of the movie to display.
+    /// Provided through the route parameter.
+    /// </summary>
+    [Parameter]
+    public string MovieId { get; set; } = string.Empty;
 
+    // State variables
+    private MovieDto movie;
+    private List<ReviewDto> reviews = new();
+    private bool isLoading = true;
+    private bool isLoadingReviews = true;
+    private bool showReviewForm = false;
+    private string currentUserId = "user1"; // This would come from authentication in a real app
+
+    /// <summary>
+    /// Initialize component and load movie data
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMovie();
+        await LoadReviews();
+    }
+
+    /// <summary>
+    /// Loads movie details from the API
+    /// </summary>
+    private async Task LoadMovie()
+    {
+        try
+        {
+            isLoading = true;
+
+            // Call the API to get the movie details
+            var response = await Http.GetAsync($"/api/Movie/{MovieId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                movie = await response.Content.ReadFromJsonAsync<MovieDto>();
+                Console.WriteLine($"Loaded movie: {movie?.Title}");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to load movie: {response.StatusCode}");
+                Snackbar.Add("Failed to load movie details", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading movie: {ex.Message}");
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Loads reviews for this movie from the API
+    /// </summary>
+    private async Task LoadReviews()
+    {
+        try
+        {
+            isLoadingReviews = true;
+
+            // Call the API to get reviews for this movie
+            var response = await Http.GetAsync($"/api/Review/movie/{MovieId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                reviews = await response.Content.ReadFromJsonAsync<List<ReviewDto>>() ?? new();
+                Console.WriteLine($"Loaded {reviews.Count} reviews");
+
+                // If we have no reviews from the API but need to demonstrate functionality,
+                // we can use sample data in development
+                if (reviews.Count == 0 && IsDevelopmentEnvironment())
+                {
+                    // Sample review data for development purposes
+                    reviews = GenerateSampleReviews();
+                }
+            }
+            else
+            {
+                Console.WriteLine($"Failed to load reviews: {response.StatusCode}");
+                reviews = new();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading reviews: {ex.Message}");
+            reviews = new();
+        }
+        finally
+        {
+            isLoadingReviews = false;
+        }
+    }
+
+    /// <summary>
+    /// Checks if we're in a development environment
+    /// </summary>
+    private bool IsDevelopmentEnvironment()
+    {
+        // In a real application, you would use configuration to check this
+        // For this demo, we'll just return true
+        return true;
+    }
+
+    /// <summary>
+    /// Generates sample review data for development and testing
+    /// </summary>
+    private List<ReviewDto> GenerateSampleReviews()
+    {
+        return new List<ReviewDto>
+        {
+            new()
+            {
+                Id = "sample1",
+                MovieId = MovieId,
+                UserId = "user1",
+                Username = "MovieFan42",
+                Rating = 5,
+                Text = "This is one of the best films I've seen this year. The direction is flawless and the performances are outstanding. Highly recommended!",
+                CreatedAt = DateTime.Now.AddDays(-5)
+            },
+            new()
+            {
+                Id = "sample2",
+                MovieId = MovieId,
+                UserId = "user2",
+                Username = "CinemaLover",
+                Rating = 4,
+                Text = "Great movie with amazing visuals and a compelling story. The only reason I didn't give it 5 stars is because the ending felt a bit rushed.",
+                CreatedAt = DateTime.Now.AddDays(-10)
+            },
+            new()
+            {
+                Id = "sample3",
+                MovieId = MovieId,
+                UserId = "user3",
+                Username = "FilmCritic101",
+                Rating = 3,
+                Text = "Decent film but nothing groundbreaking. The cinematography was beautiful but the plot had some major holes that were hard to ignore.",
+                CreatedAt = DateTime.Now.AddDays(-15)
+            },
+            new()
+            {
+                Id = "sample4",
+                MovieId = MovieId,
+                UserId = "user1",
+                Username = "MovieFan42",
+                Rating = 2,
+                Text = "I was really disappointed with this one. The trailer promised so much more than the movie delivered. The acting was good but couldn't save the weak script.",
+                CreatedAt = DateTime.Now.AddDays(-20)
+            }
+        };
+    }
+
+    /// <summary>
+    /// Gets a poster URL for the movie, with fallbacks for missing posters
+    /// </summary>
+    private string GetPosterUrl()
+    {
+        // Check if the URL from the database seems valid
+        if (!string.IsNullOrEmpty(movie.PosterUrl) &&
+            (movie.PosterUrl.StartsWith("http://") || movie.PosterUrl.StartsWith("https://")))
+        {
+            return movie.PosterUrl;
+        }
+
+        // Fallback for specific movie genres
+        if (movie.Genres != null && movie.Genres.Any())
+        {
+            if (movie.Genres.Contains("Action"))
+                return "https://cdn.pixabay.com/photo/2015/03/11/01/43/movie-667986_1280.jpg";
+            if (movie.Genres.Contains("Drama"))
+                return "https://cdn.pixabay.com/photo/2016/01/22/08/01/theater-1155201_1280.jpg";
+            if (movie.Genres.Contains("Sci-Fi"))
+                return "https://cdn.pixabay.com/photo/2017/07/15/19/42/manipulation-2507330_1280.jpg";
+        }
+
+        // Default fallback image
+        return "https://via.placeholder.com/300x450?text=" + Uri.EscapeDataString(movie?.Title ?? "No Title");
+    }
+
+    /// <summary>
+    /// Handles the event when a new review is submitted
+    /// </summary>
+    private async Task HandleReviewSubmitted(ReviewDto review)
+    {
+        // Hide the review form
+        showReviewForm = false;
+
+        // Reload the reviews to include the new one
+        await LoadReviews();
+
+        // Also reload the movie to update the average rating
+        await LoadMovie();
+    }
+
+    /// <summary>
+    /// Handles the event when a review is edited
+    /// </summary>
+    private void HandleEditReview(ReviewDto review)
+    {
+        // In a real app, this would open an edit form or dialog
+        // For now, we'll just show a notification
+        Snackbar.Add("Edit review functionality would be implemented here", Severity.Info);
+    }
+
+    /// <summary>
+    /// Handles the event when a review is deleted
+    /// </summary>
+    private async Task HandleReviewDeleted(string reviewId)
+    {
+        // Reload the movie to update the average rating
+        await LoadMovie();
+    }
 }

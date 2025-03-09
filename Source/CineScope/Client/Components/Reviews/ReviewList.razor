@@ -1,176 +1,293 @@
-﻿@page "/movie/{MovieId}"
-@using CineScope.Shared.DTOs
-@using CineScope.Client.Components.Reviews
+﻿@using CineScope.Shared.DTOs
 @using System.Net.Http.Json
 @inject HttpClient Http
 @inject ISnackbar Snackbar
-@inject NavigationManager NavigationManager
 
-<PageTitle>@(movie?.Title ?? "Movie Details") - CineScope</PageTitle>
+<div class="review-list-section mb-6">
+    <MudText Typo="Typo.h5" Class="mb-4">@Title</MudText>
 
-@if (isLoading)
-{
-    <div class="d-flex justify-center my-8">
-        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
-    </div>
-}
-else if (movie == null)
-{
-    <MudAlert Severity="Severity.Error" Class="my-4">
-        Movie not found or an error occurred while loading the data.
-    </MudAlert>
-    <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/movies">
-        Back to Movies
-    </MudButton>
-}
-else
-{
-    <!-- Movie Details Section -->
-    <MudGrid>
-        <!-- Movie Poster -->
-        <MudItem xs="12" sm="4" md="3">
-            <MudCard Elevation="3" Class="movie-poster-card">
-                <MudCardMedia Image="@GetPosterUrl()" Height="450" />
-            </MudCard>
-        </MudItem>
-
-        <!-- Movie Info -->
-        <MudItem xs="12" sm="8" md="9">
-            <div class="mb-4">
-                <div class="d-flex justify-space-between align-center flex-wrap gap-2">
-                    <div>
-                        <MudText Typo="Typo.h3">@movie.Title</MudText>
-                        <MudText Typo="Typo.subtitle1" Class="mt-1">
-                            @movie.ReleaseDate.Year • @string.Join(", ", movie.Genres ?? new List<string>())
-                        </MudText>
-                    </div>
-
-                    <div class="d-flex align-center">
-                        <MudRating ReadOnly="true" SelectedValue="@((int)Math.Round(movie.AverageRating))" Size="Size.Large" />
-                        <MudText Typo="Typo.h5" Class="ml-2">@movie.AverageRating.ToString("0.0")</MudText>
-                    </div>
-                </div>
-
-                <MudDivider Class="my-3" />
-
-                <!-- Movie Description -->
-                <MudText Typo="Typo.body1" Class="mt-4">@movie.Description</MudText>
-
-                <!-- Additional Details -->
-                <MudGrid Class="mt-4">
-                    @if (!string.IsNullOrEmpty(movie.Director))
-                    {
-                        <MudItem xs="12" sm="6">
-                            <MudText Typo="Typo.subtitle2">Director</MudText>
-                            <MudText Typo="Typo.body1">@movie.Director</MudText>
-                        </MudItem>
-                    }
-
-                    @if (movie.Actors != null && movie.Actors.Any())
-                    {
-                        <MudItem xs="12" sm="6">
-                            <MudText Typo="Typo.subtitle2">Cast</MudText>
-                            <MudText Typo="Typo.body1">@string.Join(", ", movie.Actors)</MudText>
-                        </MudItem>
-                    }
-                </MudGrid>
-
-                <!-- Action Buttons -->
-                <div class="d-flex gap-3 mt-6">
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                               OnClick="@(() => showReviewForm = !showReviewForm)"
-                               StartIcon="@(showReviewForm ? Icons.Material.Filled.Close : Icons.Material.Filled.RateReview)">
-                        @(showReviewForm ? "Cancel Review" : "Write a Review")
-                    </MudButton>
-
-                    <MudButton Variant="Variant.Outlined" Color="Color.Primary"
-                               Href="/movies"
-                               StartIcon="@Icons.Material.Filled.ArrowBack">
-                        Back to Movies
-                    </MudButton>
-                </div>
-            </div>
-        </MudItem>
-    </MudGrid>
-
-    <!-- Review Form Section (Conditionally Displayed) -->
-    @if (showReviewForm)
+    @if (isLoading)
     {
-        <MudDivider Class="my-6" />
-        <CreateReview MovieId="@MovieId" OnReviewSubmitted="HandleReviewSubmitted" />
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Medium" />
     }
-
-    <!-- Reviews Section -->
-    <MudDivider Class="my-6" />
-
-    @if (isLoadingReviews)
+    else if (Reviews == null || !Reviews.Any())
     {
-        <div class="d-flex justify-center my-4">
-            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Medium" />
-        </div>
+        <MudAlert Severity="Severity.Info">@EmptyMessage</MudAlert>
     }
     else
     {
-        <ReviewList Reviews="@reviews" MovieId="@MovieId"
-                    Title="Reviews"
-                    ShowActions="true"
-                    CurrentUserId="@currentUserId"
-                    OnEditReview="HandleEditReview"
-                    OnReviewDeleted="HandleReviewDeleted" />
+        <!-- Filter and Sort Controls -->
+        <div class="d-flex justify-space-between align-center mb-4 flex-wrap gap-2">
+            <!-- Review Count -->
+            <MudText Typo="Typo.body2">Showing @Reviews.Count review@(Reviews.Count != 1 ? "s" : "")</MudText>
+
+            <div class="d-flex gap-2">
+                <!-- Filter Button -->
+                <MudMenu Icon="@Icons.Material.Filled.FilterList" Label="Filter" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">
+                    <MudMenuItem OnClick="@(() => FilterReviews("all"))">All Ratings</MudMenuItem>
+                    <MudMenuItem OnClick="@(() => FilterReviews("positive"))">Positive (4-5 ★)</MudMenuItem>
+                    <MudMenuItem OnClick="@(() => FilterReviews("neutral"))">Neutral (3 ★)</MudMenuItem>
+                    <MudMenuItem OnClick="@(() => FilterReviews("negative"))">Negative (1-2 ★)</MudMenuItem>
+                </MudMenu>
+
+                <!-- Sort Button -->
+                <MudMenu Icon="@Icons.Material.Filled.Sort" Label="Sort" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">
+                    <MudMenuItem OnClick="@(() => SortReviews("newest"))">Newest First</MudMenuItem>
+                    <MudMenuItem OnClick="@(() => SortReviews("oldest"))">Oldest First</MudMenuItem>
+                    <MudMenuItem OnClick="@(() => SortReviews("highest"))">Highest Rated</MudMenuItem>
+                    <MudMenuItem OnClick="@(() => SortReviews("lowest"))">Lowest Rated</MudMenuItem>
+                </MudMenu>
+            </div>
+        </div>
+
+        <!-- Active Filters -->
+        @if (currentFilter != "all" || currentSort != "newest")
+        {
+            <MudPaper Elevation="0" Class="pa-2 mb-4" Style="background-color: var(--mud-palette-background-grey)">
+                <div class="d-flex flex-wrap gap-2 align-center">
+                    <MudText Typo="Typo.caption">Active:</MudText>
+
+                    @if (currentFilter != "all")
+                    {
+                        <MudChip Size="Size.Small" Color="Color.Primary" Variant="Variant.Outlined"
+                                 OnClose="@(() => FilterReviews("all"))">
+                            @GetFilterName(currentFilter)
+                        </MudChip>
+                    }
+
+                    @if (currentSort != "newest")
+                    {
+                        <MudChip Size="Size.Small" Color="Color.Secondary" Variant="Variant.Outlined"
+                                 OnClose="@(() => SortReviews("newest"))">
+                            @GetSortName(currentSort)
+                        </MudChip>
+                    }
+
+                    <MudButton Variant="Variant.Text" Color="Color.Error" Size="Size.Small"
+                               OnClick="@ResetFilters">Clear All</MudButton>
+                </div>
+            </MudPaper>
+        }
+
+        <!-- Review List -->
+        <MudList Clickable="false" Dense="false">
+            @foreach (var review in displayedReviews)
+            {
+                <MudListItem Class="pa-0 mb-4">
+                    <MudCard Elevation="2" Class="review-card">
+                        <MudCardContent>
+                            <!-- Review Header -->
+                            <div class="d-flex justify-space-between align-center mb-2">
+                                <MudText Typo="Typo.h6">@review.Username</MudText>
+                                <MudRating ReadOnly="true" Value="@review.Rating" />
+                            </div>
+
+                            <!-- Review Date -->
+                            <MudText Typo="Typo.caption" Class="mb-2">
+                                @review.CreatedAt.ToString("MMMM dd, yyyy")
+                            </MudText>
+
+                            <!-- Review Text -->
+                            <MudText Typo="Typo.body1">@review.Text</MudText>
+                        </MudCardContent>
+
+                        @if (ShowActions && review.UserId == CurrentUserId)
+                        {
+                            <MudCardActions>
+                                <MudButton Variant="Variant.Text" Color="Color.Primary"
+                                           OnClick="@(() => OnEditReview.InvokeAsync(review))">
+                                    Edit
+                                </MudButton>
+                                <MudButton Variant="Variant.Text" Color="Color.Error"
+                                           OnClick="@(() => DeleteReviewAsync(review.Id))">
+                                    Delete
+                                </MudButton>
+                            </MudCardActions>
+                        }
+                    </MudCard>
+                </MudListItem>
+            }
+        </MudList>
     }
-}
+</div>
 
 @code {
     /// <summary>
-    /// The ID of the movie to display.
-    /// Provided through the route parameter.
+    /// The list of reviews to display.
     /// </summary>
     [Parameter]
-    public string MovieId { get; set; }
-
-    // State variables
-    private MovieDto movie;
-    private List<ReviewDto> reviews = new List<ReviewDto>();
-    private bool isLoading = true;
-    private bool isLoadingReviews = true;
-    private bool showReviewForm = false;
-    private string currentUserId = "user1"; // This would come from authentication in a real app
+    public List<ReviewDto> Reviews { get; set; } = new();
 
     /// <summary>
-    /// Initialize component and load movie data
+    /// The ID of the movie these reviews are for.
     /// </summary>
-    protected override async Task OnInitializedAsync()
+    [Parameter]
+    public string MovieId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The title of the reviews section.
+    /// </summary>
+    [Parameter]
+    public string Title { get; set; } = "Reviews";
+
+    /// <summary>
+    /// The message to display when there are no reviews.
+    /// </summary>
+    [Parameter]
+    public string EmptyMessage { get; set; } = "No reviews yet. Be the first to share your thoughts!";
+
+    /// <summary>
+    /// Whether to show edit/delete actions for the current user's reviews.
+    /// </summary>
+    [Parameter]
+    public bool ShowActions { get; set; } = false;
+
+    /// <summary>
+    /// The ID of the current user (for showing edit/delete buttons).
+    /// </summary>
+    [Parameter]
+    public string CurrentUserId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Event called when the user wants to edit a review.
+    /// </summary>
+    [Parameter]
+    public EventCallback<ReviewDto> OnEditReview { get; set; }
+
+    /// <summary>
+    /// Event called when a review is deleted.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> OnReviewDeleted { get; set; }
+
+    /// <summary>
+    /// The filtered and sorted list of reviews to display.
+    /// </summary>
+    private List<ReviewDto> displayedReviews = new();
+
+    /// <summary>
+    /// Loading indicator state.
+    /// </summary>
+    private bool isLoading = false;
+
+    /// <summary>
+    /// Current filter applied to the reviews.
+    /// </summary>
+    private string currentFilter = "all";
+
+    /// <summary>
+    /// Current sort order applied to the reviews.
+    /// </summary>
+    private string currentSort = "newest";
+
+    /// <summary>
+    /// Initializes the component and applies default filtering/sorting.
+    /// </summary>
+    protected override void OnParametersSet()
     {
-        await LoadMovie();
-        await LoadReviews();
+        // Apply default filter and sort when the reviews list changes
+        ApplyFilterAndSort();
     }
 
     /// <summary>
-    /// Loads movie details from the API
+    /// Applies a filter to the reviews list.
     /// </summary>
-    private async Task LoadMovie()
+    /// <param name="filter">Filter type: all, positive, neutral, negative</param>
+    private void FilterReviews(string filter)
     {
+        currentFilter = filter;
+        ApplyFilterAndSort();
+    }
+
+    /// <summary>
+    /// Applies a sort order to the reviews list.
+    /// </summary>
+    /// <param name="sort">Sort type: newest, oldest, highest, lowest</param>
+    private void SortReviews(string sort)
+    {
+        currentSort = sort;
+        ApplyFilterAndSort();
+    }
+
+    /// <summary>
+    /// Resets filters and sort to default values.
+    /// </summary>
+    private void ResetFilters()
+    {
+        currentFilter = "all";
+        currentSort = "newest";
+        ApplyFilterAndSort();
+    }
+
+    /// <summary>
+    /// Applies the current filter and sort settings to the reviews list.
+    /// </summary>
+    private void ApplyFilterAndSort()
+    {
+        if (Reviews == null)
+        {
+            displayedReviews = new();
+            return;
+        }
+
+        // First apply filter
+        var filteredReviews = currentFilter switch
+        {
+            "positive" => Reviews.Where(r => r.Rating >= 4).ToList(),
+            "neutral" => Reviews.Where(r => r.Rating == 3).ToList(),
+            "negative" => Reviews.Where(r => r.Rating <= 2).ToList(),
+            _ => Reviews.ToList() // "all" filter
+        };
+
+        // Then apply sort
+        displayedReviews = currentSort switch
+        {
+            "oldest" => filteredReviews.OrderBy(r => r.CreatedAt).ToList(),
+            "highest" => filteredReviews.OrderByDescending(r => r.Rating).ToList(),
+            "lowest" => filteredReviews.OrderBy(r => r.Rating).ToList(),
+            _ => filteredReviews.OrderByDescending(r => r.CreatedAt).ToList() // "newest" sort
+        };
+    }
+
+    /// <summary>
+    /// Deletes a review after confirmation.
+    /// </summary>
+    /// <param name="reviewId">The ID of the review to delete</param>
+    private async Task DeleteReviewAsync(string reviewId)
+    {
+        // Show confirmation dialog
+        bool confirmed = await ShowDeleteConfirmationDialog();
+
+        if (!confirmed)
+            return;
+
         try
         {
             isLoading = true;
 
-            // Call the API to get the movie details
-            var response = await Http.GetAsync($"/api/Movie/{MovieId}");
+            // Delete the review through the API
+            var response = await Http.DeleteAsync($"api/Review/{reviewId}");
 
             if (response.IsSuccessStatusCode)
             {
-                movie = await response.Content.ReadFromJsonAsync<MovieDto>();
-                Console.WriteLine($"Loaded movie: {movie?.Title}");
+                // Remove the review from the lists
+                Reviews.RemoveAll(r => r.Id == reviewId);
+                displayedReviews.RemoveAll(r => r.Id == reviewId);
+
+                // Show success message
+                Snackbar.Add("Review deleted successfully", Severity.Success);
+
+                // Notify parent component
+                await OnReviewDeleted.InvokeAsync(reviewId);
             }
             else
             {
-                Console.WriteLine($"Failed to load movie: {response.StatusCode}");
-                Snackbar.Add("Failed to load movie details", Severity.Error);
+                var error = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Failed to delete review: {error}", Severity.Error);
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error loading movie: {ex.Message}");
             Snackbar.Add($"Error: {ex.Message}", Severity.Error);
         }
         finally
@@ -180,165 +297,35 @@ else
     }
 
     /// <summary>
-    /// Loads reviews for this movie from the API
+    /// Shows a confirmation dialog before deleting a review.
     /// </summary>
-    private async Task LoadReviews()
+    /// <returns>True if the user confirms deletion, false otherwise</returns>
+    private Task<bool> ShowDeleteConfirmationDialog()
     {
-        try
-        {
-            isLoadingReviews = true;
-
-            // Call the API to get reviews for this movie
-            var response = await Http.GetAsync($"/api/Review/movie/{MovieId}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                reviews = await response.Content.ReadFromJsonAsync<List<ReviewDto>>() ?? new List<ReviewDto>();
-                Console.WriteLine($"Loaded {reviews.Count} reviews");
-
-                // If we have no reviews from the API but need to demonstrate functionality,
-                // we can use sample data in development
-                if (reviews.Count == 0 && IsDevelopmentEnvironment())
-                {
-                    // Sample review data for development purposes
-                    reviews = GenerateSampleReviews();
-                }
-            }
-            else
-            {
-                Console.WriteLine($"Failed to load reviews: {response.StatusCode}");
-                reviews = new List<ReviewDto>();
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error loading reviews: {ex.Message}");
-            reviews = new List<ReviewDto>();
-        }
-        finally
-        {
-            isLoadingReviews = false;
-        }
+        // In a real implementation, this would show a MudBlazor dialog
+        // For this implementation we'll just return true to simulate confirmation
+        return Task.FromResult(true);
     }
 
     /// <summary>
-    /// Checks if we're in a development environment
+    /// Gets a user-friendly name for the current filter.
     /// </summary>
-    private bool IsDevelopmentEnvironment()
+    private string GetFilterName(string filter) => filter switch
     {
-        // In a real application, you would use configuration to check this
-        // For this demo, we'll just return true
-        return true;
-    }
+        "positive" => "Positive Ratings (4-5★)",
+        "neutral" => "Neutral Ratings (3★)",
+        "negative" => "Negative Ratings (1-2★)",
+        _ => "All Ratings"
+    };
 
     /// <summary>
-    /// Generates sample review data for development and testing
+    /// Gets a user-friendly name for the current sort order.
     /// </summary>
-    private List<ReviewDto> GenerateSampleReviews()
+    private string GetSortName(string sort) => sort switch
     {
-        return new List<ReviewDto>
-        {
-            new ReviewDto
-            {
-                Id = "sample1",
-                MovieId = MovieId,
-                UserId = "user1",
-                Username = "MovieFan42",
-                Rating = 5,
-                Text = "This is one of the best films I've seen this year. The direction is flawless and the performances are outstanding. Highly recommended!",
-                CreatedAt = DateTime.Now.AddDays(-5)
-            },
-            new ReviewDto
-            {
-                Id = "sample2",
-                MovieId = MovieId,
-                UserId = "user2",
-                Username = "CinemaLover",
-                Rating = 4,
-                Text = "Great movie with amazing visuals and a compelling story. The only reason I didn't give it 5 stars is because the ending felt a bit rushed.",
-                CreatedAt = DateTime.Now.AddDays(-10)
-            },
-            new ReviewDto
-            {
-                Id = "sample3",
-                MovieId = MovieId,
-                UserId = "user3",
-                Username = "FilmCritic101",
-                Rating = 3,
-                Text = "Decent film but nothing groundbreaking. The cinematography was beautiful but the plot had some major holes that were hard to ignore.",
-                CreatedAt = DateTime.Now.AddDays(-15)
-            },
-            new ReviewDto
-            {
-                Id = "sample4",
-                MovieId = MovieId,
-                UserId = "user1",
-                Username = "MovieFan42",
-                Rating = 2,
-                Text = "I was really disappointed with this one. The trailer promised so much more than the movie delivered. The acting was good but couldn't save the weak script.",
-                CreatedAt = DateTime.Now.AddDays(-20)
-            }
-        };
-    }
-
-    /// <summary>
-    /// Gets a poster URL for the movie, with fallbacks for missing posters
-    /// </summary>
-    private string GetPosterUrl()
-    {
-        // Check if the URL from the database seems valid
-        if (!string.IsNullOrEmpty(movie.PosterUrl) &&
-            (movie.PosterUrl.StartsWith("http://") || movie.PosterUrl.StartsWith("https://")))
-        {
-            return movie.PosterUrl;
-        }
-
-        // Fallback for specific movie genres
-        if (movie.Genres != null && movie.Genres.Any())
-        {
-            if (movie.Genres.Contains("Action"))
-                return "https://cdn.pixabay.com/photo/2015/03/11/01/43/movie-667986_1280.jpg";
-            if (movie.Genres.Contains("Drama"))
-                return "https://cdn.pixabay.com/photo/2016/01/22/08/01/theater-1155201_1280.jpg";
-            if (movie.Genres.Contains("Sci-Fi"))
-                return "https://cdn.pixabay.com/photo/2017/07/15/19/42/manipulation-2507330_1280.jpg";
-        }
-
-        // Default fallback image
-        return "https://via.placeholder.com/300x450?text=" + Uri.EscapeDataString(movie?.Title ?? "No Title");
-    }
-
-    /// <summary>
-    /// Handles the event when a new review is submitted
-    /// </summary>
-    private async Task HandleReviewSubmitted(ReviewDto review)
-    {
-        // Hide the review form
-        showReviewForm = false;
-
-        // Reload the reviews to include the new one
-        await LoadReviews();
-
-        // Also reload the movie to update the average rating
-        await LoadMovie();
-    }
-
-    /// <summary>
-    /// Handles the event when a review is edited
-    /// </summary>
-    private void HandleEditReview(ReviewDto review)
-    {
-        // In a real app, this would open an edit form or dialog
-        // For now, we'll just show a notification
-        Snackbar.Add("Edit review functionality would be implemented here", Severity.Info);
-    }
-
-    /// <summary>
-    /// Handles the event when a review is deleted
-    /// </summary>
-    private async Task HandleReviewDeleted(string reviewId)
-    {
-        // Reload the movie to update the average rating
-        await LoadMovie();
-    }
+        "oldest" => "Oldest First",
+        "highest" => "Highest Rated",
+        "lowest" => "Lowest Rated",
+        _ => "Newest First"
+    };
 }

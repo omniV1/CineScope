@@ -11,7 +11,7 @@
             <!-- Rating selection -->
             <div class="d-flex flex-column gap-2 mb-4">
                 <MudText Typo="Typo.subtitle1">Your Rating</MudText>
-                <MudRating @bind-SelectedValue="review.Rating" MaxValue="5" Size="Size.Large" />
+                <MudRating @bind-Value="review.Rating" MaxValue="5" Size="Size.Large" />
             </div>
 
             <!-- Review text -->
@@ -26,7 +26,7 @@
                 <MudAlert Severity="Severity.Error" Class="mt-4" Dense="true">@errorMessage</MudAlert>
             }
 
-            @if (contentWarning != null)
+            @if (contentWarning != null && contentWarning.Any())
             {
                 <MudAlert Severity="Severity.Warning" Class="mt-4">
                     <MudText>Content Warning</MudText>
@@ -60,7 +60,7 @@
 @code {
     private MudForm form;
     private bool success;
-    private string[] errors = { };
+    private string[] errors = Array.Empty<string>();
     private string errorMessage = string.Empty;
     private bool isLoading = false;
     private List<string> contentWarning = null;
@@ -69,7 +69,7 @@
     /// The ID of the movie being reviewed.
     /// </summary>
     [Parameter]
-    public string MovieId { get; set; }
+    public string MovieId { get; set; } = string.Empty;
 
     /// <summary>
     /// Event callback triggered when a review is successfully submitted.
@@ -80,7 +80,7 @@
     /// <summary>
     /// Review data model.
     /// </summary>
-    private ReviewDto review = new ReviewDto
+    private ReviewDto review = new()
         {
             Rating = 0,
             Text = string.Empty,
@@ -225,6 +225,6 @@
     private class ContentFilterResult
     {
         public bool IsApproved { get; set; }
-        public List<string> ViolationWords { get; set; } = new List<string>();
+        public List<string> ViolationWords { get; set; } = new();
     }
 }
