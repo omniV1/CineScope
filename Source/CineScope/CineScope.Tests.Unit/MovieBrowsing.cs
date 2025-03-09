@@ -34,6 +34,12 @@ namespace CineScope.Tests.Unit
 
             // Register mock HttpClient
             Services.AddSingleton<HttpClient>(GetMockHttpClient());
+
+            // Configure JSInterop for MudBlazor components
+            JSInterop.Mode = JSRuntimeMode.Loose;
+            JSInterop.SetupVoid("mudPopover.initialize", _ => true);
+            JSInterop.SetupVoid("mudElementRef.saveMeasurements", _ => true);
+            JSInterop.SetupVoid("mudPopover.connect", _ => true);
         }
 
         /// <summary>

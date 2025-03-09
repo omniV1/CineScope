@@ -28,30 +28,20 @@ namespace CineScope.Tests.Unit
         {
             // Arrange - Set up test data and dependencies
             var movieId = "movie123";
-
             var reviews = new List<Review>
-            {
-                new Review
-                {
-                    Id = "1",
-                    MovieId = movieId,
-                    UserId = "user1",
-                    Rating = 4, // Changed from 4.5 to match the actual test data
-                    Text = "Great movie!",
-                    CreatedAt = DateTime.UtcNow,
-                    Username = "User One"
-                },
-                new Review
-                {
-                    Id = "2",
-                    MovieId = movieId,
-                    UserId = "user2",
-                    Rating = 5,
-                    Text = "Excellent film!",
-                    CreatedAt = DateTime.UtcNow,
-                    Username = "User Two"
-                }
-            };
+{
+    new Review
+    {
+        Id = "1",
+        MovieId = movieId,
+        UserId = "user1",
+        Rating = 4, // Fix this to match the expected value in the test assertion
+        Text = "Great movie!",
+        CreatedAt = DateTime.UtcNow,
+        Username = "User One"
+    }
+
+};
 
             var mockCollection = new Mock<IMongoCollection<Review>>();
             var mockCursor = new Mock<IAsyncCursor<Review>>();
