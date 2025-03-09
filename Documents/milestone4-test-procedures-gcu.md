@@ -32,6 +32,9 @@ March 3, 2025
 |--------------|------------------|---------------|----------|
 | | 1.0 | | |
 
+### Project Links
+[Jira Backlog](https://cinescopedev.atlassian.net/jira/software/projects/SCRUM/boards/1/backlog?atlOrigin=eyJpIjoiM2MxNTc1MmE1OTRmNDk4MmI4M2JkY2U2NmE5MmUwYWIiLCJwIjoiaiJ9)
+
 ## I. Introduction
 
 ### Purpose of the Document
