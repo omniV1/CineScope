@@ -49,7 +49,7 @@ else
                     </div>
 
                     <div class="d-flex align-center">
-                        <MudRating ReadOnly="true" Value="@movie.AverageRating" Size="Size.Large" />
+                        <MudRating ReadOnly="true" Value="@((int)Math.Round(movie.AverageRating))" Size="Size.Large" />
                         <MudText Typo="Typo.h5" Class="ml-2">@movie.AverageRating.ToString("0.0")</MudText>
                     </div>
                 </div>
@@ -135,7 +135,8 @@ else
                             Title="Reviews"
                             ShowActions="true"
                             CurrentUserId="@currentUserId"
-                            OnEditReview="HandleEditReview"
+                            MovieTitles="@movieTitles"
+                            OnReviewUpdated="HandleReviewUpdated"
                             OnReviewDeleted="HandleReviewDeleted" />
             </Authorized>
             <NotAuthorized>
@@ -163,6 +164,7 @@ else
     private bool isLoadingReviews = true;
     private bool showReviewForm = false;
     private string currentUserId = string.Empty;
+    private Dictionary<string, string> movieTitles = new();
 
     /// <summary>
     /// Initialize component and load movie data
@@ -175,6 +177,7 @@ else
 
         await LoadMovie();
         await LoadReviews();
+        LoadMovieTitles();
 
         // Check if there's a query parameter to show the review form
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
@@ -202,13 +205,22 @@ else
         {
             isLoading = true;
 
+            // Debug: Print the movie ID we're loading
+            Console.WriteLine($"Loading movie with ID from route parameter: {MovieId}");
+
             // Call the API to get the movie details
             var response = await Http.GetAsync($"/api/Movie/{MovieId}");
 
             if (response.IsSuccessStatusCode)
             {
                 movie = await response.Content.ReadFromJsonAsync<MovieDto>();
-                Console.WriteLine($"Loaded movie: {movie?.Title}");
+                Console.WriteLine($"Loaded movie: {movie?.Title} with ID: {movie?.Id}");
+
+                // Check if the movie ID in the route matches what we got back
+                if (movie?.Id != MovieId)
+                {
+                    Console.WriteLine($"IMPORTANT: Route parameter ID ({MovieId}) does not match returned movie ID ({movie?.Id})");
+                }
             }
             else
             {
@@ -236,8 +248,13 @@ else
         {
             isLoadingReviews = true;
 
+            // Debug message for the movie ID we're requesting reviews for
+            Console.WriteLine($"Requesting reviews for movie ID: {MovieId}");
+
             // Call the API to get reviews for this movie
             var response = await Http.GetAsync($"/api/Review/movie/{MovieId}");
+
+            Console.WriteLine($"Review API response status: {response.StatusCode}");
 
             if (response.IsSuccessStatusCode)
             {
@@ -250,22 +267,56 @@ else
                 {
                     // Sample review data for development purposes
                     reviews = GenerateSampleReviews();
+                    Console.WriteLine("Using sample reviews since no real reviews were found");
                 }
             }
             else
             {
-                Console.WriteLine($"Failed to load reviews: {response.StatusCode}");
-                reviews = new();
+                // Try to get more detailed error information
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Failed to load reviews: {response.StatusCode}. Details: {errorContent}");
+
+                // For development purposes only - use sample data if API fails
+                if (IsDevelopmentEnvironment())
+                {
+                    reviews = GenerateSampleReviews();
+                    Console.WriteLine("Using sample reviews due to API error");
+                }
+                else
+                {
+                    reviews = new();
+                }
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error loading reviews: {ex.Message}");
-            reviews = new();
+
+            // For development purposes only - use sample data if exception occurs
+            if (IsDevelopmentEnvironment())
+            {
+                reviews = GenerateSampleReviews();
+                Console.WriteLine("Using sample reviews due to exception");
+            }
+            else
+            {
+                reviews = new();
+            }
         }
         finally
         {
             isLoadingReviews = false;
+        }
+    }
+
+    /// <summary>
+    /// Loads movie titles for the review edit dialog
+    /// </summary>
+    private void LoadMovieTitles()
+    {
+        if (movie != null)
+        {
+            movieTitles[movie.Id] = movie.Title;
         }
     }
 
@@ -275,7 +326,7 @@ else
     private bool IsDevelopmentEnvironment()
     {
         // In a real application, you would use configuration to check this
-        // For this demo, we'll just return true
+        // For this demo, we'll return true
         return true;
     }
 
@@ -362,21 +413,23 @@ else
     }
 
     /// <summary>
-    /// Handles the event when a review is edited
-    /// </summary>
-    private void HandleEditReview(ReviewDto review)
-    {
-        // In a real app, this would open an edit form or dialog
-        // For now, we'll just show a notification
-        Snackbar.Add("Edit review functionality would be implemented here", Severity.Info);
-    }
-
-    /// <summary>
     /// Handles the event when a review is deleted
     /// </summary>
     private async Task HandleReviewDeleted(string reviewId)
     {
         // Reload the movie to update the average rating
+        await LoadMovie();
+    }
+
+    /// <summary>
+    /// Handles the event when a review is edited and updated
+    /// </summary>
+    private async Task HandleReviewUpdated(ReviewDto updatedReview)
+    {
+        // Reload all reviews to ensure we have the latest data
+        await LoadReviews();
+
+        // Also reload the movie to update the average rating
         await LoadMovie();
     }
 }

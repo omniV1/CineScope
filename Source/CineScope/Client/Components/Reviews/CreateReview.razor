@@ -25,18 +25,18 @@
 
             @if (!string.IsNullOrEmpty(errorMessage))
             {
-                <MudAlert Severity="Severity.Error" Class="mt-4" Dense="true">@errorMessage</MudAlert>
+                    <MudAlert Severity="Severity.Error" Class="mt-4" Dense="true">@errorMessage</MudAlert>
             }
 
             @if (contentWarning != null && contentWarning.Any())
             {
-                <MudAlert Severity="Severity.Warning" Class="mt-4">
-                    <MudText>Content Warning</MudText>
-                    <MudText Typo="Typo.body2">
-                        Your review contains content that may violate our community guidelines.
-                        Please remove the following terms: @string.Join(", ", contentWarning)
-                    </MudText>
-                </MudAlert>
+                    <MudAlert Severity="Severity.Warning" Class="mt-4">
+                        <MudText>Content Warning</MudText>
+                        <MudText Typo="Typo.body2">
+                            Your review contains content that may violate our community guidelines.
+                            Please remove the following terms: @string.Join(", ", contentWarning)
+                        </MudText>
+                    </MudAlert>
             }
         </MudCardContent>
 
@@ -44,15 +44,15 @@
             <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="@Reset">Reset</MudButton>
             <MudSpacer />
             <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                       Disabled="@(!success || isLoading || review.Rating == 0)" OnClick="@SubmitReview">
+                       Disabled="@(!success || isLoading || ratingValue == 0)" OnClick="@SubmitReview">
                 @if (isLoading)
                 {
-                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                    <MudText Class="ms-2">Submitting</MudText>
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                        <MudText Class="ms-2">Submitting</MudText>
                 }
                 else
                 {
-                    <MudText>Submit Review</MudText>
+                        <MudText>Submit Review</MudText>
                 }
             </MudButton>
         </MudCardActions>
@@ -107,6 +107,8 @@
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine($"CreateReview initialized with MovieId: {MovieId}");
+
         // Set the movie ID from parameter
         review.MovieId = MovieId;
 
@@ -118,11 +120,13 @@
             {
                 review.UserId = user.Id;
                 review.Username = user.Username;
+                Console.WriteLine($"Using authenticated user: {user.Username} (ID: {user.Id})");
             }
         }
         else
         {
             review.UserId = CurrentUserId;
+            Console.WriteLine($"Using provided user ID: {CurrentUserId}");
         }
     }
 
@@ -133,6 +137,8 @@
     {
         try
         {
+            Console.WriteLine("Validating review content...");
+
             // Call the content filter API
             var response = await Http.PostAsJsonAsync("api/ContentFilter/validate", review.Text);
 
@@ -145,15 +151,21 @@
                 if (result.IsApproved)
                 {
                     contentWarning = null;
+                    Console.WriteLine("Content validation passed");
                     return true;
                 }
 
                 // If content is not approved, store the violation words
                 contentWarning = result.ViolationWords;
+                Console.WriteLine($"Content validation failed: {string.Join(", ", contentWarning)}");
                 return false;
             }
-
-            throw new Exception("Failed to validate content");
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Content validation API error: {response.StatusCode} - {errorContent}");
+                throw new Exception($"Content validation failed: {response.StatusCode}");
+            }
         }
         catch (Exception ex)
         {
@@ -216,13 +228,17 @@
             }
 
             // Set the rating from the MudRating component
-            review.Rating = ratingValue;
+            review.Rating = (double)ratingValue;
 
             // Set current date/time
             review.CreatedAt = DateTime.Now;
 
+            Console.WriteLine($"Submitting review: MovieId={review.MovieId}, UserId={review.UserId}, Rating={review.Rating}");
+
             // Send review to the API
             var response = await Http.PostAsJsonAsync("api/Review", review);
+
+            Console.WriteLine($"Review submission response: {response.StatusCode}");
 
             if (response.IsSuccessStatusCode)
             {
@@ -244,7 +260,9 @@
             else
             {
                 // Handle error response
-                errorMessage = "Failed to submit review. Please try again.";
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error content: {errorContent}");
+                errorMessage = $"Failed to submit review: {response.StatusCode}";
                 Snackbar.Add(errorMessage, Severity.Error);
             }
         }
@@ -252,6 +270,7 @@
         {
             // Handle exceptions
             errorMessage = "An error occurred. Please try again.";
+            Console.WriteLine($"Review submission exception: {ex.Message}");
             Snackbar.Add($"Error: {ex.Message}", Severity.Error);
         }
         finally

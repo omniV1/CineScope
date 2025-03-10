@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CineScope.Server.Models;
 using CineScope.Server.Services;
@@ -6,6 +7,7 @@ using CineScope.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using System.Linq;
 
 namespace CineScope.Server.Controllers
 {
@@ -28,14 +30,21 @@ namespace CineScope.Server.Controllers
         private readonly ContentFilterService _contentFilterService;
 
         /// <summary>
+        /// Reference to the user service for retrieving user information.
+        /// </summary>
+        private readonly UserService _userService;
+
+        /// <summary>
         /// Initializes a new instance of the ReviewController.
         /// </summary>
         /// <param name="reviewService">Injected review service</param>
         /// <param name="contentFilterService">Injected content filter service</param>
-        public ReviewController(ReviewService reviewService, ContentFilterService contentFilterService)
+        /// <param name="userService">Injected user service</param>
+        public ReviewController(ReviewService reviewService, ContentFilterService contentFilterService, UserService userService)
         {
             _reviewService = reviewService;
             _contentFilterService = contentFilterService;
+            _userService = userService;
         }
 
         /// <summary>
@@ -47,22 +56,61 @@ namespace CineScope.Server.Controllers
         [HttpGet("movie/{movieId}")]
         public async Task<ActionResult<List<ReviewDto>>> GetReviewsByMovieId(string movieId)
         {
+            // Log the requested movie ID for debugging
+            Console.WriteLine($"Retrieving reviews for movie ID: {movieId}");
+
             // Ensure movieId is in a valid format for MongoDB
             if (!ObjectId.TryParse(movieId, out _))
             {
+                Console.WriteLine($"Invalid movie ID format: {movieId}");
                 return BadRequest("Invalid movie ID format");
             }
 
-            // Get reviews from service
-            var reviews = await _reviewService.GetReviewsByMovieIdAsync(movieId);
+            try
+            {
+                // Get reviews from service
+                var reviews = await _reviewService.GetReviewsByMovieIdAsync(movieId);
 
-            // Log the count for debugging
-            Console.WriteLine($"Found {reviews.Count} reviews for movie {movieId}");
+                // Log the count for debugging
+                Console.WriteLine($"Found {reviews.Count} reviews for movie {movieId}");
 
-            // Map to DTOs
-            var reviewDtos = reviews.Select(MapToDto).ToList();
+                // Map to DTOs and populate usernames
+                var reviewDtos = new List<ReviewDto>();
+                foreach (var review in reviews)
+                {
+                    var dto = MapToDto(review);
 
-            return Ok(reviewDtos);
+                    // Try to populate username if not already set
+                    if (string.IsNullOrEmpty(dto.Username))
+                    {
+                        try
+                        {
+                            var userInfo = await _userService.GetPublicUserInfoAsync(review.UserId);
+                            if (userInfo != null)
+                            {
+                                dto.Username = userInfo.Username;
+                            }
+                            else
+                            {
+                                dto.Username = "Unknown User";
+                            }
+                        }
+                        catch
+                        {
+                            dto.Username = "Unknown User";
+                        }
+                    }
+
+                    reviewDtos.Add(dto);
+                }
+
+                return Ok(reviewDtos);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving reviews: {ex.Message}");
+                return StatusCode(500, new { Error = $"Failed to retrieve reviews: {ex.Message}" });
+            }
         }
 
         /// <summary>
@@ -75,17 +123,24 @@ namespace CineScope.Server.Controllers
         [Authorize] // Require authentication
         public async Task<ActionResult<List<ReviewDto>>> GetReviewsByUserId(string userId)
         {
-            // Get reviews from service
-            var reviews = await _reviewService.GetReviewsByUserIdAsync(userId);
-
-            // Map to DTOs
-            var reviewDtos = new List<ReviewDto>();
-            foreach (var review in reviews)
+            try
             {
-                reviewDtos.Add(MapToDto(review));
-            }
+                // Get reviews from service
+                var reviews = await _reviewService.GetReviewsByUserIdAsync(userId);
 
-            return Ok(reviewDtos);
+                // Map to DTOs
+                var reviewDtos = new List<ReviewDto>();
+                foreach (var review in reviews)
+                {
+                    reviewDtos.Add(MapToDto(review));
+                }
+
+                return Ok(reviewDtos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Error = $"Failed to retrieve user reviews: {ex.Message}" });
+            }
         }
 
         /// <summary>
@@ -118,37 +173,62 @@ namespace CineScope.Server.Controllers
         [Authorize] // Require authentication
         public async Task<ActionResult<ReviewDto>> CreateReview([FromBody] ReviewDto reviewDto)
         {
-            // Validate content against banned words
-            var contentValidation = await _contentFilterService.ValidateContentAsync(reviewDto.Text);
-
-            // If content is not approved, return bad request
-            if (!contentValidation.IsApproved)
+            try
             {
-                return BadRequest(new
+                // Validate content against banned words
+                var contentValidation = await _contentFilterService.ValidateContentAsync(reviewDto.Text);
+
+                // If content is not approved, return bad request
+                if (!contentValidation.IsApproved)
                 {
-                    Message = "Review contains inappropriate content",
-                    ViolationWords = contentValidation.ViolationWords
-                });
+                    return BadRequest(new
+                    {
+                        Message = "Review contains inappropriate content",
+                        ViolationWords = contentValidation.ViolationWords
+                    });
+                }
+
+                // Ensure movie ID is valid
+                if (!ObjectId.TryParse(reviewDto.MovieId, out _))
+                {
+                    return BadRequest("Invalid movie ID format");
+                }
+
+                // Ensure user ID is valid
+                if (!ObjectId.TryParse(reviewDto.UserId, out _))
+                {
+                    return BadRequest("Invalid user ID format");
+                }
+
+                // Map DTO to model
+                var review = new Review
+                {
+                    MovieId = reviewDto.MovieId,
+                    UserId = reviewDto.UserId,
+                    Rating = reviewDto.Rating,
+                    Text = reviewDto.Text,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                    IsApproved = true,
+                    FlaggedWords = Array.Empty<string>()
+                };
+
+                // Create the review in the database
+                var createdReview = await _reviewService.CreateReviewAsync(review);
+
+                // Update the movie's average rating
+                await _reviewService.UpdateMovieAverageRatingAsync(review.MovieId);
+
+                // Map back to DTO and return
+                var createdDto = MapToDto(createdReview);
+                createdDto.Username = reviewDto.Username; // Preserve username from request
+
+                return CreatedAtAction(nameof(GetReviewById), new { id = createdReview.Id }, createdDto);
             }
-
-            // Map DTO to model
-            var review = new Review
+            catch (Exception ex)
             {
-                MovieId = reviewDto.MovieId,
-                UserId = reviewDto.UserId, // In a real implementation, get from authenticated user
-                Rating = reviewDto.Rating,
-                Text = reviewDto.Text,
-                CreatedAt = System.DateTime.UtcNow
-            };
-
-            // Create the review in the database
-            var createdReview = await _reviewService.CreateReviewAsync(review);
-
-            // Update the movie's average rating
-            await _reviewService.UpdateMovieAverageRatingAsync(review.MovieId);
-
-            // Map back to DTO and return
-            return CreatedAtAction(nameof(GetReviewById), new { id = createdReview.Id }, MapToDto(createdReview));
+                return StatusCode(500, new { Error = $"Failed to create review: {ex.Message}" });
+            }
         }
 
         /// <summary>
@@ -189,6 +269,7 @@ namespace CineScope.Server.Controllers
             // Update properties
             existingReview.Rating = reviewDto.Rating;
             existingReview.Text = reviewDto.Text;
+            existingReview.UpdatedAt = DateTime.UtcNow;
 
             // Perform the update
             var success = await _reviewService.UpdateReviewAsync(id, existingReview);

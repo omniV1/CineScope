@@ -7,6 +7,7 @@ using CineScope.Server.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using System.Linq;
+using MongoDB.Bson;
 
 namespace CineScope.Server.Services
 {
@@ -46,15 +47,43 @@ namespace CineScope.Server.Services
         {
             Console.WriteLine($"Querying database for reviews with movieId: {movieId}");
 
-            // Get the reviews collection
-            var collection = _mongoDbService.GetCollection<Review>(_settings.ReviewsCollectionName);
+            try
+            {
+                // Get the reviews collection
+                var collection = _mongoDbService.GetCollection<Review>(_settings.ReviewsCollectionName);
 
-            // Find all reviews for the specified movie
-            var filter = Builders<Review>.Filter.Eq(r => r.MovieId, movieId);
-            var reviews = await collection.Find(filter).ToListAsync();
+                // Ensure valid ObjectId and create a filter
+                ObjectId objectId;
+                if (ObjectId.TryParse(movieId, out objectId))
+                {
+                    // Create a proper filter definition for ObjectId comparison
+                    // Log all reviews in the collection to debug
+                    var allReviews = await collection.Find(_ => true).Limit(20).ToListAsync();
+                    Console.WriteLine($"Available reviews in database: {allReviews.Count}");
 
-            Console.WriteLine($"Found {reviews.Count} reviews in database");
-            return reviews;
+                    // Use the correct field name from the MongoDB document - "movieId" (camelCase)
+                    var filter = Builders<Review>.Filter.Eq("movieId", objectId);
+
+                    // Log the filter for debugging
+                    Console.WriteLine($"Using filter: {{ movieId: ObjectId('{objectId}') }}");
+
+                    // Find all reviews for the specified movie
+                    var reviews = await collection.Find(filter).ToListAsync();
+
+                    Console.WriteLine($"Found {reviews.Count} reviews in database for movie {movieId}");
+                    return reviews;
+                }
+                else
+                {
+                    Console.WriteLine($"Invalid ObjectId format for movieId: {movieId}");
+                    return new List<Review>();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving reviews: {ex.Message}");
+                return new List<Review>();
+            }
         }
 
         /// <summary>
@@ -64,11 +93,32 @@ namespace CineScope.Server.Services
         /// <returns>A list of reviews by the specified user</returns>
         public async Task<List<Review>> GetReviewsByUserIdAsync(string userId)
         {
-            // Get the reviews collection
-            var collection = _mongoDbService.GetCollection<Review>(_settings.ReviewsCollectionName);
+            try
+            {
+                // Get the reviews collection
+                var collection = _mongoDbService.GetCollection<Review>(_settings.ReviewsCollectionName);
 
-            // Find all reviews by the specified user
-            return await collection.Find(r => r.UserId == userId).ToListAsync();
+                // Convert userId to ObjectId if valid
+                ObjectId userObjectId;
+                if (ObjectId.TryParse(userId, out userObjectId))
+                {
+                    // Create a proper filter definition for ObjectId comparison
+                    var filter = Builders<Review>.Filter.Eq("UserId", userObjectId);
+
+                    // Find all reviews by the specified user
+                    return await collection.Find(filter).ToListAsync();
+                }
+                else
+                {
+                    Console.WriteLine($"Invalid ObjectId format for userId: {userId}");
+                    return new List<Review>();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving user reviews: {ex.Message}");
+                return new List<Review>();
+            }
         }
 
         /// <summary>
@@ -149,8 +199,18 @@ namespace CineScope.Server.Services
                 // Get the reviews collection
                 var reviewsCollection = _mongoDbService.GetCollection<Review>(_settings.ReviewsCollectionName);
 
+                // Ensure valid ObjectId for movieId
+                ObjectId movieObjectId;
+                if (!ObjectId.TryParse(movieId, out movieObjectId))
+                {
+                    return false;
+                }
+
+                // Create proper filter for ObjectId comparison
+                var filter = Builders<Review>.Filter.Eq("MovieId", movieObjectId);
+
                 // Get all reviews for the movie
-                var reviews = await reviewsCollection.Find(r => r.MovieId == movieId).ToListAsync();
+                var reviews = await reviewsCollection.Find(filter).ToListAsync();
 
                 // Calculate average rating (rounded to 1 decimal place)
                 double averageRating = 0;
@@ -173,8 +233,9 @@ namespace CineScope.Server.Services
 
                 return result.ModifiedCount > 0;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"Error updating movie average rating: {ex.Message}");
                 return false;
             }
         }
