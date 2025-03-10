@@ -19,7 +19,7 @@ namespace CineScope.Server
                 // Clear the console and hide the cursor for cleaner animations
                 Console.Clear();
                 Console.CursorVisible = false;
-                
+
                 // Set the color for the CineScope logo
                 Console.ForegroundColor = ConsoleColor.Red;
 
@@ -38,12 +38,12 @@ namespace CineScope.Server
 
                 // Add some spacing before the logo
                 Console.WriteLine();
-                
+
                 // Display the logo with a typewriter effect (but don't clear the screen)
                 foreach (string line in logo)
                 {
                     Console.WriteLine(line);
-                    Thread.Sleep(100); // Pause briefly between lines
+                    Thread.Sleep(50); // Pause briefly between lines
                 }
 
                 // Prepare the title for development team
@@ -52,45 +52,45 @@ namespace CineScope.Server
                 Console.WriteLine(CenterText("DEVELOPMENT TEAM"));
                 Console.WriteLine();
 
-                // Display each developer one at a time, with 10 seconds for each
-                DisplayDeveloperWithTimeout("Owen Lindsey", ConsoleColor.Yellow, GetOwenTag(), 10000);
-                DisplayDeveloperWithTimeout("Andrew Mack", ConsoleColor.Green, GetAndrewTag(), 10000);
-                DisplayDeveloperWithTimeout("Carter Wright", ConsoleColor.DarkYellow, GetCarterTag(), 10000);
-                DisplayDeveloperWithTimeout("Rian Smart", ConsoleColor.Magenta, GetRianTag(), 10000);
+                // Display each developer one at a time, with 6-7 seconds for each (reduced from 10)
+                DisplayDeveloperWithTimeout("Owen Lindsey", ConsoleColor.Yellow, GetOwenTag(), 6500);
+                DisplayDeveloperWithTimeout("Andrew Mack", ConsoleColor.Green, GetAndrewTag(), 6500);
+                DisplayDeveloperWithTimeout("Carter Wright", ConsoleColor.DarkYellow, GetCarterTag(), 6500);
+                DisplayDeveloperWithTimeout("Rian Smart", ConsoleColor.Magenta, GetRianTag(), 6500);
 
                 // Return to main program flow
                 Console.ForegroundColor = ConsoleColor.White;
-                
+
                 // Display the tagline with a typewriter effect
                 string tagline = "FOR MOVIE LOVERS, BY MOVIE LOVERS";
                 Console.WriteLine("\n");
                 Console.WriteLine(CenterText(tagline));
-                
+
                 // Brief pause for effect
                 Thread.Sleep(500);
-                
+
                 // Display the core values with a dramatic reveal
                 string values = "EXPLORE. CONNECT. DISCOVER.";
                 Console.WriteLine();
                 Console.WriteLine(CenterText(values));
-                
+
                 // Add spacing before loading message
                 Console.WriteLine();
                 Console.WriteLine();
-                
+
                 // Show loading message with typewriter effect
                 string loading = "Starting CineScope server...";
                 TypewriterEffect(CenterText(loading), 30);
-                
+
                 // Display loading progress bar animation
                 Console.WriteLine();
                 SimulateLoading();
-                
+
                 // Show version info in gray at the bottom
                 Console.ForegroundColor = ConsoleColor.Gray;
                 Console.WriteLine();
                 Console.WriteLine(CenterText("v1.0.0 | © 2025 Team CineScope"));
-                
+
                 // If waitForKeypress is true, wait for user input before continuing
                 if (waitForKeypress)
                 {
@@ -105,7 +105,7 @@ namespace CineScope.Server
                     // Give user more time to see the animation if not waiting for keypress
                     Thread.Sleep(3000);
                 }
-                
+
                 // Reset console color and cursor visibility before exiting
                 Console.ResetColor();
                 Console.CursorVisible = true;
@@ -119,7 +119,7 @@ namespace CineScope.Server
                 Thread.Sleep(2000); // Brief pause to show the error
             }
         }
-        
+
         /// <summary>
         /// Displays a developer name and tag for a specified duration, then clears it
         /// </summary>
@@ -131,21 +131,21 @@ namespace CineScope.Server
         {
             // Save the current cursor position to return here after clearing
             int startLine = Console.CursorTop;
-            
+
             // Set the developer's color
             Console.ForegroundColor = color;
             Console.WriteLine(CenterText(name));
-            
+
             // Display the developer's tag with animation
             foreach (string line in tag)
             {
                 Console.WriteLine(CenterText(line));
                 Thread.Sleep(50);
             }
-            
+
             // Wait for the specified duration
             Thread.Sleep(durationMs);
-            
+
             // Clear the developer's display by returning to the start position
             // and writing blank lines over the existing content
             Console.SetCursorPosition(0, startLine);
@@ -153,11 +153,11 @@ namespace CineScope.Server
             {
                 Console.WriteLine(new string(' ', Console.WindowWidth - 1));
             }
-            
+
             // Return to the starting cursor position for the next developer
             Console.SetCursorPosition(0, startLine);
         }
-        
+
         /// <summary>
         /// Gets Owen's ASCII art tag
         /// </summary>
@@ -170,7 +170,7 @@ namespace CineScope.Server
                 @" ╚██████╔╝██║╚██╔╝██║██║╚████║██║ ╚████╔╝ "
             };
         }
-        
+
         /// <summary>
         /// Gets Andrew's ASCII art tag
         /// </summary>
@@ -178,14 +178,14 @@ namespace CineScope.Server
         {
             // TODO: Andrew should replace this with his own ASCII art
             return new string[] {
-                @"     ___              __                   ", 
+                @"     ___              __                   ",
                 @"    /   |  ____  ____/ /_______  _      __",
                 @"   / /| | / __ \/ __  / ___/ _ \| | /| / /",
                 @"  / ___ |/ / / / /_/ / /  /  __/| |/ |/ / ",
                 @" /_/  |_/_/ /_/\__,_/_/   \___/ |__/|__/  "
             };
         }
-        
+
         /// <summary>
         /// Gets Carter's ASCII art tag
         /// </summary>
@@ -200,7 +200,7 @@ namespace CineScope.Server
                 @"\____/\__,_/_/   \__/\___/_/     "
             };
         }
-        
+
         /// <summary>
         /// Gets Rian's ASCII art tag
         /// </summary>
@@ -215,7 +215,7 @@ namespace CineScope.Server
                 @"/_/ |_/_/\__,_/_/ /_/ "
             };
         }
-        
+
         /// <summary>
         /// Centers text in the console window
         /// </summary>
@@ -226,7 +226,7 @@ namespace CineScope.Server
             // Calculate padding to center the text and handle potential error cases
             return new string(' ', Math.Max(0, (Console.WindowWidth - text.Length) / 2)) + text;
         }
-        
+
         /// <summary>
         /// Creates a typewriter effect for text
         /// </summary>
@@ -242,7 +242,7 @@ namespace CineScope.Server
             }
             Console.WriteLine();
         }
-        
+
         /// <summary>
         /// Simulates a loading progress bar
         /// </summary>
@@ -250,22 +250,22 @@ namespace CineScope.Server
         {
             // Draw the empty progress bar container
             Console.Write(CenterText("[                    ]"));
-            
+
             // Position cursor at the start of the progress bar
             int cursorLeft = Console.CursorLeft;
             int cursorTop = Console.CursorTop;
             Console.SetCursorPosition(Math.Max(0, cursorLeft - 21), cursorTop);
-            
+
             // Fill the progress bar one block at a time
             for (int i = 0; i < 20; i++)
             {
                 Thread.Sleep(100);
                 Console.Write("█");
             }
-            
+
             Console.WriteLine();
         }
-        
+
         /// <summary>
         /// Draws a curtain opening animation effect
         /// </summary>
@@ -274,23 +274,23 @@ namespace CineScope.Server
             // Get the current console width and define curtain height
             int width = Console.WindowWidth;
             int height = 5;
-            
+
             // Draw initial closed curtain (solid blocks across the width)
             for (int y = 0; y < height; y++)
             {
                 Console.WriteLine(new string('█', width));
             }
-            
-            // Pause for 2 seconds before starting the curtain animation
-            Thread.Sleep(2000);
-            
+
+            // Pause for 1 second before starting the curtain animation (reduced from 2)
+            Thread.Sleep(1000);
+
             // Open the curtain by creating a growing space in the middle
             // Use fewer steps and longer delays to slow down the animation
-            for (int step = 0; step < width / 2; step += 1) // Increment by 1 for smoother movement
+            for (int step = 0; step < width / 2; step += 2) // Increment by 2 for faster movement
             {
                 // Return cursor to the start position
                 Console.SetCursorPosition(0, 0);
-                
+
                 // Draw each line of the curtain
                 for (int y = 0; y < height; y++)
                 {
@@ -298,22 +298,22 @@ namespace CineScope.Server
                     string leftCurtain = new string('█', Math.Max(0, width / 2 - step));
                     string space = new string(' ', Math.Min(width, step * 2));
                     string rightCurtain = new string('█', Math.Max(0, width / 2 - step));
-                    
+
                     // Ensure we don't exceed console width
                     string line = (leftCurtain + space + rightCurtain);
                     if (line.Length > width)
                         line = line.Substring(0, width);
-                        
+
                     Console.WriteLine(line);
                 }
-                
-                // Longer delay between animation frames (150ms instead of 15ms)
-                Thread.Sleep(150);
+
+                // Reduced delay between animation frames (100ms instead of 150ms)
+                Thread.Sleep(100);
             }
-            
-            // Pause for 2 seconds when curtain is fully open
-            Thread.Sleep(2000);
-            
+
+            // Pause for 1 second when curtain is fully open (reduced from 2)
+            Thread.Sleep(1000);
+
             // Do NOT clear the screen after the curtain animation
             // Instead, move the cursor to position after the curtain
             Console.SetCursorPosition(0, height + 1);
