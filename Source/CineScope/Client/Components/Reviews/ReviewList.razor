@@ -1,113 +1,115 @@
 ﻿@using CineScope.Shared.DTOs
+@using CineScope.Client.Components.Reviews
 @using System.Net.Http.Json
 @inject HttpClient Http
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <div class="review-list-section mb-6">
     <MudText Typo="Typo.h5" Class="mb-4">@Title</MudText>
 
     @if (isLoading)
     {
-        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Medium" />
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Medium" />
     }
     else if (Reviews == null || !Reviews.Any())
     {
-        <MudAlert Severity="Severity.Info">@EmptyMessage</MudAlert>
+            <MudAlert Severity="Severity.Info">@EmptyMessage</MudAlert>
     }
     else
     {
-        <!-- Filter and Sort Controls -->
-        <div class="d-flex justify-space-between align-center mb-4 flex-wrap gap-2">
-            <!-- Review Count -->
-            <MudText Typo="Typo.body2">Showing @displayedReviews.Count review@(displayedReviews.Count != 1 ? "s" : "")</MudText>
+            <!-- Filter and Sort Controls -->
+            <div class="d-flex justify-space-between align-center mb-4 flex-wrap gap-2">
+                <!-- Review Count -->
+                <MudText Typo="Typo.body2">Showing @displayedReviews.Count review@(displayedReviews.Count != 1 ? "s" : "")</MudText>
 
-            <div class="d-flex gap-2">
-                <!-- Filter Button -->
-                <MudMenu Icon="@Icons.Material.Filled.FilterList" Label="Filter" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
-                    <MudMenuItem OnClick="@(() => FilterReviews("all"))">All Ratings</MudMenuItem>
-                    <MudMenuItem OnClick="@(() => FilterReviews("positive"))">Positive (4-5 ★)</MudMenuItem>
-                    <MudMenuItem OnClick="@(() => FilterReviews("neutral"))">Neutral (3 ★)</MudMenuItem>
-                    <MudMenuItem OnClick="@(() => FilterReviews("negative"))">Negative (1-2 ★)</MudMenuItem>
-                </MudMenu>
+                <div class="d-flex gap-2">
+                    <!-- Filter Button -->
+                    <MudMenu Icon="@Icons.Material.Filled.FilterList" Label="Filter" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                        <MudMenuItem OnClick="@(() => FilterReviews("all"))">All Ratings</MudMenuItem>
+                        <MudMenuItem OnClick="@(() => FilterReviews("positive"))">Positive (4-5 ★)</MudMenuItem>
+                        <MudMenuItem OnClick="@(() => FilterReviews("neutral"))">Neutral (3 ★)</MudMenuItem>
+                        <MudMenuItem OnClick="@(() => FilterReviews("negative"))">Negative (1-2 ★)</MudMenuItem>
+                    </MudMenu>
 
-                <!-- Sort Button -->
-                <MudMenu Icon="@Icons.Material.Filled.Sort" Label="Sort" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
-                    <MudMenuItem OnClick="@(() => SortReviews("newest"))">Newest First</MudMenuItem>
-                    <MudMenuItem OnClick="@(() => SortReviews("oldest"))">Oldest First</MudMenuItem>
-                    <MudMenuItem OnClick="@(() => SortReviews("highest"))">Highest Rated</MudMenuItem>
-                    <MudMenuItem OnClick="@(() => SortReviews("lowest"))">Lowest Rated</MudMenuItem>
-                </MudMenu>
+                    <!-- Sort Button -->
+                    <MudMenu Icon="@Icons.Material.Filled.Sort" Label="Sort" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                        <MudMenuItem OnClick="@(() => SortReviews("newest"))">Newest First</MudMenuItem>
+                        <MudMenuItem OnClick="@(() => SortReviews("oldest"))">Oldest First</MudMenuItem>
+                        <MudMenuItem OnClick="@(() => SortReviews("highest"))">Highest Rated</MudMenuItem>
+                        <MudMenuItem OnClick="@(() => SortReviews("lowest"))">Lowest Rated</MudMenuItem>
+                    </MudMenu>
+                </div>
             </div>
-        </div>
 
-        <!-- Active Filters -->
+            <!-- Active Filters -->
         @if (currentFilter != "all" || currentSort != "newest")
         {
-            <MudPaper Elevation="0" Class="pa-2 mb-4" Style="background-color: var(--mud-palette-background-grey)">
-                <div class="d-flex flex-wrap gap-2 align-center">
-                    <MudText Typo="Typo.caption">Active:</MudText>
+                    <MudPaper Elevation="0" Class="pa-2 mb-4" Style="background-color: var(--mud-palette-background-grey)">
+                        <div class="d-flex flex-wrap gap-2 align-center">
+                            <MudText Typo="Typo.caption">Active:</MudText>
 
                     @if (currentFilter != "all")
                     {
-                        <MudChip Size="Size.Small" Color="Color.Primary" Variant="Variant.Outlined"
-                                 OnClose="@(() => FilterReviews("all"))">
+                                    <MudChip Size="Size.Small" Color="Color.Primary" Variant="Variant.Outlined"
+                                             OnClose="@(() => FilterReviews("all"))">
                             @GetFilterName(currentFilter)
-                        </MudChip>
+                                    </MudChip>
                     }
 
                     @if (currentSort != "newest")
                     {
-                        <MudChip Size="Size.Small" Color="Color.Secondary" Variant="Variant.Outlined"
-                                 OnClose="@(() => SortReviews("newest"))">
+                                    <MudChip Size="Size.Small" Color="Color.Secondary" Variant="Variant.Outlined"
+                                             OnClose="@(() => SortReviews("newest"))">
                             @GetSortName(currentSort)
-                        </MudChip>
+                                    </MudChip>
                     }
 
-                    <MudButton Variant="Variant.Text" Color="Color.Error" Size="Size.Small"
-                               OnClick="@ResetFilters">Clear All</MudButton>
-                </div>
-            </MudPaper>
+                            <MudButton Variant="Variant.Text" Color="Color.Error" Size="Size.Small"
+                                       OnClick="@ResetFilters">Clear All</MudButton>
+                        </div>
+                    </MudPaper>
         }
 
-        <!-- Review List -->
-        <MudList Clickable="false" Dense="false">
+            <!-- Review List -->
+            <MudList Clickable="false" Dense="false">
             @foreach (var review in displayedReviews)
             {
-                <MudListItem Class="pa-0 mb-4">
-                    <MudCard Elevation="2" Class="review-card">
-                        <MudCardContent>
-                            <!-- Review Header -->
-                            <div class="d-flex justify-space-between align-center mb-2">
-                                <MudText Typo="Typo.h6">@review.Username</MudText>
-                                <MudRating ReadOnly="true" Value="@review.Rating" />
-                            </div>
+                        <MudListItem Class="pa-0 mb-4">
+                            <MudCard Elevation="2" Class="review-card">
+                                <MudCardContent>
+                                    <!-- Review Header -->
+                                    <div class="d-flex justify-space-between align-center mb-2">
+                                        <MudText Typo="Typo.h6">@review.Username</MudText>
+                                        <MudRating ReadOnly="true" Value="@review.Rating" />
+                                    </div>
 
-                            <!-- Review Date -->
-                            <MudText Typo="Typo.caption" Class="mb-2">
+                                    <!-- Review Date -->
+                                    <MudText Typo="Typo.caption" Class="mb-2">
                                 @review.CreatedAt.ToString("MMMM dd, yyyy")
-                            </MudText>
+                                    </MudText>
 
-                            <!-- Review Text -->
-                            <MudText Typo="Typo.body1">@review.Text</MudText>
-                        </MudCardContent>
+                                    <!-- Review Text -->
+                                    <MudText Typo="Typo.body1">@review.Text</MudText>
+                                </MudCardContent>
 
                         @if (ShowActions && review.UserId == CurrentUserId)
                         {
-                            <MudCardActions>
-                                <MudButton Variant="Variant.Text" Color="Color.Primary"
-                                           OnClick="@(() => OnEditReview.InvokeAsync(review))">
-                                    Edit
-                                </MudButton>
-                                <MudButton Variant="Variant.Text" Color="Color.Error"
-                                           OnClick="@(() => OnReviewDeleted.InvokeAsync(review.Id))">
-                                    Delete
-                                </MudButton>
-                            </MudCardActions>
+                                        <MudCardActions>
+                                            <MudButton Variant="Variant.Text" Color="Color.Primary"
+                                                       OnClick="@(() => OpenEditDialog(review))">
+                                                Edit
+                                            </MudButton>
+                                            <MudButton Variant="Variant.Text" Color="Color.Error"
+                                                       OnClick="@(() => DeleteReviewAsync(review.Id))">
+                                                Delete
+                                            </MudButton>
+                                        </MudCardActions>
                         }
-                    </MudCard>
-                </MudListItem>
+                            </MudCard>
+                        </MudListItem>
             }
-        </MudList>
+            </MudList>
     }
 </div>
 
@@ -161,6 +163,18 @@
     public EventCallback<string> OnReviewDeleted { get; set; }
 
     /// <summary>
+    /// Event called when a review is updated
+    /// </summary>
+    [Parameter]
+    public EventCallback<ReviewDto> OnReviewUpdated { get; set; }
+
+    /// <summary>
+    /// Dictionary mapping movie IDs to their titles for display in edit dialog
+    /// </summary>
+    [Parameter]
+    public Dictionary<string, string> MovieTitles { get; set; } = new();
+
+    /// <summary>
     /// The filtered and sorted list of reviews to display.
     /// </summary>
     private List<ReviewDto> displayedReviews = new();
@@ -187,6 +201,111 @@
     {
         // Apply default filter and sort when the reviews list changes
         ApplyFilterAndSort();
+    }
+
+    /// <summary>
+    /// Opens the edit dialog for a review
+    /// </summary>
+    /// <param name="review">The review to edit</param>
+    private async Task OpenEditDialog(ReviewDto review)
+    {
+        // Get the movie title if available
+        string movieTitle = "this movie";
+        if (MovieTitles.ContainsKey(review.MovieId))
+        {
+            movieTitle = MovieTitles[review.MovieId];
+        }
+
+        var parameters = new DialogParameters
+            {
+                ["Review"] = review,
+                ["MovieTitle"] = movieTitle
+            };
+
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true
+            };
+
+        var dialog = await DialogService.ShowAsync<EditReview>("Edit Review", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            // If dialog was not cancelled, result.Data contains the updated review
+            var updatedReview = (ReviewDto)result.Data;
+
+            // Update the review in the local list
+            var index = Reviews.FindIndex(r => r.Id == updatedReview.Id);
+            if (index >= 0)
+            {
+                Reviews[index] = updatedReview;
+
+                // Re-apply filters and sort
+                ApplyFilterAndSort();
+
+                // Notify parent component
+                await OnReviewUpdated.InvokeAsync(updatedReview);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Deletes a review after confirmation
+    /// </summary>
+    /// <param name="reviewId">The ID of the review to delete</param>
+    private async Task DeleteReviewAsync(string reviewId)
+    {
+        // Show confirmation dialog
+        bool? result = await DialogService.ShowMessageBox(
+            "Confirm Deletion",
+            "Are you sure you want to delete this review? This action cannot be undone.",
+            yesText: "Delete", cancelText: "Cancel"
+        );
+
+        if (result == true)
+        {
+            try
+            {
+                isLoading = true;
+
+                // Call API to delete the review
+                var response = await Http.DeleteAsync($"api/Review/{reviewId}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Remove from local list
+                    var reviewToRemove = Reviews.FirstOrDefault(r => r.Id == reviewId);
+                    if (reviewToRemove != null)
+                    {
+                        Reviews.Remove(reviewToRemove);
+
+                        // Re-apply filters and sort
+                        ApplyFilterAndSort();
+
+                        // Notify parent component
+                        await OnReviewDeleted.InvokeAsync(reviewId);
+
+                        Snackbar.Add("Review deleted successfully", Severity.Success);
+                    }
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    Snackbar.Add($"Failed to delete review: {errorContent}", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+            }
+            finally
+            {
+                isLoading = false;
+            }
+        }
     }
 
     /// <summary>

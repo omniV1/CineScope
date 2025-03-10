@@ -129,13 +129,14 @@ else
     }
     else
     {
-        <AuthorizeView>
+                <AuthorizeView>
             <Authorized>
                 <ReviewList Reviews="@reviews" MovieId="@MovieId"
                             Title="Reviews"
                             ShowActions="true"
                             CurrentUserId="@currentUserId"
-                            OnEditReview="HandleEditReview"
+                            MovieTitles="@movieTitles"
+                            OnReviewUpdated="HandleReviewUpdated"
                             OnReviewDeleted="HandleReviewDeleted" />
             </Authorized>
             <NotAuthorized>
@@ -174,6 +175,7 @@ else
         currentUserId = user?.Id ?? string.Empty;
 
         await LoadMovie();
+         LoadMovieTitles();
         await LoadReviews();
 
         // Check if there's a query parameter to show the review form
@@ -192,6 +194,8 @@ else
             }
         }
     }
+
+
 
     /// <summary>
     /// Loads movie details from the API
@@ -361,15 +365,6 @@ else
         await LoadMovie();
     }
 
-    /// <summary>
-    /// Handles the event when a review is edited
-    /// </summary>
-    private void HandleEditReview(ReviewDto review)
-    {
-        // In a real app, this would open an edit form or dialog
-        // For now, we'll just show a notification
-        Snackbar.Add("Edit review functionality would be implemented here", Severity.Info);
-    }
 
     /// <summary>
     /// Handles the event when a review is deleted
@@ -379,4 +374,33 @@ else
         // Reload the movie to update the average rating
         await LoadMovie();
     }
+
+    /// <summary>
+    /// Dictionary to store movie titles by ID for use in dialogs
+    /// </summary>
+    private Dictionary<string, string> movieTitles = new();
+
+    /// <summary>
+    /// Loads movie titles for the review edit dialog
+    /// </summary>
+    private void LoadMovieTitles()
+    {
+        if (movie != null)
+        {
+            movieTitles[movie.Id] = movie.Title;
+        }
+    }
+
+    /// <summary>
+    /// Handles the event when a review is edited and updated
+    /// </summary>
+    private async Task HandleReviewUpdated(ReviewDto updatedReview)
+    {
+        // Reload all reviews to ensure we have the latest data
+        await LoadReviews();
+
+        // Also reload the movie to update the average rating
+        await LoadMovie();
+    }
+
 }

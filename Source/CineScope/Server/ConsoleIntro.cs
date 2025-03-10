@@ -123,8 +123,7 @@ namespace CineScope.Server
                 Console.ResetColor();
                 Console.CursorVisible = true;
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex)            {
                 // In case of any errors, make sure we don't break application startup
                 Console.ResetColor();
                 Console.CursorVisible = true;
