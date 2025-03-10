@@ -1,6 +1,9 @@
 using CineScope.Server.Interfaces;
 using CineScope.Server.Services;
 using CineScope.Server.Data;
+using CineScope.Server;
+// Show the ASCII art intro at application startup
+ConsoleIntro.ShowIntro();
 
 var builder = WebApplication.CreateBuilder(args);
 
