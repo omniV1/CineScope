@@ -8,7 +8,11 @@ ConsoleIntro.ShowIntro();
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+// Add this line to load user secrets in Development environment
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddUserSecrets<Program>();
+}
 /// <summary>
 /// Configure MVC controllers and Razor Pages for the application.
 /// </summary>
@@ -50,6 +54,7 @@ if (app.Environment.IsDevelopment())
     /// when running in development mode.
     /// </summary>
     app.UseWebAssemblyDebugging();
+
 }
 else
 {

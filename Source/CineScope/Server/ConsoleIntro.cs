@@ -26,7 +26,8 @@ namespace CineScope.Server
                 // Start with a theater curtain opening animation for dramatic effect
                 DrawCurtainAnimation();
 
-                // The CineScope logo - DO NOT MODIFY THIS SECTION
+
+                // The CineScope logo
                 string[] logo = {
 @"     ██████╗██╗███╗   ██╗███████╗███████╗ ██████╗ ██████╗ ██████╗ ███████╗",
 @"    ██╔════╝██║████╗  ██║██╔════╝██╔════╝██╔════╝██╔═══██╗██╔══██╗██╔════╝",
@@ -34,17 +35,29 @@ namespace CineScope.Server
 @"    ██║     ██║██║╚██╗██║██╔══╝  ╚════██║██║     ██║   ██║██╔═══╝ ██╔══╝  ",
 @"    ╚██████╗██║██║ ╚████║███████╗███████║╚██████╗╚██████╔╝██║     ███████╗",
 @"     ╚═════╝╚═╝╚═╝  ╚═══╝╚══════╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝     ╚══════╝"
-                };
+};
 
                 // Add some spacing before the logo
                 Console.WriteLine();
 
+                // Determine the length of the longest line in the logo
+                int maxLength = 0;
+                foreach (string line in logo)
+                {
+                    maxLength = Math.Max(maxLength, line.Length);
+                }
+
+                // Calculate the padding needed to center the logo
+                int padding = Math.Max(0, (Console.WindowWidth - maxLength) / 2);
+                string paddingStr = new string(' ', padding);
+
                 // Display the logo with a typewriter effect (but don't clear the screen)
                 foreach (string line in logo)
                 {
-                    Console.WriteLine(line);
+                    Console.WriteLine(paddingStr + line);
                     Thread.Sleep(50); // Pause briefly between lines
                 }
+
 
                 // Prepare the title for development team
                 Console.WriteLine("\n");
@@ -282,7 +295,7 @@ namespace CineScope.Server
             }
 
             // Pause for 1 second before starting the curtain animation (reduced from 2)
-            Thread.Sleep(1000);
+            Thread.Sleep(500);
 
             // Open the curtain by creating a growing space in the middle
             // Use fewer steps and longer delays to slow down the animation
