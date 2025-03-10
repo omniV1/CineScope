@@ -53,10 +53,10 @@ namespace CineScope.Server
                 Console.WriteLine();
 
                 // Display each developer one at a time, with 6-7 seconds for each (reduced from 10)
-                DisplayDeveloperWithTimeout("Owen Lindsey", ConsoleColor.Yellow, GetOwenTag(), 6500);
-                DisplayDeveloperWithTimeout("Andrew Mack", ConsoleColor.Green, GetAndrewTag(), 6500);
-                DisplayDeveloperWithTimeout("Carter Wright", ConsoleColor.DarkYellow, GetCarterTag(), 6500);
-                DisplayDeveloperWithTimeout("Rian Smart", ConsoleColor.Magenta, GetRianTag(), 6500);
+                DisplayDeveloperWithTimeout("Owen Lindsey", ConsoleColor.Yellow, GetOwenTag(), 1500);
+                DisplayDeveloperWithTimeout("Andrew Mack", ConsoleColor.Green, GetAndrewTag(), 1500);
+                DisplayDeveloperWithTimeout("Carter Wright", ConsoleColor.DarkYellow, GetCarterTag(), 1500);
+                DisplayDeveloperWithTimeout("Rian Smart", ConsoleColor.Magenta, GetRianTag(), 1500);
 
                 // Return to main program flow
                 Console.ForegroundColor = ConsoleColor.White;
