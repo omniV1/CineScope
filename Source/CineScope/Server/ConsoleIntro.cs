@@ -46,108 +46,17 @@ namespace CineScope.Server
                     Thread.Sleep(100); // Pause briefly between lines
                 }
 
-                // Display team members with their individual ASCII art tags
+                // Prepare the title for development team
                 Console.WriteLine("\n");
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine(CenterText("DEVELOPMENT TEAM"));
                 Console.WriteLine();
 
-                // -------------------------------------------------------------------------
-                // OWEN LINDSEY'S ASCII ART TAG
-                // -------------------------------------------------------------------------
-                // Set pastel yellow color (the closest we can get in console is Yellow)
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine(CenterText("Owen Lindsey"));
-                
-                // Owen's ASCII art tag - OmniV (compact version, around 50% smaller than previous)
-                string[] owenTag = {
-@" ██████╗ ███╗   ███╗███╗   ██╗██╗██╗   ██╗",
-@" ██╔══██╗████╗ ████║████╗  ██║██║██║   ██║",
-@" ██║  ██║██╔████╔██║██╔██╗ ██║██║╚██╗ ██╔╝",
-@" ╚██████╔╝██║╚██╔╝██║██║╚████║██║ ╚████╔╝ "
-                };
-
-                // Display Owen's tag with a subtle animation
-                foreach (string line in owenTag)
-                {
-                    Console.WriteLine(CenterText(line));
-                    Thread.Sleep(50); // Slow down a bit to match the blocky style
-                }
-                
-                // -------------------------------------------------------------------------
-                // ANDREW MACK'S ASCII ART TAG
-                // -------------------------------------------------------------------------
-                // This section is reserved for Andrew to add his own ASCII art
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("\n" + CenterText("Andrew Mack"));
-                
-                /* 
-                // Andrew's ASCII art tag - ADD YOUR ASCII ART HERE
-                // Uncomment the block below and replace with your own ASCII art
-                string[] andrewTag = {
-                    @"",
-                    @"",
-                    @""
-                };
-
-                foreach (string line in andrewTag)
-                {
-                    Console.WriteLine(CenterText(line));
-                    Thread.Sleep(30);
-                }
-                */
-                // Placeholder until Andrew adds his ASCII art
-                Console.WriteLine(CenterText("< Developer Signature >"));
-                
-                // -------------------------------------------------------------------------
-                // CARTER WRIGHT'S ASCII ART TAG
-                // -------------------------------------------------------------------------
-                // This section is reserved for Carter to add his own ASCII art
-                Console.ForegroundColor = ConsoleColor.DarkYellow; // Different yellow shade
-                Console.WriteLine("\n" + CenterText("Carter Wright"));
-                
-                /* 
-                // Carter's ASCII art tag - ADD YOUR ASCII ART HERE
-                // Uncomment the block below and replace with your own ASCII art
-                string[] carterTag = {
-                    @"",
-                    @"",
-                    @""
-                };
-
-                foreach (string line in carterTag)
-                {
-                    Console.WriteLine(CenterText(line));
-                    Thread.Sleep(30);
-                }
-                */
-                // Placeholder until Carter adds his ASCII art
-                Console.WriteLine(CenterText("< Developer Signature >"));
-                
-                // -------------------------------------------------------------------------
-                // RIAN SMART'S ASCII ART TAG
-                // -------------------------------------------------------------------------
-                // This section is reserved for Rian to add his own ASCII art
-                Console.ForegroundColor = ConsoleColor.Magenta;
-                Console.WriteLine("\n" + CenterText("Rian Smart"));
-                
-                /* 
-                // Rian's ASCII art tag - ADD YOUR ASCII ART HERE
-                // Uncomment the block below and replace with your own ASCII art
-                string[] rianTag = {
-                    @"",
-                    @"",
-                    @""
-                };
-
-                foreach (string line in rianTag)
-                {
-                    Console.WriteLine(CenterText(line));
-                    Thread.Sleep(30);
-                }
-                */
-                // Placeholder until Rian adds his ASCII art
-                Console.WriteLine(CenterText("< Developer Signature >"));
+                // Display each developer one at a time, with 10 seconds for each
+                DisplayDeveloperWithTimeout("Owen Lindsey", ConsoleColor.Yellow, GetOwenTag(), 10000);
+                DisplayDeveloperWithTimeout("Andrew Mack", ConsoleColor.Green, GetAndrewTag(), 10000);
+                DisplayDeveloperWithTimeout("Carter Wright", ConsoleColor.DarkYellow, GetCarterTag(), 10000);
+                DisplayDeveloperWithTimeout("Rian Smart", ConsoleColor.Magenta, GetRianTag(), 10000);
 
                 // Return to main program flow
                 Console.ForegroundColor = ConsoleColor.White;
@@ -209,6 +118,102 @@ namespace CineScope.Server
                 Console.WriteLine($"Error displaying intro: {ex.Message}");
                 Thread.Sleep(2000); // Brief pause to show the error
             }
+        }
+        
+        /// <summary>
+        /// Displays a developer name and tag for a specified duration, then clears it
+        /// </summary>
+        /// <param name="name">Developer name</param>
+        /// <param name="color">Color to use for the developer's display</param>
+        /// <param name="tag">ASCII art tag lines</param>
+        /// <param name="durationMs">How long to display in milliseconds</param>
+        private static void DisplayDeveloperWithTimeout(string name, ConsoleColor color, string[] tag, int durationMs)
+        {
+            // Save the current cursor position to return here after clearing
+            int startLine = Console.CursorTop;
+            
+            // Set the developer's color
+            Console.ForegroundColor = color;
+            Console.WriteLine(CenterText(name));
+            
+            // Display the developer's tag with animation
+            foreach (string line in tag)
+            {
+                Console.WriteLine(CenterText(line));
+                Thread.Sleep(50);
+            }
+            
+            // Wait for the specified duration
+            Thread.Sleep(durationMs);
+            
+            // Clear the developer's display by returning to the start position
+            // and writing blank lines over the existing content
+            Console.SetCursorPosition(0, startLine);
+            for (int i = 0; i < tag.Length + 1; i++) // +1 for the name line
+            {
+                Console.WriteLine(new string(' ', Console.WindowWidth - 1));
+            }
+            
+            // Return to the starting cursor position for the next developer
+            Console.SetCursorPosition(0, startLine);
+        }
+        
+        /// <summary>
+        /// Gets Owen's ASCII art tag
+        /// </summary>
+        private static string[] GetOwenTag()
+        {
+            return new string[] {
+                @" ██████╗ ███╗   ███╗███╗   ██╗██╗██╗   ██╗",
+                @" ██╔══██╗████╗ ████║████╗  ██║██║██║   ██║",
+                @" ██║  ██║██╔████╔██║██╔██╗ ██║██║╚██╗ ██╔╝",
+                @" ╚██████╔╝██║╚██╔╝██║██║╚████║██║ ╚████╔╝ "
+            };
+        }
+        
+        /// <summary>
+        /// Gets Andrew's ASCII art tag
+        /// </summary>
+        private static string[] GetAndrewTag()
+        {
+            // TODO: Andrew should replace this with his own ASCII art
+            return new string[] {
+                @"     ___              __                   ", 
+                @"    /   |  ____  ____/ /_______  _      __",
+                @"   / /| | / __ \/ __  / ___/ _ \| | /| / /",
+                @"  / ___ |/ / / / /_/ / /  /  __/| |/ |/ / ",
+                @" /_/  |_/_/ /_/\__,_/_/   \___/ |__/|__/  "
+            };
+        }
+        
+        /// <summary>
+        /// Gets Carter's ASCII art tag
+        /// </summary>
+        private static string[] GetCarterTag()
+        {
+            // TODO: Carter should replace this with his own ASCII art
+            return new string[] {
+                @"   ______           __            ",
+                @"  / ____/___ ______/ /____  _____",
+                @" / /   / __ `/ ___/ __/ _ \/ ___/",
+                @"/ /___/ /_/ / /  / /_/  __/ /    ",
+                @"\____/\__,_/_/   \__/\___/_/     "
+            };
+        }
+        
+        /// <summary>
+        /// Gets Rian's ASCII art tag
+        /// </summary>
+        private static string[] GetRianTag()
+        {
+            // TODO: Rian should replace this with his own ASCII art
+            return new string[] {
+                @"    ____  _           ",
+                @"   / __ \(_)___ _____ ",
+                @"  / /_/ / / __ `/ __ \",
+                @" / _, _/ / /_/ / / / /",
+                @"/_/ |_/_/\__,_/_/ /_/ "
+            };
         }
         
         /// <summary>
