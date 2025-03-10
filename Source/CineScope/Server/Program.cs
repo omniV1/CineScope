@@ -2,10 +2,25 @@ using CineScope.Server.Interfaces;
 using CineScope.Server.Services;
 using CineScope.Server.Data;
 using CineScope.Server;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 // Show the ASCII art intro at application startup
 ConsoleIntro.ShowIntro();
 
+// Configure MongoDB serialization settings for better compatibility
+ConfigureMongoDb();
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Enhanced logging for troubleshooting
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
 // Add services to the container.
 // Add this line to load user secrets in Development environment
@@ -13,6 +28,7 @@ if (builder.Environment.IsDevelopment())
 {
     builder.Configuration.AddUserSecrets<Program>();
 }
+
 /// <summary>
 /// Configure MVC controllers and Razor Pages for the application.
 /// </summary>
@@ -20,11 +36,52 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 /// <summary>
+/// Configure CORS policy for development
+/// </summary>
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
+/// <summary>
 /// Configure MongoDB connection settings from appsettings.json.
 /// Bind the MongoDbSettings section to the MongoDbSettings class.
 /// </summary>
 builder.Services.Configure<MongoDbSettings>(
     builder.Configuration.GetSection(nameof(MongoDbSettings)));
+
+/// <summary>
+/// Configure JWT authentication
+/// </summary>
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Secret"]))
+    };
+
+    // For development purposes only - don't require HTTPS
+    if (builder.Environment.IsDevelopment())
+    {
+        options.RequireHttpsMetadata = false;
+    }
+});
 
 /// <summary>
 /// Register MongoDB service as a singleton to maintain the connection
@@ -55,6 +112,11 @@ if (app.Environment.IsDevelopment())
     /// </summary>
     app.UseWebAssemblyDebugging();
 
+    // Use CORS in development
+    app.UseCors("AllowAll");
+
+    // Show detailed exceptions
+    app.UseDeveloperExceptionPage();
 }
 else
 {
@@ -92,6 +154,13 @@ app.UseStaticFiles();
 app.UseRouting();
 
 /// <summary>
+/// Configure authentication and authorization middleware.
+/// Must be after UseRouting and before UseEndpoints/MapControllers.
+/// </summary>
+app.UseAuthentication();
+app.UseAuthorization();
+
+/// <summary>
 /// Map Razor Pages routes for server-side pages.
 /// </summary>
 app.MapRazorPages();
@@ -106,6 +175,20 @@ app.MapControllers();
 /// This is essential for client-side routing in Blazor WebAssembly.
 /// </summary>
 app.MapFallbackToFile("index.html");
+
+/// <summary>
+/// Configure MongoDB serialization
+/// </summary>
+void ConfigureMongoDb()
+{
+    // Register ObjectId serializer to handle string to ObjectId conversion
+    BsonSerializer.RegisterSerializer(new ObjectIdSerializer());
+
+    // Note: MongoDB client logging will be configured in the MongoDbService
+    // when creating the client instance
+
+    Console.WriteLine("MongoDB serialization configured successfully");
+}
 
 /// <summary>
 /// Start the application.
