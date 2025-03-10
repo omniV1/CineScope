@@ -1,4 +1,4 @@
-# SELF-SCAN FUNCTIONAL SPEC
+# Version Description Document
 
 Version Description Document for CineScope Movie Review Platform
 
@@ -6,7 +6,7 @@ Owen Lindsey, Andrew Mack, Carter Wright, Rian Smart
 
 Grand Canyon University: CST-326
 
-March 3, 2025
+March 9, 2025
 
 
 # Test Procedures Document
@@ -37,6 +37,12 @@ March 3, 2025
 [Jira Backlog](https://cinescopedev.atlassian.net/jira/software/projects/SCRUM/boards/1/backlog?atlOrigin=eyJpIjoiM2MxNTc1MmE1OTRmNDk4MmI4M2JkY2U2NmE5MmUwYWIiLCJwIjoiaiJ9)
 
 [Source code](https://github.com/omniV1/CineScope/tree/main/Source)
+
+[Unit Test code](https://github.com/omniV1/CineScope/tree/main/Source/CineScope/CineScope.Tests.Unit)
+
+[Integration Test code](https://github.com/omniV1/CineScope/tree/main/Source/CineScope/CineScope.Tests.Integration)
+
+[MongoDb](https://cloud.mongodb.com/v2/6553d33fa0144c49a3e558f3#/metrics/replicaSet/67801cb75c168515713678b9/explorer/CineScopeDb)
 
 ## I. Introduction
 
@@ -126,7 +132,7 @@ The following table outlines the key functional requirements being tested:
    | 1 | Click on "Categories" dropdown | Menu expands with genre options |
    | 2 | Select a specific genre (e.g., "Action") | Movies filtered by selected genre |
    | 3 | Click on "Filters" button | Filter panel opens |
-   | 4 | Set rating filter to "4+ stars" | Filter applied |
+   | 4 | Set rating filter to "Pulp" | Filter applied |
    | 5 | Click "Apply" button | Results updated with both filters |
 
 2. [Pass/Fail](#passfail)
