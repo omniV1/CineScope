@@ -8,8 +8,29 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager NavigationManager
 @inject AuthService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
 
 <PageTitle>@(movie?.Title ?? "Movie Details") - CineScope</PageTitle>
+
+<!-- Authentication Debug Panel -->
+<AuthorizeView>
+    <Authorized>
+        <MudAlert Severity="Severity.Info" Class="mb-4">
+            <MudText>Authentication Status: <strong>Logged in as @context.User.Identity.Name</strong></MudText>
+            <MudText>User ID: @currentUserId</MudText>
+            <MudText>Claims: @string.Join(", ", context.User.Claims.Select(c => $"{c.Type}={c.Value}"))</MudText>
+        </MudAlert>
+    </Authorized>
+    <NotAuthorized>
+        <MudAlert Severity="Severity.Warning" Class="mb-4">
+            <MudText>Authentication Status: <strong>Not logged in</strong></MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                       OnClick="@(() => NavigationManager.NavigateTo($"/login?returnUrl={Uri.EscapeDataString(NavigationManager.Uri)}"))">
+                Log In Now
+            </MudButton>
+        </MudAlert>
+    </NotAuthorized>
+</AuthorizeView>
 
 @if (isLoading)
 {
@@ -28,7 +49,7 @@ else if (movie == null)
 }
 else
 {
-    <!-- Movie Details Section -->
+    <!-- Movie Details Section - no changes needed here -->
     <MudGrid>
         <!-- Movie Poster -->
         <MudItem xs="12" sm="4" md="3">
@@ -49,7 +70,7 @@ else
                     </div>
 
                     <div class="d-flex align-center">
-                        <MudRating ReadOnly="true" Value="@((int)Math.Round(movie.AverageRating))" Size="Size.Large" />
+                        <MudRating ReadOnly="true" SelectedValue="@((int)Math.Round(movie.AverageRating))" Color="Color.Primary" />
                         <MudText Typo="Typo.h5" Class="ml-2">@movie.AverageRating.ToString("0.0")</MudText>
                     </div>
                 </div>
@@ -78,7 +99,7 @@ else
                     }
                 </MudGrid>
 
-                <!-- Action Buttons -->
+                <!-- Action Buttons - Modified to include direct auth check for debugging -->
                 <div class="d-flex gap-3 mt-6">
                     <AuthorizeView>
                         <Authorized>
@@ -107,7 +128,7 @@ else
         </MudItem>
     </MudGrid>
 
-    <!-- Review Form Section (Conditionally Displayed) -->
+    <!-- Review Form Section - Modified to show auth status debug info -->
     <AuthorizeView>
         <Authorized>
             @if (showReviewForm)
@@ -116,6 +137,12 @@ else
                 <CreateReview MovieId="@MovieId" OnReviewSubmitted="HandleReviewSubmitted" CurrentUserId="@currentUserId" />
             }
         </Authorized>
+        <NotAuthorized>
+            <MudAlert Severity="Severity.Warning" Class="my-4">
+                Auth debug: User appears not authenticated to post reviews.
+                CurrentUserId: @currentUserId
+            </MudAlert>
+        </NotAuthorized>
     </AuthorizeView>
 
     <!-- Reviews Section -->
@@ -150,14 +177,13 @@ else
 }
 
 @code {
-    /// <summary>
-    /// The ID of the movie to display.
-    /// Provided through the route parameter.
-    /// </summary>
+    // Add AuthStateProvider so we can diagnose auth issues
+    [CascadingParameter] private Task<AuthenticationState> authStateTask { get; set; }
+
+    // The rest of your parameters and variables remain the same
     [Parameter]
     public string MovieId { get; set; } = string.Empty;
 
-    // State variables
     private MovieDto movie;
     private List<ReviewDto> reviews = new();
     private bool isLoading = true;
@@ -171,9 +197,38 @@ else
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        // Get the current user ID
-        var user = await AuthService.GetCurrentUser();
-        currentUserId = user?.Id ?? string.Empty;
+        // Enhanced authentication debugging
+        try
+        {
+            Console.WriteLine("Checking authentication state...");
+
+            // Get authentication state for debugging
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            Console.WriteLine($"Is authenticated: {authState.User.Identity.IsAuthenticated}");
+            if (authState.User.Identity.IsAuthenticated)
+            {
+                Console.WriteLine($"Username: {authState.User.Identity.Name}");
+                Console.WriteLine($"Claims: {string.Join(", ", authState.User.Claims.Select(c => $"{c.Type}={c.Value}"))}");
+            }
+
+            // Get the current user ID
+            var user = await AuthService.GetCurrentUser();
+            currentUserId = user?.Id ?? string.Empty;
+            Console.WriteLine($"Current user ID from AuthService: {currentUserId}");
+
+            // Check if token is in headers
+            var hasAuthHeader = Http.DefaultRequestHeaders.Authorization != null;
+            Console.WriteLine($"Has Authorization header: {hasAuthHeader}");
+            if (hasAuthHeader)
+            {
+                Console.WriteLine($"Auth header scheme: {Http.DefaultRequestHeaders.Authorization.Scheme}");
+                Console.WriteLine($"Auth header length: {Http.DefaultRequestHeaders.Authorization.Parameter?.Length ?? 0}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Authentication debugging error: {ex.Message}");
+        }
 
         await LoadMovie();
         await LoadReviews();

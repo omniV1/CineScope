@@ -6,12 +6,24 @@ using MudBlazor.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using CineScope.Client.Services;
 using Blazored.LocalStorage;
+using System.Net.Http.Headers;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+// Configure HttpClient with auth header handler
+builder.Services.AddScoped<AuthenticationHeaderHandler>();
+builder.Services.AddScoped(sp =>
+{
+    var localStorage = sp.GetRequiredService<ILocalStorageService>();
+    var handler = new AuthenticationHeaderHandler(localStorage);
+    var httpClient = new HttpClient(handler)
+    {
+        BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+    };
+    return httpClient;
+});
 
 // Add Blazored LocalStorage for JWT token storage
 builder.Services.AddBlazoredLocalStorage();
@@ -84,3 +96,35 @@ builder.Services.AddMudServices(config => {
 });
 
 await builder.Build().RunAsync();
+
+// Token-attaching HTTP handler
+public class AuthenticationHeaderHandler : DelegatingHandler
+{
+    private readonly ILocalStorageService _localStorage;
+
+    public AuthenticationHeaderHandler(ILocalStorageService localStorage)
+    {
+        _localStorage = localStorage;
+        InnerHandler = new HttpClientHandler();
+    }
+
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        // Try to get the token from local storage
+        var token = await _localStorage.GetItemAsync<string>("authToken");
+
+        // If token exists, add it to the Authorization header
+        if (!string.IsNullOrEmpty(token))
+        {
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            Console.WriteLine($"Added auth token to request: {request.RequestUri}");
+        }
+        else
+        {
+            Console.WriteLine($"No auth token available for request: {request.RequestUri}");
+        }
+
+        // Pass the request to the inner handler
+        return await base.SendAsync(request, cancellationToken);
+    }
+}

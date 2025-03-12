@@ -10,10 +10,19 @@
     </TitleContent>
     <DialogContent>
         <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
-            <!-- Rating selection -->
+            <!-- Custom rating selection -->
             <div class="d-flex flex-column gap-2 mb-4">
                 <MudText Typo="Typo.subtitle1">Your Rating</MudText>
-                <MudRating @bind-Value="ratingValue" MaxValue="5" Size="Size.Large" />
+                <div class="d-flex align-center">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        int ratingVal = i;
+                        <MudIconButton Icon="@(ratingValue >= ratingVal ? Icons.Material.Filled.Star : Icons.Material.Outlined.StarOutline)"
+                                       Color="Color.Warning"
+                                       OnClick="@(() => SetRating(ratingVal))" />
+                    }
+                    <MudText Typo="Typo.body2" Class="ml-2">(@ratingValue stars)</MudText>
+                </div>
             </div>
 
             <!-- Review text -->
@@ -25,18 +34,18 @@
 
             @if (!string.IsNullOrEmpty(errorMessage))
             {
-                    <MudAlert Severity="Severity.Error" Class="mt-4" Dense="true">@errorMessage</MudAlert>
+                <MudAlert Severity="Severity.Error" Class="mt-4" Dense="true">@errorMessage</MudAlert>
             }
 
             @if (contentWarning != null && contentWarning.Any())
             {
-                    <MudAlert Severity="Severity.Warning" Class="mt-4">
-                        <MudText>Content Warning</MudText>
-                        <MudText Typo="Typo.body2">
-                            Your review contains content that may violate our community guidelines.
-                            Please remove the following terms: @string.Join(", ", contentWarning)
-                        </MudText>
-                    </MudAlert>
+                <MudAlert Severity="Severity.Warning" Class="mt-4">
+                    <MudText>Content Warning</MudText>
+                    <MudText Typo="Typo.body2">
+                        Your review contains content that may violate our community guidelines.
+                        Please remove the following terms: @string.Join(", ", contentWarning)
+                    </MudText>
+                </MudAlert>
             }
         </MudForm>
     </DialogContent>
@@ -46,12 +55,12 @@
                    Disabled="@(!success || isLoading || ratingValue == 0)" OnClick="SubmitChanges">
             @if (isLoading)
             {
-                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                    <MudText Class="ms-2">Updating</MudText>
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                <MudText Class="ms-2">Updating</MudText>
             }
             else
             {
-                    <MudText>Save Changes</MudText>
+                <MudText>Save Changes</MudText>
             }
         </MudButton>
     </DialogActions>
@@ -76,6 +85,16 @@
     private string reviewText;
 
     /// <summary>
+    /// Sets the rating value directly
+    /// </summary>
+    private void SetRating(int rating)
+    {
+        ratingValue = rating;
+        Console.WriteLine($"Rating manually set to: {ratingValue}");
+        StateHasChanged();
+    }
+
+    /// <summary>
     /// Initializes component data when parameters set
     /// </summary>
     protected override void OnParametersSet()
@@ -83,6 +102,7 @@
         // Set initial values from the review parameter
         ratingValue = Review.Rating;
         reviewText = Review.Text;
+        Console.WriteLine($"EditReview initialized with rating: {ratingValue}");
     }
 
     /// <summary>
@@ -167,6 +187,8 @@
                 return;
             }
 
+            Console.WriteLine($"Current rating before submitting: {ratingValue}");
+
             // Prepare updated review
             var updatedReview = new ReviewDto
                 {
@@ -179,11 +201,15 @@
                     CreatedAt = Review.CreatedAt
                 };
 
+            Console.WriteLine($"Submitting updated review with rating: {ratingValue}");
+            Console.WriteLine($"Original rating: {Review.Rating}, New rating: {updatedReview.Rating}");
+
             // Send updated review to the API
             var response = await Http.PutAsJsonAsync($"api/Review/{Review.Id}", updatedReview);
 
             if (response.IsSuccessStatusCode)
             {
+                Console.WriteLine($"Review successfully updated with rating: {updatedReview.Rating}");
                 // Close dialog with success result
                 Snackbar.Add("Review updated successfully!", Severity.Success);
                 MudDialog.Close(DialogResult.Ok(updatedReview));

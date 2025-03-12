@@ -276,5 +276,7 @@ namespace CineScope.Server.Services
             // Return the serialized token
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+
     }
 }

@@ -10,106 +10,106 @@
 
     @if (isLoading)
     {
-            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Medium" />
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Medium" />
     }
     else if (Reviews == null || !Reviews.Any())
     {
-            <MudAlert Severity="Severity.Info">@EmptyMessage</MudAlert>
+        <MudAlert Severity="Severity.Info">@EmptyMessage</MudAlert>
     }
     else
     {
-            <!-- Filter and Sort Controls -->
-            <div class="d-flex justify-space-between align-center mb-4 flex-wrap gap-2">
-                <!-- Review Count -->
-                <MudText Typo="Typo.body2">Showing @displayedReviews.Count review@(displayedReviews.Count != 1 ? "s" : "")</MudText>
+        <!-- Filter and Sort Controls -->
+        <div class="d-flex justify-space-between align-center mb-4 flex-wrap gap-2">
+            <!-- Review Count -->
+            <MudText Typo="Typo.body2">Showing @displayedReviews.Count review@(displayedReviews.Count != 1 ? "s" : "")</MudText>
 
-                <div class="d-flex gap-2">
-                    <!-- Filter Button -->
-                    <MudMenu Icon="@Icons.Material.Filled.FilterList" Label="Filter" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
-                        <MudMenuItem OnClick="@(() => FilterReviews("all"))">All Ratings</MudMenuItem>
-                        <MudMenuItem OnClick="@(() => FilterReviews("positive"))">Positive (4-5 ★)</MudMenuItem>
-                        <MudMenuItem OnClick="@(() => FilterReviews("neutral"))">Neutral (3 ★)</MudMenuItem>
-                        <MudMenuItem OnClick="@(() => FilterReviews("negative"))">Negative (1-2 ★)</MudMenuItem>
-                    </MudMenu>
+            <div class="d-flex gap-2">
+                <!-- Filter Button -->
+                <MudMenu Icon="@Icons.Material.Filled.FilterList" Label="Filter" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                    <MudMenuItem OnClick="@(() => FilterReviews("all"))">All Ratings</MudMenuItem>
+                    <MudMenuItem OnClick="@(() => FilterReviews("positive"))">Positive (4-5 ★)</MudMenuItem>
+                    <MudMenuItem OnClick="@(() => FilterReviews("neutral"))">Neutral (3 ★)</MudMenuItem>
+                    <MudMenuItem OnClick="@(() => FilterReviews("negative"))">Negative (1-2 ★)</MudMenuItem>
+                </MudMenu>
 
-                    <!-- Sort Button -->
-                    <MudMenu Icon="@Icons.Material.Filled.Sort" Label="Sort" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
-                        <MudMenuItem OnClick="@(() => SortReviews("newest"))">Newest First</MudMenuItem>
-                        <MudMenuItem OnClick="@(() => SortReviews("oldest"))">Oldest First</MudMenuItem>
-                        <MudMenuItem OnClick="@(() => SortReviews("highest"))">Highest Rated</MudMenuItem>
-                        <MudMenuItem OnClick="@(() => SortReviews("lowest"))">Lowest Rated</MudMenuItem>
-                    </MudMenu>
-                </div>
+                <!-- Sort Button -->
+                <MudMenu Icon="@Icons.Material.Filled.Sort" Label="Sort" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                    <MudMenuItem OnClick="@(() => SortReviews("newest"))">Newest First</MudMenuItem>
+                    <MudMenuItem OnClick="@(() => SortReviews("oldest"))">Oldest First</MudMenuItem>
+                    <MudMenuItem OnClick="@(() => SortReviews("highest"))">Highest Rated</MudMenuItem>
+                    <MudMenuItem OnClick="@(() => SortReviews("lowest"))">Lowest Rated</MudMenuItem>
+                </MudMenu>
             </div>
+        </div>
 
-            <!-- Active Filters -->
+        <!-- Active Filters -->
         @if (currentFilter != "all" || currentSort != "newest")
         {
-                    <MudPaper Elevation="0" Class="pa-2 mb-4" Style="background-color: var(--mud-palette-background-grey)">
-                        <div class="d-flex flex-wrap gap-2 align-center">
-                            <MudText Typo="Typo.caption">Active:</MudText>
+            <MudPaper Elevation="0" Class="pa-2 mb-4" Style="background-color: var(--mud-palette-background-grey)">
+                <div class="d-flex flex-wrap gap-2 align-center">
+                    <MudText Typo="Typo.caption">Active:</MudText>
 
                     @if (currentFilter != "all")
                     {
-                                    <MudChip Size="Size.Small" Color="Color.Primary" Variant="Variant.Outlined"
-                                             OnClose="@(() => FilterReviews("all"))">
+                        <MudChip Size="Size.Small" Color="Color.Primary" Variant="Variant.Outlined"
+                                 OnClose="@(() => FilterReviews("all"))">
                             @GetFilterName(currentFilter)
-                                    </MudChip>
+                        </MudChip>
                     }
 
                     @if (currentSort != "newest")
                     {
-                                    <MudChip Size="Size.Small" Color="Color.Secondary" Variant="Variant.Outlined"
-                                             OnClose="@(() => SortReviews("newest"))">
+                        <MudChip Size="Size.Small" Color="Color.Secondary" Variant="Variant.Outlined"
+                                 OnClose="@(() => SortReviews("newest"))">
                             @GetSortName(currentSort)
-                                    </MudChip>
+                        </MudChip>
                     }
 
-                            <MudButton Variant="Variant.Text" Color="Color.Error" Size="Size.Small"
-                                       OnClick="@ResetFilters">Clear All</MudButton>
-                        </div>
-                    </MudPaper>
+                    <MudButton Variant="Variant.Text" Color="Color.Error" Size="Size.Small"
+                               OnClick="@ResetFilters">Clear All</MudButton>
+                </div>
+            </MudPaper>
         }
 
-            <!-- Review List -->
-            <MudList Clickable="false" Dense="false">
+        <!-- Review List -->
+        <MudList Clickable="false" Dense="false">
             @foreach (var review in displayedReviews)
             {
-                        <MudListItem Class="pa-0 mb-4">
-                            <MudCard Elevation="2" Class="review-card">
-                                <MudCardContent>
-                                    <!-- Review Header -->
-                                    <div class="d-flex justify-space-between align-center mb-2">
-                                        <MudText Typo="Typo.h6">@review.Username</MudText>
-                                        <MudRating ReadOnly="true" Value="@review.Rating" />
-                                    </div>
+                <MudListItem Class="pa-0 mb-4">
+                    <MudCard Elevation="2" Class="review-card">
+                        <MudCardContent>
+                            <!-- Review Header -->
+                            <div class="d-flex justify-space-between align-center mb-2">
+                                <MudText Typo="Typo.h6">@review.Username</MudText>
+                                <MudRating ReadOnly="true" SelectedValue="@((int)Math.Round(review.Rating))" Color="Color.Primary" />
+                            </div>
 
-                                    <!-- Review Date -->
-                                    <MudText Typo="Typo.caption" Class="mb-2">
+                            <!-- Review Date -->
+                            <MudText Typo="Typo.caption" Class="mb-2">
                                 @review.CreatedAt.ToString("MMMM dd, yyyy")
-                                    </MudText>
+                            </MudText>
 
-                                    <!-- Review Text -->
-                                    <MudText Typo="Typo.body1">@review.Text</MudText>
-                                </MudCardContent>
+                            <!-- Review Text -->
+                            <MudText Typo="Typo.body1">@review.Text</MudText>
+                        </MudCardContent>
 
                         @if (ShowActions && review.UserId == CurrentUserId)
                         {
-                                        <MudCardActions>
-                                            <MudButton Variant="Variant.Text" Color="Color.Primary"
-                                                       OnClick="@(() => OpenEditDialog(review))">
-                                                Edit
-                                            </MudButton>
-                                            <MudButton Variant="Variant.Text" Color="Color.Error"
-                                                       OnClick="@(() => DeleteReviewAsync(review.Id))">
-                                                Delete
-                                            </MudButton>
-                                        </MudCardActions>
+                            <MudCardActions>
+                                <MudButton Variant="Variant.Text" Color="Color.Primary"
+                                           OnClick="@(() => OpenEditDialog(review))">
+                                    Edit
+                                </MudButton>
+                                <MudButton Variant="Variant.Text" Color="Color.Error"
+                                           OnClick="@(() => DeleteReviewAsync(review.Id))">
+                                    Delete
+                                </MudButton>
+                            </MudCardActions>
                         }
-                            </MudCard>
-                        </MudListItem>
+                    </MudCard>
+                </MudListItem>
             }
-            </MudList>
+        </MudList>
     }
 </div>
 
@@ -234,17 +234,26 @@
 
         if (!result.Canceled)
         {
-            // If dialog was not cancelled, result.Data contains the updated review
+            // Get the updated review from the dialog result
             var updatedReview = (ReviewDto)result.Data;
+            Console.WriteLine($"Dialog returned review with rating: {updatedReview.Rating}");
 
             // Update the review in the local list
             var index = Reviews.FindIndex(r => r.Id == updatedReview.Id);
             if (index >= 0)
             {
-                Reviews[index] = updatedReview;
+                // Create a completely new list to trigger UI updates
+                var newReviews = new List<ReviewDto>(Reviews);
+                newReviews[index] = updatedReview;
+                Reviews = newReviews;
 
-                // Re-apply filters and sort
+                Console.WriteLine($"Updated review in list, new rating: {Reviews[index].Rating}");
+
+                // Make sure displayedReviews is also updated
                 ApplyFilterAndSort();
+
+                // Force UI refresh
+                StateHasChanged();
 
                 // Notify parent component
                 await OnReviewUpdated.InvokeAsync(updatedReview);
@@ -280,7 +289,10 @@
                     var reviewToRemove = Reviews.FirstOrDefault(r => r.Id == reviewId);
                     if (reviewToRemove != null)
                     {
-                        Reviews.Remove(reviewToRemove);
+                        // Create a new list reference to ensure UI updates
+                        var newReviews = new List<ReviewDto>(Reviews);
+                        newReviews.Remove(reviewToRemove);
+                        Reviews = newReviews;
 
                         // Re-apply filters and sort
                         ApplyFilterAndSort();
@@ -366,6 +378,9 @@
             "lowest" => filteredReviews.OrderBy(r => r.Rating).ToList(),
             _ => filteredReviews.OrderByDescending(r => r.CreatedAt).ToList() // "newest" sort
         };
+
+        // Force UI refresh after updating displayedReviews
+        StateHasChanged();
     }
 
     /// <summary>

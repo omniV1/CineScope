@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-// Show the ASCII art intro at application startup
-ConsoleIntro.ShowIntro();
+// Show the ASCII art intro at application startup (COMMENT OUT LINE BELOW TO SKIP ANIMATION FOR DEV PURPOSES)  
+// ConsoleIntro.ShowIntro();
 
 // Configure MongoDB serialization settings for better compatibility
 ConfigureMongoDb();
