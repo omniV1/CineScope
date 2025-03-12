@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using System.Linq;
+using System.Security.Claims;
 
 namespace CineScope.Server.Controllers
 {
@@ -175,6 +176,28 @@ namespace CineScope.Server.Controllers
         {
             try
             {
+                // Add debugging to see user claims
+                Console.WriteLine("User claims in CreateReview:");
+                foreach (var claim in User.Claims)
+                {
+                    Console.WriteLine($"  {claim.Type}: {claim.Value}");
+                }
+
+                // User identification verification 
+                // Make sure the review is associated with the authenticated user
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ??
+                                 User.FindFirst("sub");
+
+                if (userIdClaim == null)
+                {
+                    Console.WriteLine("User ID claim not found in token");
+                    return Unauthorized(new { Message = "User identity could not be determined" });
+                }
+
+                // Force the userId to match the authenticated user
+                reviewDto.UserId = userIdClaim.Value;
+                Console.WriteLine($"Setting review UserId to authenticated user: {reviewDto.UserId}");
+
                 // Validate content against banned words
                 var contentValidation = await _contentFilterService.ValidateContentAsync(reviewDto.Text);
 
@@ -204,7 +227,7 @@ namespace CineScope.Server.Controllers
                 var review = new Review
                 {
                     MovieId = reviewDto.MovieId,
-                    UserId = reviewDto.UserId,
+                    UserId = userIdClaim.Value, // Use the authenticated user's ID
                     Rating = reviewDto.Rating,
                     Text = reviewDto.Text,
                     CreatedAt = DateTime.UtcNow,
@@ -227,6 +250,8 @@ namespace CineScope.Server.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Exception in CreateReview: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
                 return StatusCode(500, new { Error = $"Failed to create review: {ex.Message}" });
             }
         }

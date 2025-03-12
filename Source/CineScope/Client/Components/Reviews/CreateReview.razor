@@ -6,14 +6,31 @@
 @inject AuthService AuthService
 
 <MudCard Elevation="3" Class="create-review-form mb-4">
-    <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+    <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors" ValidationDelay="0">
         <MudCardContent>
             <MudText Typo="Typo.h5" GutterBottom="true">Write a Review</MudText>
 
-            <!-- Rating selection -->
+            <!-- Manual star rating implementation to fix binding issues -->
             <div class="d-flex flex-column gap-2 mb-4">
                 <MudText Typo="Typo.subtitle1">Your Rating</MudText>
-                <MudRating @bind-Value="ratingValue" MaxValue="5" Size="Size.Large" />
+
+                <!-- Custom star rating with direct click handlers -->
+                <div class="d-flex">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        var starValue = i; // Capture the value for the lambda
+                        <div @onclick="() => SetRating(starValue)" style="cursor: pointer; padding: 2px;">
+                            @if (ratingValue >= starValue)
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.Star" Color="Color.Warning" Size="Size.Large" />
+                            }
+                            else
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.StarOutline" Color="Color.Warning" Size="Size.Large" />
+                            }
+                        </div>
+                    }
+                </div>
             </div>
 
             <!-- Review text -->
@@ -25,34 +42,42 @@
 
             @if (!string.IsNullOrEmpty(errorMessage))
             {
-                    <MudAlert Severity="Severity.Error" Class="mt-4" Dense="true">@errorMessage</MudAlert>
+                <MudAlert Severity="Severity.Error" Class="mt-4" Dense="true">@errorMessage</MudAlert>
             }
 
             @if (contentWarning != null && contentWarning.Any())
             {
-                    <MudAlert Severity="Severity.Warning" Class="mt-4">
-                        <MudText>Content Warning</MudText>
-                        <MudText Typo="Typo.body2">
-                            Your review contains content that may violate our community guidelines.
-                            Please remove the following terms: @string.Join(", ", contentWarning)
-                        </MudText>
-                    </MudAlert>
+                <MudAlert Severity="Severity.Warning" Class="mt-4">
+                    <MudText>Content Warning</MudText>
+                    <MudText Typo="Typo.body2">
+                        Your review contains content that may violate our community guidelines.
+                        Please remove the following terms: @string.Join(", ", contentWarning)
+                    </MudText>
+                </MudAlert>
             }
+
+            <!-- Debug info panel -->
+            <MudAlert Severity="Severity.Info" Class="mt-4">
+                <MudText>Debug Info:</MudText>
+                <MudText Typo="Typo.body2">
+                    Form Valid: @success | Rating: @ratingValue | Text Length: @(review.Text?.Length ?? 0)
+                </MudText>
+            </MudAlert>
         </MudCardContent>
 
         <MudCardActions>
             <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="@Reset">Reset</MudButton>
             <MudSpacer />
             <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                       Disabled="@(!success || isLoading || ratingValue == 0)" OnClick="@SubmitReview">
+                       Disabled="@(isLoading || ratingValue == 0)" OnClick="@SubmitReview">
                 @if (isLoading)
                 {
-                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                        <MudText Class="ms-2">Submitting</MudText>
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    <MudText Class="ms-2">Submitting</MudText>
                 }
                 else
                 {
-                        <MudText>Submit Review</MudText>
+                    <MudText>Submit Review</MudText>
                 }
             </MudButton>
         </MudCardActions>
@@ -131,6 +156,17 @@
     }
 
     /// <summary>
+    /// Sets the rating value directly through manual star interaction.
+    /// This bypasses the MudRating component's binding issues.
+    /// </summary>
+    private void SetRating(int value)
+    {
+        Console.WriteLine($"Setting rating from {ratingValue} to {value}");
+        ratingValue = value;
+        StateHasChanged();
+    }
+
+    /// <summary>
     /// Validates review content against banned word list.
     /// </summary>
     private async Task<bool> ValidateContent()
@@ -182,11 +218,20 @@
     /// </summary>
     private async Task SubmitReview()
     {
+        // Ensure auth token is attached to the request
+        await AuthService.EnsureAuthHeaderAsync();
+
+        // Rest of your existing code...
+        Console.WriteLine($"SubmitReview called - Before validation - success={success}, ratingValue={ratingValue}, textLength={review.Text?.Length ?? 0}");
+
         // Validate the form
         await form.Validate();
 
+        Console.WriteLine($"After validation - success={success}, errors={string.Join(", ", errors)}");
+
         if (!success)
         {
+            Console.WriteLine("Form validation failed - review not submitted");
             return;
         }
 
@@ -194,6 +239,7 @@
         if (ratingValue == 0)
         {
             errorMessage = "Please select a rating";
+            Console.WriteLine("Rating validation failed - no stars selected");
             return;
         }
 
@@ -202,6 +248,7 @@
             // Set loading state
             isLoading = true;
             errorMessage = string.Empty;
+            Console.WriteLine("Starting review submission process");
 
             // First, validate content against banned word list
             if (!await ValidateContent())
