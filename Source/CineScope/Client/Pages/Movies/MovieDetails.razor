@@ -70,7 +70,7 @@ else
                     </div>
 
                     <div class="d-flex align-center">
-                        <MudRating ReadOnly="true" Value="@((int)Math.Round(movie.AverageRating))" Size="Size.Large" />
+                        <MudRating ReadOnly="true" SelectedValue="@((int)Math.Round(movie.AverageRating))" Color="Color.Primary" />
                         <MudText Typo="Typo.h5" Class="ml-2">@movie.AverageRating.ToString("0.0")</MudText>
                     </div>
                 </div>

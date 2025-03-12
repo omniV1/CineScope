@@ -65,7 +65,9 @@ else
                         <MudCardContent>
                             <div class="d-flex justify-space-between align-center mb-2">
                                 <MudText Typo="Typo.subtitle2">Your Rating</MudText>
-                                <MudRating ReadOnly="true" Value="@review.Rating" />
+                                <MudRating ReadOnly="true"
+                                           Value="@((int)Math.Round(review.Rating))"
+                                           SelectedValue="@((int)Math.Round(review.Rating))" />
                             </div>
 
                             <MudText Typo="Typo.caption" Class="mb-2">
