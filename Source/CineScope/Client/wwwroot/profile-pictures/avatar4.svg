@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#5141EA" />
+  
+  <!-- Robot-inspired avatar -->
+  <rect x="65" y="60" width="70" height="80" rx="5" fill="#CCCCCC" />
+  
+  <!-- Antenna -->
+  <line x1="100" y1="60" x2="100" y2="40" stroke="#888888" stroke-width="3" />
+  <circle cx="100" cy="35" r="5" fill="#FF3333" />
+  
+  <!-- Eyes -->
+  <rect x="75" y="75" width="20" height="10" rx="2" fill="#333333" />
+  <rect x="105" y="75" width="20" height="10" rx="2" fill="#333333" />
+  
+  <!-- Mouth/speaker -->
+  <rect x="85" y="100" width="30" height="5" fill="#333333" />
+  <rect x="85" y="110" width="30" height="5" fill="#333333" />
+  <rect x="85" y="120" width="30" height="5" fill="#333333" />
+  
+  <!-- Body/chassis -->
+  <path d="M75 140 L125 140 L120 170 L80 170 Z" fill="#AAAAAA" />
+  
+  <!-- Control panel -->
+  <rect x="90" y="150" width="20" height="10" rx="2" fill="#444444" />
+  <circle cx="95" cy="155" r="2" fill="#FF3333" />
+  <circle cx="105" cy="155" r="2" fill="#00CC00" />
+</svg>

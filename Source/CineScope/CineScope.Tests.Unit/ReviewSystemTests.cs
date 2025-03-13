@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bunit;
 using CineScope.Client.Components.Reviews;
-using CineScope.Client.Services;
+using CineScope.Client.Services.Auth;
 using CineScope.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;

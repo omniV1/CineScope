@@ -9,6 +9,7 @@ using CineScope.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
+using CineScope.Shared.Auth;
 
 namespace CineScope.Server.Controllers
 {
@@ -138,6 +139,42 @@ namespace CineScope.Server.Controllers
             {
                 // Log the exception in a real application
                 return StatusCode(500, new { Message = "An error occurred while retrieving user information", Error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// PUT: api/User/profile-picture
+        /// Updates just the user's profile picture.
+        /// </summary>
+        /// <param name="updateRequest">The request containing the new profile picture URL</param>
+        /// <returns>Success or error result</returns>
+        [HttpPut("profile-picture")]
+        [Authorize]
+        public async Task<IActionResult> UpdateProfilePicture([FromBody] UpdateProfileRequest updateRequest)
+        {
+            try
+            {
+                // Get the user ID from the authenticated user claims
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { Message = "User not authenticated properly" });
+                }
+
+                // Update just the profile picture
+                var result = await _userService.UpdateProfilePictureAsync(userId, updateRequest.ProfilePictureUrl);
+
+                if (!result.Success)
+                {
+                    return BadRequest(new { Message = result.Message });
+                }
+
+                return Ok(new { Message = "Profile picture updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An error occurred while updating the profile picture", Error = ex.Message });
             }
         }
     }

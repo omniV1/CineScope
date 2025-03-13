@@ -1,4 +1,5 @@
-﻿using System;
+﻿// Source/CineScope/Shared/DTOs/UserProfileDto.cs
+using System;
 
 namespace CineScope.Shared.DTOs
 {
@@ -22,6 +23,12 @@ namespace CineScope.Shared.DTOs
         /// User's email address.
         /// </summary>
         public string Email { get; set; } = string.Empty;
+
+        /// <summary>
+        /// URL to the user's profile picture.
+        /// If empty or null, a default profile picture will be shown.
+        /// </summary>
+        public string ProfilePictureUrl { get; set; } = string.Empty;
 
         /// <summary>
         /// Timestamp indicating when the user account was created.
@@ -50,6 +57,12 @@ namespace CineScope.Shared.DTOs
         /// User's chosen username for display purposes.
         /// </summary>
         public string Username { get; set; } = string.Empty;
+
+        /// <summary>
+        /// URL to the user's profile picture.
+        /// If empty or null, a default profile picture will be shown.
+        /// </summary>
+        public string ProfilePictureUrl { get; set; } = string.Empty;
 
         /// <summary>
         /// Timestamp indicating when the user joined the platform.

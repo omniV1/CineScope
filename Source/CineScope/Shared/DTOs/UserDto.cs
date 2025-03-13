@@ -26,6 +26,12 @@ namespace CineScope.Shared.DTOs
         public string Email { get; set; } = string.Empty;
 
         /// <summary>
+        /// URL to the user's profile picture.
+        /// If empty or null, a default profile picture will be shown.
+        /// </summary>
+        public string ProfilePictureUrl { get; set; } = string.Empty;
+
+        /// <summary>
         /// Collection of roles assigned to this user (e.g., "User", "Admin").
         /// Used for authorization and permission checking.
         /// </summary>

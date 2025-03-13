@@ -4,9 +4,9 @@ using CineScope.Client;
 using MudBlazor;
 using MudBlazor.Services;
 using Microsoft.AspNetCore.Components.Authorization;
-using CineScope.Client.Services;
 using Blazored.LocalStorage;
 using System.Net.Http.Headers;
+using CineScope.Client.Services.Auth;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");

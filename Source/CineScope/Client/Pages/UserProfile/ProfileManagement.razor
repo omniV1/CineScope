@@ -1,10 +1,11 @@
 ﻿@page "/profile"
 @using CineScope.Shared.DTOs
+@using CineScope.Client.Shared.Profile
+@using CineScope.Shared.Auth;
 @using System.Net.Http.Json
 @inject HttpClient Http
 @inject ISnackbar Snackbar
-@* In a real implementation, this would be protected by authentication *@
-@* [Authorize] *@
+@attribute [Authorize]
 
 <PageTitle>CineScope - My Profile</PageTitle>
 
@@ -28,6 +29,13 @@
             <MudCard Elevation="3" Class="pa-4">
                 <MudCardContent>
                     <MudGrid>
+                        <!-- Profile Picture Section -->
+                        <MudItem xs="12" md="12" Class="mb-6">
+                            <MudText Typo="Typo.h6" Class="mb-4">Profile Picture</MudText>
+                            <ProfilePictureSelector SelectedProfilePicture="@user.ProfilePictureUrl"
+                                                    OnProfilePictureSelected="@UpdateProfilePicture" />
+                        </MudItem>
+
                         <!-- Profile Details Section -->
                         <MudItem xs="12" md="6">
                             <MudText Typo="Typo.h6" Class="mb-4">Account Details</MudText>
@@ -51,7 +59,6 @@
 
                                 <MudTextField @bind-Value="currentPassword" Label="Current Password"
                                               Variant="Variant.Outlined" InputType="InputType.Password"
-                                              Required="true" RequiredError="Please enter your current password to change it."
                                               HelperText="Required to change password" Class="mb-4" />
 
                                 <MudTextField @bind-Value="newPassword" Label="New Password"
@@ -60,7 +67,6 @@
 
                                 <MudTextField @bind-Value="confirmPassword" Label="Confirm New Password"
                                               Variant="Variant.Outlined" InputType="InputType.Password"
-                                              Required="true" RequiredError="Password confirmation is required."
                                               HelperText="Must match new password" Class="mb-4" />
                             }
                             else
@@ -181,8 +187,11 @@
     private string confirmPassword = string.Empty;
 
     // User reviews
-    private List<UserReviewDto> userReviews = null;
+    private List<UserReviewDto> userReviews = new List<UserReviewDto>();
     private int reviewCount = 0;
+
+    // Track if profile picture has been updated
+    private bool profilePictureUpdated = false;
 
     /// <summary>
     /// Initializes the component and loads user data.
@@ -190,6 +199,7 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadUserProfile();
+        await LoadUserReviewCount();
         await LoadUserReviews();
     }
 
@@ -202,17 +212,23 @@
         {
             isLoading = true;
 
-            // In a real implementation, this would use the authenticated user's ID
-            // var response = await Http.GetAsync($"api/User/profile");
+            var response = await Http.GetAsync("api/User/profile");
 
-            // For demo purposes, we'll create mock data
-            user = new UserProfileDto
+            if (response.IsSuccessStatusCode)
+            {
+                user = await response.Content.ReadFromJsonAsync<UserProfileDto>();
+
+                // If profile picture is null or empty, set to default
+                if (string.IsNullOrEmpty(user.ProfilePictureUrl))
                 {
-                    Id = "user123",
-                    Username = "cinefan42",
-                    Email = "user@example.com",
-                    CreatedAt = new DateTime(2023, 9, 15)
-                };
+                    user.ProfilePictureUrl = ProfilePictureOptions.DefaultProfilePicture;
+                }
+            }
+            else
+            {
+                errorMessage = "Failed to load profile data";
+                Snackbar.Add("Error loading profile", Severity.Error);
+            }
         }
         catch (Exception ex)
         {
@@ -226,43 +242,138 @@
     }
 
     /// <summary>
-    /// Loads the user's reviews from the API.
+    /// Loads the count of user's reviews.
+    /// </summary>
+    private async Task LoadUserReviewCount()
+    {
+        try
+        {
+            var response = await Http.GetAsync($"api/Review/user/{user.Id}/count");
+
+            if (response.IsSuccessStatusCode)
+            {
+                reviewCount = await response.Content.ReadFromJsonAsync<int>();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading review count: {ex.Message}");
+            reviewCount = 0;
+        }
+    }
+
+    /// <summary>
+    /// Loads the user's reviews.
     /// </summary>
     private async Task LoadUserReviews()
     {
         try
         {
-            // In a real implementation, this would call the API
-            // var response = await Http.GetAsync($"api/Review/user/{user.Id}");
+            var response = await Http.GetAsync($"api/Review/user/{user.Id}");
 
-            // For demo purposes, we'll create mock data
-            userReviews = new List<UserReviewDto>
+            if (response.IsSuccessStatusCode)
             {
-                new UserReviewDto
-                {
-                    Id = "review1",
-                    MovieId = "movie1",
-                    MovieTitle = "The Shawshank Redemption",
-                    Rating = 5,
-                    Text = "An absolute masterpiece that stands the test of time. The performances are incredible, and the story is deeply moving.",
-                    CreatedAt = DateTime.Now.AddMonths(-2)
-                },
-                new UserReviewDto
-                {
-                    Id = "review2",
-                    MovieId = "movie2",
-                    MovieTitle = "The Dark Knight",
-                    Rating = 5,
-                    Text = "Heath Ledger's Joker is one of the greatest villain performances of all time. This film redefined what superhero movies could be.",
-                    CreatedAt = DateTime.Now.AddMonths(-1)
-                }
-            };
-
-            reviewCount = userReviews.Count;
+                var reviews = await response.Content.ReadFromJsonAsync<List<ReviewDto>>();
+                userReviews = MapToUserReviewDto(reviews);
+            }
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Error loading reviews: {ex.Message}", Severity.Warning);
+            Console.WriteLine($"Error loading reviews: {ex.Message}");
+            userReviews = new List<UserReviewDto>();
+        }
+    }
+
+    /// <summary>
+    /// Maps ReviewDto objects to UserReviewDto objects with movie titles.
+    /// </summary>
+    private List<UserReviewDto> MapToUserReviewDto(List<ReviewDto> reviews)
+    {
+        var result = new List<UserReviewDto>();
+
+        foreach (var review in reviews)
+        {
+            result.Add(new UserReviewDto
+                {
+                    Id = review.Id,
+                    MovieId = review.MovieId,
+                    MovieTitle = GetMovieTitle(review.MovieId), // You'll need to implement this method
+                    Rating = review.Rating,
+                    Text = review.Text,
+                    CreatedAt = review.CreatedAt
+                });
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Gets the title of a movie by its ID. In a real implementation,
+    /// this would fetch the title from a cache or API.
+    /// </summary>
+    private string GetMovieTitle(string movieId)
+    {
+        // Implement this method to get movie titles
+        // For now returning a placeholder
+        return $"Movie {movieId}";
+    }
+
+    /// <summary>
+    /// Updates the selected profile picture.
+    /// </summary>
+    private void UpdateProfilePicture(string pictureUrl)
+    {
+        user.ProfilePictureUrl = pictureUrl;
+        profilePictureUpdated = true;
+
+        // If not in edit mode, save immediately
+        if (!isEditing)
+        {
+            SaveProfilePicture();
+        }
+    }
+
+    /// <summary>
+    /// Saves just the profile picture change.
+    /// </summary>
+    private async Task SaveProfilePicture()
+    {
+        if (!profilePictureUpdated)
+            return;
+
+        try
+        {
+            isSaving = true;
+
+            // Create request with just the profile picture
+            var updateRequest = new UpdateProfileRequest
+                {
+                    Username = user.Username,
+                    Email = user.Email,
+                    ProfilePictureUrl = user.ProfilePictureUrl
+                };
+
+            // Call API to update just the profile picture
+            var response = await Http.PutAsJsonAsync("api/User/profile-picture", updateRequest);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Profile picture updated", Severity.Success);
+                profilePictureUpdated = false;
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Error: {errorContent}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isSaving = false;
         }
     }
 
@@ -326,19 +437,27 @@
                 {
                     Username = user.Username,
                     Email = user.Email,
+                    ProfilePictureUrl = user.ProfilePictureUrl,
                     CurrentPassword = currentPassword,
                     NewPassword = newPassword
                 };
 
-            // In a real implementation, this would call the API
-            // var response = await Http.PutAsJsonAsync("api/User/profile", updateRequest);
+            // Send update request to the API
+            var response = await Http.PutAsJsonAsync("api/User/profile", updateRequest);
 
-            // For demo purposes, we'll just simulate a successful update
-            await Task.Delay(1000); // Simulate API call
-
-            Snackbar.Add("Profile updated successfully", Severity.Success);
-            isEditing = false;
-            errorMessage = string.Empty;
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Profile updated successfully", Severity.Success);
+                isEditing = false;
+                errorMessage = string.Empty;
+                profilePictureUpdated = false;
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                errorMessage = $"Failed to update profile: {errorContent}";
+                Snackbar.Add(errorMessage, Severity.Error);
+            }
         }
         catch (Exception ex)
         {
@@ -352,12 +471,11 @@
     }
 
     /// <summary>
-    /// Opens the review edit dialog.
+    /// Opens the edit dialog for a review.
     /// </summary>
     private void EditReview(UserReviewDto review)
     {
-        // In a real implementation, this would open a dialog or navigate to edit page
-        Snackbar.Add("Review editing would open here", Severity.Info);
+        // Implement opening an edit dialog for the review
     }
 
     /// <summary>
@@ -365,38 +483,26 @@
     /// </summary>
     private async Task DeleteReview(string reviewId)
     {
-        // In a real implementation, this would show a confirmation dialog
-        bool confirmed = true; // Simulate confirmation
-
-        if (confirmed)
+        // Implement deletion with confirmation dialog
+        try
         {
-            try
+            var response = await Http.DeleteAsync($"api/Review/{reviewId}");
+
+            if (response.IsSuccessStatusCode)
             {
-                // In a real implementation, this would call the API
-                // var response = await Http.DeleteAsync($"api/Review/{reviewId}");
-
-                // For demo purposes, we'll just remove from the local list
                 userReviews.RemoveAll(r => r.Id == reviewId);
-                reviewCount = userReviews.Count;
-
+                reviewCount--;
                 Snackbar.Add("Review deleted successfully", Severity.Success);
             }
-            catch (Exception ex)
+            else
             {
-                Snackbar.Add($"Error deleting review: {ex.Message}", Severity.Error);
+                Snackbar.Add("Failed to delete review", Severity.Error);
             }
         }
-    }
-
-    /// <summary>
-    /// Data model for user profile information.
-    /// </summary>
-    private class UserProfileDto
-    {
-        public string Id { get; set; } = string.Empty;
-        public string Username { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
     }
 
     /// <summary>
@@ -410,16 +516,5 @@
         public double Rating { get; set; }
         public string Text { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
-    }
-
-    /// <summary>
-    /// Data model for profile update request.
-    /// </summary>
-    private class UpdateProfileRequest
-    {
-        public string Username { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string CurrentPassword { get; set; } = string.Empty;
-        public string NewPassword { get; set; } = string.Empty;
     }
 }
