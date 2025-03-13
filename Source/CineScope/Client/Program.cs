@@ -32,6 +32,9 @@ builder.Services.AddBlazoredLocalStorage();
 // Add the client-side movie cache service
 builder.Services.AddScoped<ClientMovieCacheService>();
 
+// Register the poster cache service
+builder.Services.AddScoped<CineScope.Client.Services.MoviePosterCacheService>();
+
 // Add Authentication Services
 builder.Services.AddScoped<AuthStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<AuthStateProvider>());
