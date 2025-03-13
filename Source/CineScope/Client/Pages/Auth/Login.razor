@@ -16,11 +16,11 @@
                     <MudText Typo="Typo.subtitle1" Align="Align.Center" Class="mb-4">Sign in to your CineScope account</MudText>
 
                     <MudTextField T="string" Label="Username" @bind-Value="loginRequest.Username"
-                                  Required="true" RequiredError="Username is required"
+                                  Required="true" RequiredError="Username is Required."
                                   Variant="Variant.Outlined" Class="my-4" />
 
                     <MudTextField T="string" Label="Password" @bind-Value="loginRequest.Password"
-                                  Required="true" RequiredError="Password is required"
+                                  Required="true" RequiredError="Password is Required."
                                   Variant="Variant.Outlined" InputType="InputType.Password"
                                   Class="my-4" />
 
@@ -101,14 +101,14 @@
             else
             {
                 // Handle error
-                errorMessage = result.Message ?? "Login failed. Please try again.";
+                errorMessage = result.Message ?? "Login failed. Please check your credentials try again.";
                 Snackbar.Add(errorMessage, Severity.Error);
             }
         }
         catch (Exception ex)
         {
             // Handle exceptions
-            errorMessage = "An error occurred during login. Please try again.";
+            errorMessage = "An unexpected error occured. Please try again later.";
             Snackbar.Add($"Error: {ex.Message}", Severity.Error);
         }
         finally
