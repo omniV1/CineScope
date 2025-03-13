@@ -9,7 +9,7 @@ using CineScope.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
-using CineScope.Shared.Auth;
+using CineScope.Client.Shared.Profile;
 
 namespace CineScope.Server.Controllers
 {

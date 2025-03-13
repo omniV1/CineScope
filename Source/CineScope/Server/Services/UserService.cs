@@ -4,9 +4,9 @@ using CineScope.Server.Data;
 using CineScope.Server.Interfaces;
 using CineScope.Server.Models;
 using CineScope.Shared.DTOs;
-using CineScope.Shared.Auth; // Added this import to use the shared UpdateProfileRequest
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using CineScope.Client.Shared.Profile;
 
 namespace CineScope.Server.Services
 {

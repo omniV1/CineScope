@@ -2,8 +2,10 @@
 @using CineScope.Shared.DTOs
 @using CineScope.Client.Shared.Profile
 @using CineScope.Shared.Auth;
+@using CineScope.Client.Services.Auth;
 @using System.Net.Http.Json
 @inject HttpClient Http
+@inject AuthService AuthService
 @inject ISnackbar Snackbar
 @attribute [Authorize]
 
@@ -353,11 +355,14 @@
                     ProfilePictureUrl = user.ProfilePictureUrl
                 };
 
-            // Call API to update just the profile picture
+            // Call API to update the profile picture
             var response = await Http.PutAsJsonAsync("api/User/profile-picture", updateRequest);
 
             if (response.IsSuccessStatusCode)
             {
+                // Use the RefreshUserProfile method which is already correctly implemented
+                await AuthService.RefreshUserProfile();
+
                 Snackbar.Add("Profile picture updated", Severity.Success);
                 profilePictureUpdated = false;
             }
@@ -447,6 +452,9 @@
 
             if (response.IsSuccessStatusCode)
             {
+                // Refresh the authentication state to update the navbar
+                await AuthService.RefreshUserStateAsync();
+
                 Snackbar.Add("Profile updated successfully", Severity.Success);
                 isEditing = false;
                 errorMessage = string.Empty;
