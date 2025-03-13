@@ -251,15 +251,26 @@ namespace CineScope.Server.Services
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+            // Ensure we have a valid profile picture URL
+            string profilePictureUrl = !string.IsNullOrEmpty(user.ProfilePictureUrl)
+                ? user.ProfilePictureUrl
+                : "/profile-pictures/default.svg";
+
+            // Ensure path starts with /
+            if (!profilePictureUrl.StartsWith("/") && !profilePictureUrl.StartsWith("http"))
+            {
+                profilePictureUrl = "/" + profilePictureUrl;
+            }
+
             // Create claims for the token
             var claims = new List<Claim>
-{
-    new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-    new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
-    new Claim(JwtRegisteredClaimNames.Email, user.Email),
-    new Claim("ProfilePictureUrl", user.ProfilePictureUrl ?? ""), 
-    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-};
+    {
+        new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+        new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
+        new Claim(JwtRegisteredClaimNames.Email, user.Email),
+        new Claim("ProfilePictureUrl", profilePictureUrl), // Make sure this claim has the exact name "ProfilePictureUrl"
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+    };
 
             // Add role claims
             foreach (var role in user.Roles)

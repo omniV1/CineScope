@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using CineScope.Shared.Auth;
@@ -352,6 +353,96 @@ namespace CineScope.Client.Services.Auth
                 Console.WriteLine($"Error refreshing user state: {ex.Message}");
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Updates the user information in the authentication state without requiring a full login
+        /// </summary>
+        public async Task RefreshUserProfile()
+        {
+            try
+            {
+                // Get the current token
+                var token = await _localStorage.GetItemAsync<string>("authToken");
+                if (string.IsNullOrEmpty(token))
+                    return;
+
+                // Get updated user profile from the server
+                var response = await _httpClient.GetAsync("api/User/profile");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var updatedUser = await response.Content.ReadFromJsonAsync<UserProfileDto>();
+                    if (updatedUser != null)
+                    {
+                        // Convert UserProfileDto to UserDto
+                        var userDto = new UserDto
+                        {
+                            Id = updatedUser.Id,
+                            Username = updatedUser.Username,
+                            Email = updatedUser.Email,
+                            ProfilePictureUrl = updatedUser.ProfilePictureUrl,
+                            Roles = await GetUserRoles()
+                        };
+
+                        // Update the user in local storage
+                        await _localStorage.SetItemAsync("user", JsonSerializer.Serialize(userDto));
+
+                        // Create a new authentication state with updated user info
+                        var tokenHandler = new JwtSecurityTokenHandler();
+                        var jwtToken = tokenHandler.ReadJwtToken(token);
+
+                        // Create claims list from token
+                        var claims = new List<Claim>(jwtToken.Claims);
+
+                        // Update or add the ProfilePictureUrl claim
+                        var existingClaim = claims.FirstOrDefault(c => c.Type == "ProfilePictureUrl");
+                        if (existingClaim != null)
+                        {
+                            // Remove the old claim
+                            claims.Remove(existingClaim);
+                        }
+
+                        // Add the updated profile picture URL
+                        claims.Add(new Claim("ProfilePictureUrl", updatedUser.ProfilePictureUrl ?? ""));
+
+                        // Create a new identity and principal
+                        var identity = new ClaimsIdentity(claims, "jwt");
+                        var principal = new ClaimsPrincipal(identity);
+
+                        // Use the new public method instead of the protected one
+                        _authStateProvider.UpdateAuthenticationState(Task.FromResult(new AuthenticationState(principal)));
+
+                        Console.WriteLine("User profile refreshed with updated profile picture");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error refreshing user profile: {ex.Message}");
+            }
+        }
+
+        // Helper method to get user roles from the current authentication state
+        private async Task<List<string>> GetUserRoles()
+        {
+            var authState = await _authStateProvider.GetAuthenticationStateAsync();
+            var roles = new List<string>();
+
+            if (authState.User.Identity.IsAuthenticated)
+            {
+                // Check for role claims
+                var roleClaims = authState.User.Claims.Where(c => c.Type == ClaimTypes.Role);
+                roles.AddRange(roleClaims.Select(c => c.Value));
+            }
+
+            if (roles.Count == 0)
+            {
+                // Default role if none found
+                roles.Add("User");
+            }
+
+            return roles;
         }
     }
 }

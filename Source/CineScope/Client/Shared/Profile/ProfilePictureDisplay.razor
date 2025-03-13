@@ -23,7 +23,10 @@
         // If URL is null or empty, use the default profile picture
         if (string.IsNullOrEmpty(Url))
         {
-            Url = ProfilePictureOptions.DefaultProfilePicture;
+            // Make sure this path matches the actual path structure you're using
+            Url = "/profile-pictures/default.svg";
         }
+
+        Console.WriteLine($"ProfilePictureDisplay initialized with URL: {Url}");
     }
 }

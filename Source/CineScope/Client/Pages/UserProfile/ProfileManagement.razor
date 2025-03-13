@@ -355,13 +355,13 @@
                     ProfilePictureUrl = user.ProfilePictureUrl
                 };
 
-            // Call API to update just the profile picture
+            // Call API to update the profile picture
             var response = await Http.PutAsJsonAsync("api/User/profile-picture", updateRequest);
 
             if (response.IsSuccessStatusCode)
             {
-                // Refresh auth state to update navbar
-                await AuthService.RefreshUserStateAsync();
+                // Use the RefreshUserProfile method which is already correctly implemented
+                await AuthService.RefreshUserProfile();
 
                 Snackbar.Add("Profile picture updated", Severity.Success);
                 profilePictureUpdated = false;

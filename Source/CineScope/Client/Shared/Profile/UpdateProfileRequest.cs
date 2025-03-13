@@ -1,4 +1,4 @@
-﻿namespace CineScope.Shared.Auth
+﻿namespace CineScope.Client.Shared.Profile
 {
     /// <summary>
     /// Represents a profile update request.

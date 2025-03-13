@@ -5,6 +5,7 @@ using CineScope.Shared.Auth;
 using CineScope.Shared.DTOs;
 using System.Text.Json;
 using Blazored.LocalStorage;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace CineScope.Client.Services.Auth
 {
@@ -28,6 +29,11 @@ namespace CineScope.Client.Services.Auth
             _httpClient = httpClient;
             _localStorage = localStorage;
             _anonymous = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+        }
+
+        public void UpdateAuthenticationState(Task<AuthenticationState> authState)
+        {
+            NotifyAuthenticationStateChanged(authState);
         }
 
         /// <summary>
@@ -89,18 +95,18 @@ namespace CineScope.Client.Services.Auth
             // Set the auth token in the authorization header
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-            // Create claims for the authenticated user
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Email, user.Email)
-            };
+            // Decode the token to extract claims
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwtToken = tokenHandler.ReadJwtToken(token);
 
-            // Add role claims
-            foreach (var role in user.Roles)
+            // Create claims for the authenticated user
+            var claims = new List<Claim>();
+
+            // Add all claims from the token
+            foreach (var claim in jwtToken.Claims)
             {
-                claims.Add(new Claim(ClaimTypes.Role, role));
+                claims.Add(new Claim(claim.Type, claim.Value));
+                Console.WriteLine($"Added claim from token: {claim.Type} = {claim.Value}");
             }
 
             var identity = new ClaimsIdentity(claims, "jwt");

@@ -1,6 +1,7 @@
 ﻿@using CineScope.Client.Services
 @using CineScope.Client.Services.Auth
 @using CineScope.Shared.DTOs
+@using CineScope.Client.Shared.Profile
 @inherits LayoutComponentBase
 @inject AuthService AuthService
 @inject ISnackbar Snackbar
@@ -21,21 +22,19 @@
 
             <AuthorizeView>
                 <Authorized>
+                    <!-- Show profile picture and user menu -->
                     <MudMenu AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
                         <ActivatorContent>
-                            <MudAvatar Style="height: 40px; width: 40px; cursor: pointer;">
-                                @if (!string.IsNullOrEmpty(context.User.FindFirst("ProfilePictureUrl")?.Value))
-                                {
-                                    <img src="@context.User.FindFirst("ProfilePictureUrl")?.Value" alt="Profile" />
-                                }
-                                else
-                                {
-                                    <MudIcon Icon="@Icons.Material.Filled.AccountCircle" />
-                                }
-                            </MudAvatar>
+                            <div style="cursor: pointer;">
+                                <ProfilePictureDisplay Url="@GetProfilePictureUrl(context)"
+                                                       Username="@context.User.Identity.Name"
+                                                       Size="Size.Medium"
+                                                       Width="40"
+                                                       Height="40" />
+                            </div>
                         </ActivatorContent>
                         <ChildContent>
-                            <MudText Typo="Typo.body2" Class="px-4 py-2">@context.User.Identity?.Name</MudText>
+                            <MudText Typo="Typo.body2" Class="px-4 py-2">@context.User.Identity.Name</MudText>
                             <MudDivider Class="mb-2" />
                             <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("/profile"))">My Profile</MudMenuItem>
                             <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("/my-reviews"))">My Reviews</MudMenuItem>
@@ -44,7 +43,7 @@
                     </MudMenu>
                 </Authorized>
                 <NotAuthorized>
-                    <!-- Show these items when user is not authenticated -->
+                    <!-- Login/register buttons -->
                     <MudButton Variant="Variant.Text" Color="Color.Inherit" OnClick="@(() => NavigationManager.NavigateTo("/login"))">Login</MudButton>
                     <MudButton Variant="Variant.Outlined" Color="Color.Inherit" OnClick="@(() => NavigationManager.NavigateTo("/register"))">Register</MudButton>
                 </NotAuthorized>
@@ -120,5 +119,45 @@
         await AuthService.Logout();
         Snackbar.Add("You have been logged out", Severity.Success);
         NavigationManager.NavigateTo("/");
+    }
+
+    /// <summary>
+    /// Gets the user's profile picture URL from the authentication context.
+    /// </summary>
+    private string GetProfilePictureUrl(AuthenticationState context)
+    {
+        try
+        {
+            // Debug: list all claims
+            foreach (var claim in context.User.Claims)
+            {
+                Console.WriteLine($"Claim: {claim.Type} = {claim.Value}");
+            }
+
+            // Check for ProfilePictureUrl claim
+            var profilePictureClaim = context.User.FindFirst("ProfilePictureUrl");
+
+            if (profilePictureClaim != null && !string.IsNullOrWhiteSpace(profilePictureClaim.Value))
+            {
+                Console.WriteLine($"Found profile picture URL: {profilePictureClaim.Value}");
+                return profilePictureClaim.Value;
+            }
+
+            // If user is authenticated but no profile picture claim found,
+            // use avatar8.svg since we know it exists
+            if (context.User.Identity.IsAuthenticated)
+            {
+                Console.WriteLine("User authenticated but no profile picture claim found, using avatar8.svg");
+                return "/profile-pictures/avatar8.svg";
+            }
+
+            // Default fallback
+            return "/profile-pictures/default.svg";
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting profile picture: {ex.Message}");
+            return "/profile-pictures/default.svg";
+        }
     }
 }
