@@ -5,11 +5,14 @@
 @using CineScope.Client.Services.Auth
 @using CineScope.Shared.DTOs
 @using Microsoft.AspNetCore.Components.Authorization
+@using System.Text.Json
+@inject ClientMovieCacheService MovieCacheService
 @inject HttpClient Http
 @inject ISnackbar Snackbar
 @inject NavigationManager NavigationManager
 @inject AuthService AuthService
 @inject AuthenticationStateProvider AuthStateProvider
+@inject IJSRuntime JSRuntime
 
 <PageTitle>@(movie?.Title ?? "Movie Details") - CineScope</PageTitle>
 
@@ -50,13 +53,22 @@ else if (movie == null)
 }
 else
 {
-    <!-- Movie Details Section - no changes needed here -->
+    <!-- Movie Details Section -->
     <MudGrid>
         <!-- Movie Poster -->
         <MudItem xs="12" sm="4" md="3">
             <MudCard Elevation="3" Class="movie-poster-card">
                 <MudCardMedia Image="@GetPosterUrl()" Height="450" />
             </MudCard>
+
+            <!-- Refresh Button -->
+            <MudButton Variant="Variant.Text" Color="Color.Primary"
+                       FullWidth="true"
+                       OnClick="@(() => LoadMovie(true))"
+                       StartIcon="@Icons.Material.Filled.Refresh"
+                       Class="mt-2">
+                Refresh Movie Data
+            </MudButton>
         </MudItem>
 
         <!-- Movie Info -->
@@ -100,7 +112,7 @@ else
                     }
                 </MudGrid>
 
-                <!-- Action Buttons - Modified to include direct auth check for debugging -->
+                <!-- Action Buttons -->
                 <div class="d-flex gap-3 mt-6">
                     <AuthorizeView>
                         <Authorized>
@@ -129,7 +141,7 @@ else
         </MudItem>
     </MudGrid>
 
-    <!-- Review Form Section - Modified to show auth status debug info -->
+    <!-- Review Form Section -->
     <AuthorizeView>
         <Authorized>
             @if (showReviewForm)
@@ -138,12 +150,6 @@ else
                 <CreateReview MovieId="@MovieId" OnReviewSubmitted="HandleReviewSubmitted" CurrentUserId="@currentUserId" />
             }
         </Authorized>
-        <NotAuthorized>
-            <MudAlert Severity="Severity.Warning" Class="my-4">
-                Auth debug: User appears not authenticated to post reviews.
-                CurrentUserId: @currentUserId
-            </MudAlert>
-        </NotAuthorized>
     </AuthorizeView>
 
     <!-- Reviews Section -->
@@ -157,10 +163,18 @@ else
     }
     else
     {
+        <div class="d-flex justify-space-between align-center mb-4">
+            <MudText Typo="Typo.h5">Reviews</MudText>
+            <MudButton Variant="Variant.Text" Color="Color.Primary"
+                       OnClick="@(() => LoadReviews(true))"
+                       StartIcon="@Icons.Material.Filled.Refresh">
+                Refresh Reviews
+            </MudButton>
+        </div>
+
         <AuthorizeView>
             <Authorized>
                 <ReviewList Reviews="@reviews" MovieId="@MovieId"
-                            Title="Reviews"
                             ShowActions="true"
                             CurrentUserId="@currentUserId"
                             MovieTitles="@movieTitles"
@@ -169,7 +183,6 @@ else
             </Authorized>
             <NotAuthorized>
                 <ReviewList Reviews="@reviews" MovieId="@MovieId"
-                            Title="Reviews"
                             ShowActions="false"
                             EmptyMessage="No reviews yet. Login to be the first to share your thoughts!" />
             </NotAuthorized>
@@ -193,12 +206,15 @@ else
     private string currentUserId = string.Empty;
     private Dictionary<string, string> movieTitles = new();
 
+    // Keys for client-side caching of reviews
+    private const string REVIEWS_CACHE_KEY_PREFIX = "Reviews_";
+    private const int REVIEWS_CACHE_EXPIRATION_MINUTES = 5;
+
     /// <summary>
     /// Initialize component and load movie data
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        // Enhanced authentication debugging
         try
         {
             Console.WriteLine("Checking authentication state...");
@@ -216,15 +232,6 @@ else
             var user = await AuthService.GetCurrentUser();
             currentUserId = user?.Id ?? string.Empty;
             Console.WriteLine($"Current user ID from AuthService: {currentUserId}");
-
-            // Check if token is in headers
-            var hasAuthHeader = Http.DefaultRequestHeaders.Authorization != null;
-            Console.WriteLine($"Has Authorization header: {hasAuthHeader}");
-            if (hasAuthHeader)
-            {
-                Console.WriteLine($"Auth header scheme: {Http.DefaultRequestHeaders.Authorization.Scheme}");
-                Console.WriteLine($"Auth header length: {Http.DefaultRequestHeaders.Authorization.Parameter?.Length ?? 0}");
-            }
         }
         catch (Exception ex)
         {
@@ -253,35 +260,28 @@ else
     }
 
     /// <summary>
-    /// Loads movie details from the API
+    /// Loads movie details from the cache or API
     /// </summary>
-    private async Task LoadMovie()
+    private async Task LoadMovie(bool forceRefresh = false)
     {
         try
         {
             isLoading = true;
 
             // Debug: Print the movie ID we're loading
-            Console.WriteLine($"Loading movie with ID from route parameter: {MovieId}");
+            Console.WriteLine($"Loading movie with ID: {MovieId} (forceRefresh: {forceRefresh})");
 
-            // Call the API to get the movie details
-            var response = await Http.GetAsync($"/api/Movie/{MovieId}");
+            // Use the cache service to get the movie
+            movie = await MovieCacheService.GetMovieByIdAsync(MovieId, forceRefresh);
 
-            if (response.IsSuccessStatusCode)
+            if (movie == null)
             {
-                movie = await response.Content.ReadFromJsonAsync<MovieDto>();
-                Console.WriteLine($"Loaded movie: {movie?.Title} with ID: {movie?.Id}");
-
-                // Check if the movie ID in the route matches what we got back
-                if (movie?.Id != MovieId)
-                {
-                    Console.WriteLine($"IMPORTANT: Route parameter ID ({MovieId}) does not match returned movie ID ({movie?.Id})");
-                }
+                Console.WriteLine("Movie not found in cache or API");
+                Snackbar.Add("Failed to load movie details", Severity.Error);
             }
             else
             {
-                Console.WriteLine($"Failed to load movie: {response.StatusCode}");
-                Snackbar.Add("Failed to load movie details", Severity.Error);
+                Console.WriteLine($"Loaded movie: {movie.Title} with ID: {movie.Id}");
             }
         }
         catch (Exception ex)
@@ -296,16 +296,28 @@ else
     }
 
     /// <summary>
-    /// Loads reviews for this movie from the API
+    /// Loads reviews for this movie from cache or API
     /// </summary>
-    private async Task LoadReviews()
+    private async Task LoadReviews(bool forceRefresh = false)
     {
         try
         {
             isLoadingReviews = true;
 
             // Debug message for the movie ID we're requesting reviews for
-            Console.WriteLine($"Requesting reviews for movie ID: {MovieId}");
+            Console.WriteLine($"Requesting reviews for movie ID: {MovieId} (forceRefresh: {forceRefresh})");
+
+            // Try to get reviews from local storage cache first
+            if (!forceRefresh)
+            {
+                var cachedReviews = await GetReviewsFromCache();
+                if (cachedReviews != null)
+                {
+                    reviews = cachedReviews;
+                    Console.WriteLine($"Retrieved {reviews.Count} reviews from cache");
+                    return;
+                }
+            }
 
             // Call the API to get reviews for this movie
             var response = await Http.GetAsync($"/api/Review/movie/{MovieId}");
@@ -315,16 +327,10 @@ else
             if (response.IsSuccessStatusCode)
             {
                 reviews = await response.Content.ReadFromJsonAsync<List<ReviewDto>>() ?? new();
-                Console.WriteLine($"Loaded {reviews.Count} reviews");
+                Console.WriteLine($"Loaded {reviews.Count} reviews from API");
 
-                // If we have no reviews from the API but need to demonstrate functionality,
-                // we can use sample data in development
-                if (reviews.Count == 0 && IsDevelopmentEnvironment())
-                {
-                    // Sample review data for development purposes
-                    reviews = GenerateSampleReviews();
-                    Console.WriteLine("Using sample reviews since no real reviews were found");
-                }
+                // Cache the reviews for future requests
+                await SaveReviewsToCache(reviews);
             }
             else
             {
@@ -362,6 +368,78 @@ else
         finally
         {
             isLoadingReviews = false;
+        }
+    }
+
+    /// <summary>
+    /// Gets reviews from browser's localStorage cache
+    /// </summary>
+    private async Task<List<ReviewDto>> GetReviewsFromCache()
+    {
+        try
+        {
+            var cacheKey = $"{REVIEWS_CACHE_KEY_PREFIX}{MovieId}";
+            // Fixed: Correct parameter passing for JavaScript interop
+            var json = await JSRuntime.InvokeAsync<string>("localStorage.getItem", new object[] { cacheKey });
+
+            if (string.IsNullOrEmpty(json))
+                return null;
+
+            var cachedData = JsonSerializer.Deserialize<CachedData<List<ReviewDto>>>(json);
+
+            // Check if cache is expired
+            if (cachedData == null || DateTime.UtcNow.Subtract(cachedData.Timestamp).TotalMinutes > REVIEWS_CACHE_EXPIRATION_MINUTES)
+                return null;
+
+            return cachedData.Data;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error retrieving reviews from cache: {ex.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Saves reviews to browser's localStorage cache
+    /// </summary>
+    private async Task SaveReviewsToCache(List<ReviewDto> reviews)
+    {
+        try
+        {
+            var cacheKey = $"{REVIEWS_CACHE_KEY_PREFIX}{MovieId}";
+            var cachedData = new CachedData<List<ReviewDto>>
+                {
+                    Data = reviews,
+                    Timestamp = DateTime.UtcNow
+                };
+
+            var json = JsonSerializer.Serialize(cachedData);
+            // Fixed: Correct parameter passing for JavaScript interop
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", new object[] { cacheKey, json });
+            Console.WriteLine($"Saved {reviews.Count} reviews to cache");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving reviews to cache: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Invalidates the reviews cache for this movie
+    /// </summary>
+    private async Task InvalidateReviewsCache()
+    {
+        try
+        {
+            var cacheKey = $"{REVIEWS_CACHE_KEY_PREFIX}{MovieId}";
+            // Fixed: Correct parameter passing for JavaScript interop
+            await JSRuntime.InvokeVoidAsync("localStorage.removeItem", new object[] { cacheKey });
+            Console.WriteLine("Invalidated reviews cache");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error invalidating reviews cache: {ex.Message}");
         }
     }
 
@@ -461,11 +539,14 @@ else
         // Hide the review form
         showReviewForm = false;
 
+        // Invalidate the reviews cache since we added a new review
+        await InvalidateReviewsCache();
+
         // Reload the reviews to include the new one
-        await LoadReviews();
+        await LoadReviews(true);
 
         // Also reload the movie to update the average rating
-        await LoadMovie();
+        await LoadMovie(true);
     }
 
     /// <summary>
@@ -473,8 +554,14 @@ else
     /// </summary>
     private async Task HandleReviewDeleted(string reviewId)
     {
+        // Invalidate the reviews cache since we deleted a review
+        await InvalidateReviewsCache();
+
         // Reload the movie to update the average rating
-        await LoadMovie();
+        await LoadMovie(true);
+
+        // Reload reviews to reflect the deletion
+        await LoadReviews(true);
     }
 
     /// <summary>
@@ -482,10 +569,22 @@ else
     /// </summary>
     private async Task HandleReviewUpdated(ReviewDto updatedReview)
     {
+        // Invalidate the reviews cache since we updated a review
+        await InvalidateReviewsCache();
+
         // Reload all reviews to ensure we have the latest data
-        await LoadReviews();
+        await LoadReviews(true);
 
         // Also reload the movie to update the average rating
-        await LoadMovie();
+        await LoadMovie(true);
+    }
+
+    /// <summary>
+    /// Class to store cached data with timestamp
+    /// </summary>
+    private class CachedData<T>
+    {
+        public T Data { get; set; }
+        public DateTime Timestamp { get; set; }
     }
 }

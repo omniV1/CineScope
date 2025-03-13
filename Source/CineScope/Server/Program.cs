@@ -56,6 +56,17 @@ builder.Services.Configure<MongoDbSettings>(
     builder.Configuration.GetSection(nameof(MongoDbSettings)));
 
 /// <summary>
+/// Configure movie cache settings from appsettings.json.
+/// </summary>
+builder.Services.Configure<MovieCacheSettings>(
+    builder.Configuration.GetSection(nameof(MovieCacheSettings)));
+
+/// <summary>
+/// Add memory cache support for application-wide caching.
+/// </summary>
+builder.Services.AddMemoryCache();
+
+/// <summary>
 /// Configure JWT authentication
 /// </summary>
 builder.Services.AddAuthentication(options =>
@@ -89,6 +100,14 @@ builder.Services.AddAuthentication(options =>
 /// </summary>
 builder.Services.AddSingleton<IMongoDbService, MongoDbService>();
 
+/// <summary>
+/// Register the caching services as singletons to maintain
+/// cached data throughout the application's lifetime.
+/// </summary>
+builder.Services.AddSingleton<MovieCacheService>();
+
+
+/// <summary>
 /// Register services as scoped services.
 /// Scoped services are created once per HTTP request.
 /// </summary>
