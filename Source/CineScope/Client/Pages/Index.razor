@@ -40,7 +40,9 @@
 }
 else if (topRatedMovies.Count == 0)
 {
-    <MudAlert Severity="Severity.Info">No top rated movies found.</MudAlert>
+    <MudAlert Severity="Severity.Warning">
+        <i class="fas fa-exclamation-circle"></i> No top rated movies found. Please check back later.
+    </MudAlert>
 }
 else
 {
@@ -69,7 +71,9 @@ else
 }
 else if (recentlyAddedMovies.Count == 0)
 {
-    <MudAlert Severity="Severity.Info">No recently added movies found.</MudAlert>
+    <MudAlert Severity="Severity.Warning">
+        <i class="fas fa-exclamation-circle"></i> No recently added movies found. Stay tuned for updates!
+    </MudAlert>
 }
 else
 {
