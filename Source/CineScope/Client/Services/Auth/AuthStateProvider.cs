@@ -6,7 +6,7 @@ using CineScope.Shared.DTOs;
 using System.Text.Json;
 using Blazored.LocalStorage;
 
-namespace CineScope.Client.Services
+namespace CineScope.Client.Services.Auth
 {
     /// <summary>
     /// Provides authentication state management for the application.

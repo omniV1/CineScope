@@ -11,7 +11,7 @@ using CineScope.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace CineScope.Client.Services
+namespace CineScope.Client.Services.Auth
 {
     /// <summary>
     /// Service responsible for client-side authentication operations.
@@ -141,7 +141,7 @@ namespace CineScope.Client.Services
         /// <returns>True if the user is authenticated, false otherwise</returns>
         public async Task<bool> IsAuthenticated()
         {
-            var authState = await ((AuthenticationStateProvider)_authStateProvider).GetAuthenticationStateAsync();
+            var authState = await _authStateProvider.GetAuthenticationStateAsync();
             return authState.User.Identity.IsAuthenticated;
         }
 

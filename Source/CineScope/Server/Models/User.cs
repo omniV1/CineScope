@@ -67,5 +67,12 @@ namespace CineScope.Server.Models
         /// Used for security to implement account lockout after multiple failures.
         /// </summary>
         public int FailedLoginAttempts { get; set; } = 0;
+
+        /// <summary>
+        /// URL to the user's profile picture.
+        /// This can be an absolute URL to an external service or a relative path to a locally stored image.
+        /// If empty or null, a default profile picture will be shown.
+        /// </summary>
+        public string ProfilePictureUrl { get; set; } = string.Empty;
     }
 }

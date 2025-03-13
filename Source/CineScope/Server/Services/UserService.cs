@@ -4,6 +4,7 @@ using CineScope.Server.Data;
 using CineScope.Server.Interfaces;
 using CineScope.Server.Models;
 using CineScope.Shared.DTOs;
+using CineScope.Shared.Auth; // Added this import to use the shared UpdateProfileRequest
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
@@ -61,6 +62,7 @@ namespace CineScope.Server.Services
                 Id = user.Id,
                 Username = user.Username,
                 Email = user.Email,
+                ProfilePictureUrl = user.ProfilePictureUrl, // Added this line to include the profile picture
                 CreatedAt = user.CreatedAt,
                 LastLogin = user.LastLogin
             };
@@ -144,7 +146,8 @@ namespace CineScope.Server.Services
             // Build update definition
             var updateDefinition = Builders<User>.Update
                 .Set(u => u.Username, updateProfileRequest.Username)
-                .Set(u => u.Email, updateProfileRequest.Email);
+                .Set(u => u.Email, updateProfileRequest.Email)
+                .Set(u => u.ProfilePictureUrl, updateProfileRequest.ProfilePictureUrl); // Added this line to update profile picture
 
             // Add password update if provided
             if (!string.IsNullOrEmpty(updateProfileRequest.NewPassword))
@@ -194,42 +197,56 @@ namespace CineScope.Server.Services
                 return null;
             }
 
-            // Map user to public DTO (only expose username and join date)
+            // Map user to public DTO (expose username, profile picture and join date)
             return new PublicUserDto
             {
                 Id = user.Id,
                 Username = user.Username,
+                ProfilePictureUrl = user.ProfilePictureUrl, // Added this line to include profile picture
                 JoinDate = user.CreatedAt
             };
         }
-    }
-
-    /// <summary>
-    /// Represents a profile update request.
-    /// </summary>
-    public class UpdateProfileRequest
-    {
-        /// <summary>
-        /// The updated username.
-        /// </summary>
-        public string Username { get; set; }
 
         /// <summary>
-        /// The updated email address.
+        /// Updates just a user's profile picture.
         /// </summary>
-        public string Email { get; set; }
+        /// <param name="userId">The ID of the user to update</param>
+        /// <param name="profilePictureUrl">The new profile picture URL</param>
+        /// <returns>Result indicating success or failure</returns>
+        public async Task<ProfileUpdateResult> UpdateProfilePictureAsync(string userId, string profilePictureUrl)
+        {
+            // Get the users collection
+            var collection = _mongoDbService.GetCollection<User>(_settings.UsersCollectionName);
 
-        /// <summary>
-        /// The current password for verification.
-        /// Required when changing the password.
-        /// </summary>
-        public string CurrentPassword { get; set; }
+            // Find the user by ID
+            var user = await collection.Find(u => u.Id == userId).FirstOrDefaultAsync();
 
-        /// <summary>
-        /// The new password to set.
-        /// Optional - only provided when changing password.
-        /// </summary>
-        public string NewPassword { get; set; }
+            // If user not found, return failure
+            if (user == null)
+            {
+                return new ProfileUpdateResult
+                {
+                    Success = false,
+                    Message = "User not found"
+                };
+            }
+
+            // Build update definition for just the profile picture
+            var updateDefinition = Builders<User>.Update
+                .Set(u => u.ProfilePictureUrl, profilePictureUrl);
+
+            // Update the user in the database
+            var updateResult = await collection.UpdateOneAsync(u => u.Id == userId, updateDefinition);
+
+            // Return result
+            return new ProfileUpdateResult
+            {
+                Success = updateResult.ModifiedCount > 0,
+                Message = updateResult.ModifiedCount > 0
+                    ? "Profile picture updated successfully"
+                    : "No changes were made to the profile picture"
+            };
+        }
     }
 
     /// <summary>
