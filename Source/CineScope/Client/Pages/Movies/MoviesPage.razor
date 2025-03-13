@@ -14,45 +14,60 @@
             <MudPaper Elevation="0" Class="pb-4">
                 <MudText Typo="Typo.h4" Class="mb-4">Browse Movies</MudText>
 
-                <MudGrid>
+                <!-- Compact search bar and filters in a single row with perfect alignment -->
+                <div class="search-filter-container">
                     <!-- Search Box -->
-                    <MudItem xs="12" sm="6" md="4">
-                        <MudTextField @bind-Value="searchTerm" Label="Search Movies"
-                                      Variant="Variant.Outlined" Adornment="Adornment.End"
-                                      AdornmentIcon="@Icons.Material.Filled.Search"
-                                      IconSize="Size.Medium" aria-label="Search Movies"
-                                      OnKeyDown="@HandleSearchKeyDown"
-                                      HelperText="Type a movie title and press enter to search"
-                                      Class="mt-0" />
-                    </MudItem>
+                    <div class="control-wrapper">
+                        <MudTextField @bind-Value="searchTerm" 
+                                    Label="Search Movies"
+                                    Variant="Variant.Outlined" 
+                                    Adornment="Adornment.End"
+                                    AdornmentIcon="@Icons.Material.Filled.Search"
+                                    IconSize="Size.Medium" 
+                                    Style="flex: 1; min-width: 300px;" 
+                                    OnKeyDown="@HandleSearchKeyDown" />
+                    </div>
 
                     <!-- Genre Filter -->
-                    <MudItem xs="12" sm="6" md="2">
-                        <MudSelect T="string" Label="Genre" Variant="Variant.Outlined"
-                                   Value="@selectedGenre" ValueChanged="@OnGenreChanged"
-                                   Dense="true" aria-label="Select Genre" Class="mt-0">
+                    <div class="control-wrapper" style="margin-left: 8px;">
+                        <MudSelect T="string" 
+                                Label="Select a Genre" 
+                                Value="@selectedGenre" 
+                                ValueChanged="@OnGenreChanged"
+                                Variant="Variant.Outlined"
+                                Style="min-width: 150px;"
+                                AnchorOrigin="Origin.BottomCenter">
                             <MudSelectItem Value="@string.Empty">All Genres</MudSelectItem>
                             @foreach (var genre in genres)
                             {
-                                <MudSelectItem Value="@genre">@genre</MudSelectItem>
+                                    <MudSelectItem Value="@genre">@genre</MudSelectItem>
                             }
                         </MudSelect>
-                    </MudItem>
+                    </div>
 
-                    <!-- Filter Button -->
-                    <MudItem xs="6" sm="4" md="2">
-                        <MudButton FullWidth="true" Variant="Variant.Outlined" Color="Color.Primary"
-                                   OnClick="@ShowFilterDialog" StartIcon="@Icons.Material.Filled.FilterList"
-                                   aria-label="Filter Options" Class="mt-1">
-                            Filters
+                    <!-- Spacer to push the buttons to the right -->
+                    <div style="flex-grow: 1;"></div>
+
+                    <!-- Filters Button -->
+                    <div class="control-wrapper">
+                        <MudButton Variant="Variant.Outlined" 
+                                Color="Color.Error" 
+                                OnClick="@ShowFilterDialog" 
+                                StartIcon="@Icons.Material.Filled.FilterList"
+                                Class="aligned-button">
+                            FILTERS
                         </MudButton>
-                    </MudItem>
+                    </div>
 
-                    <!-- Sort Button -->
-                    <MudItem xs="6" sm="4" md="2">
-                        <MudMenu Label="Sort" Variant="Variant.Outlined" FullWidth="true"
-                                 EndIcon="@Icons.Material.Filled.Sort" aria-label="Sort Options"
-                                 Class="mt-1">
+                    <!-- Sort Button with Dropdown -->
+                    <div class="control-wrapper" style="margin-left: 8px;">
+                        <MudMenu Icon="@Icons.Material.Filled.ArrowDropDown" 
+                                Label="SORT" 
+                                Variant="Variant.Outlined"
+                                EndIcon="false"
+                                Class="aligned-button"
+                                AnchorOrigin="Origin.BottomCenter"
+                                TransformOrigin="Origin.TopCenter">
                             <MudMenuItem OnClick="@(() => ApplySort("date_desc"))">
                                 Newest First
                             </MudMenuItem>
@@ -63,75 +78,116 @@
                                 Title (A-Z)
                             </MudMenuItem>
                         </MudMenu>
-                    </MudItem>
+                    </div>
 
                     <!-- Search Button -->
-                    <MudItem xs="12" sm="4" md="2">
-                        <MudButton FullWidth="true" Variant="Variant.Filled" Color="Color.Primary"
-                                   OnClick="@SearchMovies" aria-label="Search" Class="mt-1">
-                            Search
+                    <div class="control-wrapper" style="margin-left: 8px;">
+                        <MudButton Variant="Variant.Filled" 
+                                Color="Color.Error" 
+                                OnClick="@SearchMovies" 
+                                Class="aligned-button">
+                            SEARCH
                         </MudButton>
-                    </MudItem>
-                </MudGrid>
+                    </div>
+                </div>
             </MudPaper>
         </MudItem>
 
         <!-- Active Filters Display -->
         @if (!string.IsNullOrEmpty(selectedGenre) || minimumRating > 1)
         {
-            <MudItem xs="12">
-                <MudPaper Elevation="0" Class="pa-4 mb-4" Style="background-color: var(--mud-palette-background-grey)">
-                    <MudText Typo="Typo.subtitle1">Active Filters:</MudText>
-                    <div class="d-flex flex-wrap gap-2 mt-2">
+                <MudItem xs="12">
+                    <MudPaper Elevation="0" Class="pa-4 mb-4" Style="background-color: var(--mud-palette-background-grey)">
+                        <MudText Typo="Typo.subtitle1">Active Filters:</MudText>
+                        <div class="d-flex flex-wrap gap-2 mt-2">
                         @if (!string.IsNullOrEmpty(selectedGenre))
                         {
-                            <MudChip Color="Color.Primary" OnClose="@(() => ClearGenreFilter())">
-                                Genre: @selectedGenre
-                            </MudChip>
+                                    <MudChip Color="Color.Error" OnClose="@(() => ClearGenreFilter())">
+                                        Genre: @selectedGenre
+                                    </MudChip>
                         }
                         @if (minimumRating > 1)
                         {
-                            <MudChip Color="Color.Secondary" OnClose="@(() => ClearRatingFilter())">
-                                Rating: @minimumRating+ Stars
-                            </MudChip>
+                                    <MudChip Color="Color.Error" OnClose="@(() => ClearRatingFilter())">
+                                        Rating: @minimumRating+ Stars
+                                    </MudChip>
                         }
-                        <MudButton Variant="Variant.Text" Color="Color.Error"
-                                   OnClick="@ClearAllFilters" Size="Size.Small">
-                            Clear All
-                        </MudButton>
-                    </div>
-                </MudPaper>
-            </MudItem>
+                            <MudButton Variant="Variant.Text" Color="Color.Error"
+                                      OnClick="@ClearAllFilters" Size="Size.Small">
+                                Clear All
+                            </MudButton>
+                        </div>
+                    </MudPaper>
+                </MudItem>
         }
 
         <MudItem xs="12">
             @if (isLoading)
             {
-                <div class="d-flex justify-center my-8">
-                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
-                </div>
+                    <div class="d-flex justify-center my-8">
+                        <MudProgressCircular Color="Color.Error" Indeterminate="true" Size="Size.Large" />
+                    </div>
             }
             else if (displayedMovies.Count == 0)
             {
-                <MudAlert Severity="Severity.Info" Class="my-4">
-                    <i class="fas fa-exclamation-circle"></i> No movies found. Try adjusting your search or filters.
-                </MudAlert>
+                    <MudAlert Severity="Severity.Info" Class="my-4">
+                        <i class="fas fa-exclamation-circle"></i> No movies found. Try adjusting your search or filters.
+                    </MudAlert>
             }
             else
             {
-                <MudText Class="mb-4">Found @displayedMovies.Count movies</MudText>
-                <MudGrid>
+                    <MudText Class="mb-4">Found @displayedMovies.Count movies</MudText>
+                    <MudGrid>
                     @foreach (var movie in displayedMovies)
                     {
-                        <MudItem xs="12" sm="6" md="4" lg="3">
-                            <MovieCard Movie="@movie" />
-                        </MudItem>
+                                <MudItem xs="12" sm="6" md="4" lg="3">
+                                    <MovieCard Movie="@movie" />
+                                </MudItem>
                     }
-                </MudGrid>
+                    </MudGrid>
             }
         </MudItem>
     </MudGrid>
 </MudContainer>
+
+<style>
+    /* Custom styles to ensure proper alignment */
+    .search-filter-container {
+        display: flex;
+        align-items: center; /* Center align all items vertically */
+        flex-wrap: wrap;
+        gap: 0;
+    }
+
+    /* Wrapper to ensure consistent heights */
+    .control-wrapper {
+        display: flex;
+        align-items: center;
+        height: 40px; /* Fixed height for all controls */
+    }
+
+    /* Style for buttons to ensure alignment */
+    .aligned-button {
+        height: 40px;
+        text-transform: uppercase;
+        margin: 0;
+        padding: 0 16px;
+    }
+
+    /* Force consistent height on mobile */
+    @@media (max-width: 600px) {
+        .search-filter-container {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .control-wrapper {
+            margin-left: 0 !important;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+    }
+</style>
 
 @code {
     // State for movies and display
@@ -156,6 +212,24 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadMovies();
+    }
+
+    /// <summary>
+    /// Cycles through sort options when the Sort button is clicked
+    /// </summary>
+    private async Task CycleSortOptions()
+    {
+        // Cycle through the sort options in a predefined order
+        string nextSort = CurrentSortOption switch
+        {
+            "date_desc" => "rating_desc",
+            "rating_desc" => "title_asc",
+            "title_asc" => "date_desc",
+            _ => "date_desc" // Default fallback
+        };
+
+        // Apply the next sort option
+        await ApplySort(nextSort);
     }
 
     /// <summary>
