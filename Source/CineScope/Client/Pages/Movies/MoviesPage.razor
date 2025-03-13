@@ -22,6 +22,7 @@
                                       AdornmentIcon="@Icons.Material.Filled.Search"
                                       IconSize="Size.Medium" aria-label="Search Movies"
                                       OnKeyDown="@HandleSearchKeyDown"
+                                      HelperText="Type a movie title and press enter to search"
                                       Class="mt-0" />
                     </MudItem>
 
@@ -113,7 +114,7 @@
             else if (displayedMovies.Count == 0)
             {
                 <MudAlert Severity="Severity.Info" Class="my-4">
-                    No movies found. Try adjusting your search or filters.
+                    <i class="fas fa-exclamation-circle"></i> No movies found. Try adjusting your search or filters.
                 </MudAlert>
             }
             else
