@@ -316,5 +316,42 @@ namespace CineScope.Client.Services.Auth
             var returnUrl = _navigationManager.Uri;
             _navigationManager.NavigateTo($"/login?returnUrl={Uri.EscapeDataString(returnUrl)}");
         }
+
+        /// <summary>
+        /// Refreshes the authentication token after a profile update to reflect changes in the UI.
+        /// </summary>
+        /// <returns>True if token refresh was successful</returns>
+        public async Task<bool> RefreshUserStateAsync()
+        {
+            try
+            {
+                // Get the current token
+                var currentToken = await _localStorage.GetItemAsync<string>("authToken");
+                if (string.IsNullOrEmpty(currentToken))
+                    return false;
+
+                // Call the API endpoint to refresh the token with updated user information
+                var response = await _httpClient.PostAsync("api/Auth/refresh", null);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadFromJsonAsync<AuthResponse>();
+                    if (result.Success)
+                    {
+                        // Update auth state with the new token and user information
+                        await _authStateProvider.NotifyUserAuthentication(result.Token, result.User);
+                        Console.WriteLine("Authentication state refreshed successfully");
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error refreshing user state: {ex.Message}");
+                return false;
+            }
+        }
     }
 }

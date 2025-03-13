@@ -21,13 +21,26 @@
 
             <AuthorizeView>
                 <Authorized>
-                    <!-- Show these items when user is authenticated -->
-                    <MudMenu Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
-                        <MudText Typo="Typo.body2" Class="px-4 py-2">@context.User.Identity.Name</MudText>
-                        <MudDivider Class="mb-2" />
-                        <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("/profile"))">My Profile</MudMenuItem>
-                        <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("/my-reviews"))">My Reviews</MudMenuItem>
-                        <MudMenuItem OnClick="Logout">Logout</MudMenuItem>
+                    <MudMenu AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                        <ActivatorContent>
+                            <MudAvatar Style="height: 40px; width: 40px; cursor: pointer;">
+                                @if (!string.IsNullOrEmpty(context.User.FindFirst("ProfilePictureUrl")?.Value))
+                                {
+                                    <img src="@context.User.FindFirst("ProfilePictureUrl")?.Value" alt="Profile" />
+                                }
+                                else
+                                {
+                                    <MudIcon Icon="@Icons.Material.Filled.AccountCircle" />
+                                }
+                            </MudAvatar>
+                        </ActivatorContent>
+                        <ChildContent>
+                            <MudText Typo="Typo.body2" Class="px-4 py-2">@context.User.Identity?.Name</MudText>
+                            <MudDivider Class="mb-2" />
+                            <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("/profile"))">My Profile</MudMenuItem>
+                            <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("/my-reviews"))">My Reviews</MudMenuItem>
+                            <MudMenuItem OnClick="Logout">Logout</MudMenuItem>
+                        </ChildContent>
                     </MudMenu>
                 </Authorized>
                 <NotAuthorized>

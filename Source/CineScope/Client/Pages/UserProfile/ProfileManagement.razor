@@ -2,8 +2,10 @@
 @using CineScope.Shared.DTOs
 @using CineScope.Client.Shared.Profile
 @using CineScope.Shared.Auth;
+@using CineScope.Client.Services.Auth;
 @using System.Net.Http.Json
 @inject HttpClient Http
+@inject AuthService AuthService
 @inject ISnackbar Snackbar
 @attribute [Authorize]
 
@@ -358,6 +360,9 @@
 
             if (response.IsSuccessStatusCode)
             {
+                // Refresh auth state to update navbar
+                await AuthService.RefreshUserStateAsync();
+
                 Snackbar.Add("Profile picture updated", Severity.Success);
                 profilePictureUpdated = false;
             }
@@ -447,6 +452,9 @@
 
             if (response.IsSuccessStatusCode)
             {
+                // Refresh the authentication state to update the navbar
+                await AuthService.RefreshUserStateAsync();
+
                 Snackbar.Add("Profile updated successfully", Severity.Success);
                 isEditing = false;
                 errorMessage = string.Empty;

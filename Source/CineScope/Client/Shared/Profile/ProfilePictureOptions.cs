@@ -9,7 +9,7 @@
         /// Base URL for profile pictures, either hosted on GitHub via jsDelivr or local to the application.
         /// For GitHub hosting, replace with your repository details.
         /// </summary>
-        private const string BaseUrl = "/images/profile-pictures/";
+        private const string BaseUrl = "/profile-pictures/";
 
         /// <summary>
         /// Gets the URLs to all available SVG profile pictures.

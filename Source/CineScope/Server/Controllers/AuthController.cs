@@ -137,8 +137,13 @@ namespace CineScope.Server.Controllers
         /// Refreshes the authentication token for the current user.
         /// </summary>
         /// <returns>Authentication result with new token if successful</returns>
+        /// <summary>
+        /// POST: api/Auth/refresh
+        /// Refreshes the authentication token for the current user.
+        /// </summary>
+        /// <returns>Authentication result with new token if successful</returns>
         [HttpPost("refresh")]
-        [Authorize] // Require authentication to refresh token
+        [Authorize] // Require authentication
         public async Task<ActionResult<AuthResponse>> RefreshToken()
         {
             try
@@ -148,42 +153,27 @@ namespace CineScope.Server.Controllers
                              User.FindFirst("sub")?.Value;
 
                 if (string.IsNullOrEmpty(userId))
-                {
-                    Console.WriteLine("Failed to get userId from claims");
-                    return Unauthorized(new AuthResponse
-                    {
-                        Success = false,
-                        Message = "Invalid token"
-                    });
-                }
+                    return Unauthorized(new AuthResponse { Success = false, Message = "Invalid token" });
 
                 // Get the user from database
                 var collection = _mongoDbService.GetCollection<User>(_settings.UsersCollectionName);
                 var user = await collection.Find(u => u.Id == userId).FirstOrDefaultAsync();
 
                 if (user == null)
-                {
-                    Console.WriteLine($"User not found: {userId}");
-                    return Unauthorized(new AuthResponse
-                    {
-                        Success = false,
-                        Message = "User not found"
-                    });
-                }
+                    return Unauthorized(new AuthResponse { Success = false, Message = "User not found" });
 
-                // Generate a new token with a fresh expiration time
+                // Generate a new token with fresh user data
                 var token = GenerateJwtToken(user);
 
-                // Return the new token
+                // Return the new token with updated user info
                 var userDto = new UserDto
                 {
                     Id = user.Id,
                     Username = user.Username,
                     Email = user.Email,
+                    ProfilePictureUrl = user.ProfilePictureUrl,
                     Roles = user.Roles
                 };
-
-                Console.WriteLine($"Token refreshed for user: {user.Username}");
 
                 return Ok(new AuthResponse
                 {
@@ -195,7 +185,6 @@ namespace CineScope.Server.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in RefreshToken: {ex.Message}");
                 return StatusCode(500, new AuthResponse
                 {
                     Success = false,
@@ -203,6 +192,8 @@ namespace CineScope.Server.Controllers
                 });
             }
         }
+
+
 
         /// <summary>
         /// Generates a JWT token for the authenticated user.

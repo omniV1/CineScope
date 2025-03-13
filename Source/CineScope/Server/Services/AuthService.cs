@@ -149,6 +149,7 @@ namespace CineScope.Server.Services
                 Id = user.Id,
                 Username = user.Username,
                 Email = user.Email,
+                ProfilePictureUrl = user.ProfilePictureUrl, 
                 Roles = user.Roles
             };
 
@@ -219,6 +220,7 @@ namespace CineScope.Server.Services
                 Id = newUser.Id,
                 Username = newUser.Username,
                 Email = newUser.Email,
+                ProfilePictureUrl = newUser.ProfilePictureUrl, 
                 Roles = newUser.Roles
             };
 
@@ -251,12 +253,13 @@ namespace CineScope.Server.Services
 
             // Create claims for the token
             var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-                new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
+{
+    new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+    new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
+    new Claim(JwtRegisteredClaimNames.Email, user.Email),
+    new Claim("ProfilePictureUrl", user.ProfilePictureUrl ?? ""), 
+    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+};
 
             // Add role claims
             foreach (var role in user.Roles)
