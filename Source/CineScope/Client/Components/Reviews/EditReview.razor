@@ -1,0 +1,248 @@
+﻿@using CineScope.Shared.DTOs
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">Edit Review for "@MovieTitle"</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+            <!-- Custom rating selection -->
+            <div class="d-flex flex-column gap-2 mb-4">
+                <MudText Typo="Typo.subtitle1">Your Rating</MudText>
+                <div class="d-flex align-center">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        int ratingVal = i;
+                        <MudIconButton Icon="@(ratingValue >= ratingVal ? Icons.Material.Filled.Star : Icons.Material.Outlined.StarOutline)"
+                                       Color="Color.Warning"
+                                       OnClick="@(() => SetRating(ratingVal))" />
+                    }
+                    <MudText Typo="Typo.body2" Class="ml-2">(@ratingValue stars)</MudText>
+                </div>
+            </div>
+
+            <!-- Review text -->
+            <MudTextField T="string" Label="Your Review" @bind-Value="reviewText"
+                          Required="true" RequiredError="Review text is required"
+                          Variant="Variant.Outlined" Lines="5"
+                          Counter="1000" MaxLength="1000"
+                          HelperText="Write your thoughts about the movie" />
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <MudAlert Severity="Severity.Error" Class="mt-4" Dense="true">@errorMessage</MudAlert>
+            }
+
+            @if (contentWarning != null && contentWarning.Any())
+            {
+                <MudAlert Severity="Severity.Warning" Class="mt-4">
+                    <MudText>Content Warning</MudText>
+                    <MudText Typo="Typo.body2">
+                        Your review contains content that may violate our community guidelines.
+                        Please remove the following terms: @string.Join(", ", contentWarning)
+                    </MudText>
+                </MudAlert>
+            }
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="Cancel">Cancel</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                   Disabled="@(!success || isLoading || ratingValue == 0)" OnClick="SubmitChanges">
+            @if (isLoading)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                <MudText Class="ms-2">Updating</MudText>
+            }
+            else
+            {
+                <MudText>Save Changes</MudText>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    private MudForm form;
+    private bool success;
+    private string[] errors = Array.Empty<string>();
+    private string errorMessage = string.Empty;
+    private bool isLoading = false;
+    private List<string> contentWarning = null;
+
+    // Component parameters
+    [Parameter] public ReviewDto Review { get; set; } = new ReviewDto();
+    [Parameter] public string MovieTitle { get; set; } = string.Empty;
+
+    // Local state
+    private double ratingValue;
+    private string reviewText;
+
+    /// <summary>
+    /// Sets the rating value directly
+    /// </summary>
+    private void SetRating(int rating)
+    {
+        ratingValue = rating;
+        Console.WriteLine($"Rating manually set to: {ratingValue}");
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Initializes component data when parameters set
+    /// </summary>
+    protected override void OnParametersSet()
+    {
+        // Set initial values from the review parameter
+        ratingValue = Review.Rating;
+        reviewText = Review.Text;
+        Console.WriteLine($"EditReview initialized with rating: {ratingValue}");
+    }
+
+    /// <summary>
+    /// Cancels the edit operation
+    /// </summary>
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    /// <summary>
+    /// Validates review content against banned word list
+    /// </summary>
+    private async Task<bool> ValidateContent()
+    {
+        try
+        {
+            // Call the content filter API
+            var response = await Http.PostAsJsonAsync("api/ContentFilter/validate", reviewText);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Parse the response
+                var result = await response.Content.ReadFromJsonAsync<ContentFilterResult>();
+
+                // If content is approved, return true
+                if (result.IsApproved)
+                {
+                    contentWarning = null;
+                    return true;
+                }
+
+                // If content is not approved, store the violation words
+                contentWarning = result.ViolationWords;
+                return false;
+            }
+
+            throw new Exception("Failed to validate content");
+        }
+        catch (Exception ex)
+        {
+            // Log the error (in a real app)
+            Console.WriteLine($"Content validation error: {ex.Message}");
+
+            // For testing purposes, allow content in case of API failure
+            return true;
+        }
+    }
+
+    /// <summary>
+    /// Submits the review updates after validation
+    /// </summary>
+    private async Task SubmitChanges()
+    {
+        // Validate the form
+        await form.Validate();
+
+        if (!success)
+        {
+            return;
+        }
+
+        // Check if user has selected a rating
+        if (ratingValue == 0)
+        {
+            errorMessage = "Please select a rating";
+            return;
+        }
+
+        try
+        {
+            // Set loading state
+            isLoading = true;
+            errorMessage = string.Empty;
+
+            // First, validate content against banned word list
+            if (!await ValidateContent())
+            {
+                errorMessage = "Review contains inappropriate content. Please revise.";
+                Snackbar.Add(errorMessage, Severity.Warning);
+                isLoading = false;
+                return;
+            }
+
+            Console.WriteLine($"Current rating before submitting: {ratingValue}");
+
+            // Prepare updated review
+            var updatedReview = new ReviewDto
+                {
+                    Id = Review.Id,
+                    MovieId = Review.MovieId,
+                    UserId = Review.UserId,
+                    Username = Review.Username,
+                    Rating = ratingValue,
+                    Text = reviewText,
+                    CreatedAt = Review.CreatedAt
+                };
+
+            Console.WriteLine($"Submitting updated review with rating: {ratingValue}");
+            Console.WriteLine($"Original rating: {Review.Rating}, New rating: {updatedReview.Rating}");
+
+            // Send updated review to the API
+            var response = await Http.PutAsJsonAsync($"api/Review/{Review.Id}", updatedReview);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"Review successfully updated with rating: {updatedReview.Rating}");
+                // Close dialog with success result
+                Snackbar.Add("Review updated successfully!", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(updatedReview));
+            }
+            else
+            {
+                // Handle error response
+                errorMessage = "Failed to update review. Please try again.";
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"API Error: {errorContent}");
+                Snackbar.Add(errorMessage, Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions
+            errorMessage = "An error occurred. Please try again.";
+            Console.WriteLine($"Exception: {ex.Message}");
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            // Reset loading state
+            isLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Class to represent content filter API response.
+    /// </summary>
+    private class ContentFilterResult
+    {
+        public bool IsApproved { get; set; }
+        public List<string> ViolationWords { get; set; } = new();
+    }
+}

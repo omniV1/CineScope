@@ -1,0 +1,89 @@
+﻿@using CineScope.Shared.DTOs
+@inject NavigationManager NavigationManager
+
+<MudCard Elevation="4" Class="movie-card my-4" Style="height: 100%;">
+    <div class="poster-container" style="position: relative; width: 100%; padding-top: 150%; overflow: hidden;">
+        @if (!string.IsNullOrEmpty(Movie.PosterUrl) && (Movie.PosterUrl.StartsWith("http://") || Movie.PosterUrl.StartsWith("https://")))
+        {
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+                <img src="@GetPosterUrl()" style="width: 100%; height: 100%; object-fit: cover;" alt="@Movie.Title" />
+            </div>
+        }
+        else
+        {
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #1a1a1a; display: flex; justify-content: center; align-items: center; text-align: center; padding: 20px; color: #f5f5f1;">
+                <div>
+                    <div>Missing Poster for:</div>
+                    <h3>@Movie.Title</h3>
+                </div>
+            </div>
+        }
+    </div>
+
+    <MudCardContent Class="pt-3 pb-3">
+        <MudText Typo="Typo.h5" Style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@Movie.Title</MudText>
+        <MudText Typo="Typo.body2" Style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            @string.Join(", ", Movie.Genres ?? new List<string>()) | @Movie.ReleaseDate.Year
+        </MudText>
+        <MudRating ReadOnly="true" 
+           Value="@((int)Math.Round(Movie.AverageRating))" 
+           SelectedValue="@((int)Math.Round(Movie.AverageRating))" 
+           Color="Color.Primary" />
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton Variant="Variant.Text" Color="Color.Primary"
+                   OnClick="@(() => GoToMovieDetails())" aria-label="Learn More">
+            Learn More
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                   OnClick="@(() => GoToWriteReview())">
+            Review
+        </MudButton>
+    </MudCardActions>
+</MudCard>
+
+@code {
+    [Parameter]
+    public MovieDto Movie { get; set; } = new MovieDto();
+
+    /// <summary>
+    /// Navigates to the movie details page
+    /// </summary>
+    private void GoToMovieDetails()
+    {
+        NavigationManager.NavigateTo($"/movie/{Movie.Id}");
+    }
+
+    /// <summary>
+    /// Navigates to the movie details page with the review form open
+    /// </summary>
+    private void GoToWriteReview()
+    {
+        // Navigate to movie details with a query parameter to open the review form
+        NavigationManager.NavigateTo($"/movie/{Movie.Id}?action=review");
+    }
+
+    private string GetPosterUrl()
+    {
+        // Check if the URL from the database seems valid
+        if (!string.IsNullOrEmpty(Movie.PosterUrl) &&
+            (Movie.PosterUrl.StartsWith("http://") || Movie.PosterUrl.StartsWith("https://")))
+        {
+            return Movie.PosterUrl;
+        }
+
+        // Fallback for specific movie genres
+        if (Movie.Genres != null && Movie.Genres.Any())
+        {
+            if (Movie.Genres.Contains("Action"))
+                return "https://cdn.pixabay.com/photo/2015/03/11/01/43/movie-667986_1280.jpg";
+            if (Movie.Genres.Contains("Drama"))
+                return "https://cdn.pixabay.com/photo/2016/01/22/08/01/theater-1155201_1280.jpg";
+            if (Movie.Genres.Contains("Sci-Fi"))
+                return "https://cdn.pixabay.com/photo/2017/07/15/19/42/manipulation-2507330_1280.jpg";
+        }
+
+        // Default fallback image - using a 2:3 aspect ratio placeholder
+        return "https://via.placeholder.com/300x450?text=" + Uri.EscapeDataString(Movie.Title ?? "No Title");
+    }
+}
