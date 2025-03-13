@@ -125,52 +125,6 @@
     }
 
     <MudDivider Class="my-6" />
-
-    <!-- User's Reviews Section -->
-    <MudGrid>
-        <MudItem xs="12">
-            <MudText Typo="Typo.h4">My Reviews</MudText>
-        </MudItem>
-
-        <MudItem xs="12">
-            @if (userReviews == null)
-            {
-                <MudProgressCircular Indeterminate="true" />
-            }
-            else if (userReviews.Count == 0)
-            {
-                <MudAlert Severity="Severity.Info">You haven't posted any reviews yet.</MudAlert>
-            }
-            else
-            {
-                <MudList Dense="false" DisableGutters="false" Class="pa-0">
-                    @foreach (var review in userReviews)
-                    {
-                        <MudListItem>
-                            <MudCard Elevation="2" Class="mb-4">
-                                <MudCardContent>
-                                    <div class="d-flex justify-space-between align-center">
-                                        <MudText Typo="Typo.h6">@review.MovieTitle</MudText>
-                                        <MudRating ReadOnly="true" SelectedValue="@((int)review.Rating)" />
-                                    </div>
-                                    <MudText Typo="Typo.body2">Posted on @review.CreatedAt.ToString("MMM dd, yyyy")</MudText>
-                                    <MudText Typo="Typo.body1" Class="mt-2">@review.Text</MudText>
-                                </MudCardContent>
-                                <MudCardActions>
-                                    <MudButton Variant="Variant.Text" Color="Color.Primary"
-                                               Href="@($"/movie/{review.MovieId}")">View Movie</MudButton>
-                                    <MudButton Variant="Variant.Text" Color="Color.Secondary"
-                                               OnClick="@(() => EditReview(review))">Edit</MudButton>
-                                    <MudButton Variant="Variant.Text" Color="Color.Error"
-                                               OnClick="@(() => DeleteReview(review.Id))">Delete</MudButton>
-                                </MudCardActions>
-                            </MudCard>
-                        </MudListItem>
-                    }
-                </MudList>
-            }
-        </MudItem>
-    </MudGrid>
 </MudContainer>
 
 @code {
