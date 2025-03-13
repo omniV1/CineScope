@@ -1,0 +1,24 @@
+﻿/* Custom styles to ensure proper alignment */
+.search-filter-container {
+    display: flex;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 0;
+}
+
+    .search-filter-container > * {
+        margin-bottom: 8px;
+    }
+
+/* Force consistent height on mobile */
+@media (max-width: 600px) {
+    .search-filter-container {
+        flex-direction: column;
+    }
+
+        .search-filter-container > * {
+            margin-left: 0 !important;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+}

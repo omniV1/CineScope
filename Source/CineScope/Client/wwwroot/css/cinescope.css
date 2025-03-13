@@ -34,12 +34,28 @@ html, body {
     border-bottom: 1px solid var(--cinescope-dark-red);
 }
 
+/* Fix the main container padding - CRITICAL FOR REMOVING DEADSPACE */
+.mud-container.mud-container-maxwidth-xl {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+}
+
+/* Fix the main content padding - CRITICAL FOR REMOVING DEADSPACE */
+.mud-main-content {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
 /* Custom movie cards with red accents */
 .movie-card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     overflow: hidden;
     height: 100%;
     border-bottom: 3px solid var(--cinescope-red);
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0 !important;
 }
 
     .movie-card:hover {
@@ -47,11 +63,12 @@ html, body {
         box-shadow: 0 8px 16px rgba(229, 9, 20, 0.3);
     }
 
-/* Custom hero section with red gradient overlay */
+/* Custom hero section with red gradient overlay - REDUCED TOP MARGIN */
 .hero-section {
     position: relative;
-    height: 500px;
-    margin-bottom: 2rem;
+    height: 400px;
+    margin-top: 0 !important;
+    margin-bottom: 1rem !important;
     border-radius: 8px;
     overflow: hidden;
 }
@@ -63,6 +80,15 @@ html, body {
     width: 100%;
     padding: 2rem;
     background: linear-gradient(to top, rgba(15, 15, 15, 0.9) 0%, rgba(229, 9, 20, 0.4) 120%, transparent 100%);
+}
+
+.hero-title {
+    font-size: var(--cinescope-font-size-h1) !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.hero-description {
+    margin-bottom: 1rem !important;
 }
 
 .mud-button-filled.mud-button-filled-primary {
@@ -98,6 +124,8 @@ html, body {
 .section-title {
     position: relative;
     padding-bottom: 0.5rem;
+    margin-top: 0.5rem !important;
+    margin-bottom: 1rem !important;
 }
 
     .section-title:after {
@@ -109,3 +137,79 @@ html, body {
         height: 3px;
         background-color: var(--cinescope-red);
     }
+
+/* Poster container styling */
+.poster-container {
+    position: relative;
+    padding-top: 150%;
+    overflow: hidden;
+}
+
+/* Fix spacing throughout the application */
+.mud-container, .mud-grid {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+.mud-divider {
+    margin: 1rem 0 !important;
+}
+
+/* Typography spacing adjustments */
+h4.mud-typography,
+.mud-typography-h4 {
+    margin-top: 0.5rem !important;
+    margin-bottom: 1rem !important;
+}
+
+/* Make movie lists more compact */
+.mud-grid {
+    row-gap: 16px !important;
+}
+
+/* Adjust card content spacing */
+.mud-card-content {
+    padding: 12px !important;
+}
+
+/* Ensure movie items have minimal spacing */
+.mud-item {
+    padding: 6px !important;
+}
+
+/* Make sure drawer doesn't add extra space */
+.mud-drawer {
+    border-right: 1px solid rgba(229, 9, 20, 0.2) !important;
+}
+
+/* Reduce spacing in movie grid */
+.mud-grid-spacing-xs-3 {
+    margin-top: -6px !important;
+    margin-left: -6px !important;
+}
+
+    .mud-grid-spacing-xs-3 > .mud-grid-item {
+        padding-top: 6px !important;
+        padding-left: 6px !important;
+    }
+
+/* Remove space between appbar and content */
+.mud-layout {
+    display: flex;
+    flex-direction: column;
+}
+
+/* CRUCIAL: Override padding in the main container area */
+article.pa-4 {
+    padding: 0 !important;
+}
+
+.pa-4 {
+    padding: 0 !important;
+}
+
+/* Target the specific elements that might be causing space */
+.mud-container.mud-container-maxwidth-xl > div:first-child {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
