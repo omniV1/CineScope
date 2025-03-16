@@ -47,19 +47,25 @@ namespace CineScope.Server.Controllers
             try
             {
                 // Get the user ID from the authenticated user claims
-                // In a real application, you'd get this from the JWT token claims
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                // Check for both standard claim types used for user identification
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ??
+                            User.FindFirst("sub")?.Value;
 
                 if (string.IsNullOrEmpty(userId))
                 {
+                    Console.WriteLine("User not authenticated properly - no valid ID claim found");
                     return Unauthorized(new { Message = "User not authenticated properly" });
                 }
+
+                // Debug: Log the user ID we found
+                Console.WriteLine($"Profile request for user ID: {userId}");
 
                 // Get the user profile
                 var userProfile = await _userService.GetUserProfileAsync(userId);
 
                 if (userProfile == null)
                 {
+                    Console.WriteLine($"User profile not found for ID: {userId}");
                     return NotFound(new { Message = "User profile not found" });
                 }
 
@@ -68,6 +74,8 @@ namespace CineScope.Server.Controllers
             catch (Exception ex)
             {
                 // Log the exception in a real application
+                Console.WriteLine($"Error in GetUserProfile: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
                 return StatusCode(500, new { Message = "An error occurred while retrieving the user profile", Error = ex.Message });
             }
         }
@@ -91,11 +99,21 @@ namespace CineScope.Server.Controllers
                 }
 
                 // Get the user ID from the authenticated user claims
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ??
+                            User.FindFirst("sub")?.Value;
 
                 if (string.IsNullOrEmpty(userId))
                 {
+                    Console.WriteLine("User not authenticated properly - no valid ID claim found");
                     return Unauthorized(new { Message = "User not authenticated properly" });
+                }
+
+                Console.WriteLine($"Updating profile for user ID: {userId}");
+
+                // Ensure ProfilePictureUrl is not null
+                if (updateProfileRequest.ProfilePictureUrl == null)
+                {
+                    updateProfileRequest.ProfilePictureUrl = "/profile-pictures/default.svg";
                 }
 
                 // Update the profile
@@ -111,6 +129,8 @@ namespace CineScope.Server.Controllers
             catch (Exception ex)
             {
                 // Log the exception in a real application
+                Console.WriteLine($"Error in UpdateUserProfile: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
                 return StatusCode(500, new { Message = "An error occurred while updating the user profile", Error = ex.Message });
             }
         }
@@ -126,6 +146,13 @@ namespace CineScope.Server.Controllers
         {
             try
             {
+                if (string.IsNullOrEmpty(userId) || userId == "undefined" || userId == "null")
+                {
+                    return BadRequest(new { Message = "Invalid user ID" });
+                }
+
+                Console.WriteLine($"Getting public info for user ID: {userId}");
+
                 var publicUserInfo = await _userService.GetPublicUserInfoAsync(userId);
 
                 if (publicUserInfo == null)
@@ -138,6 +165,7 @@ namespace CineScope.Server.Controllers
             catch (Exception ex)
             {
                 // Log the exception in a real application
+                Console.WriteLine($"Error in GetPublicUserInfo: {ex.Message}");
                 return StatusCode(500, new { Message = "An error occurred while retrieving user information", Error = ex.Message });
             }
         }
@@ -155,11 +183,20 @@ namespace CineScope.Server.Controllers
             try
             {
                 // Get the user ID from the authenticated user claims
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ??
+                            User.FindFirst("sub")?.Value;
 
                 if (string.IsNullOrEmpty(userId))
                 {
                     return Unauthorized(new { Message = "User not authenticated properly" });
+                }
+
+                Console.WriteLine($"Updating profile picture for user ID: {userId}");
+
+                // Ensure the profile picture URL is not null
+                if (string.IsNullOrEmpty(updateRequest.ProfilePictureUrl))
+                {
+                    updateRequest.ProfilePictureUrl = "/profile-pictures/default.svg";
                 }
 
                 // Update just the profile picture
@@ -174,6 +211,7 @@ namespace CineScope.Server.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Error in UpdateProfilePicture: {ex.Message}");
                 return StatusCode(500, new { Message = "An error occurred while updating the profile picture", Error = ex.Message });
             }
         }

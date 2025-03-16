@@ -128,10 +128,12 @@ namespace CineScope.Server.Services
         /// <returns>The review, or null if not found</returns>
         public async Task<Review> GetReviewByIdAsync(string id)
         {
-            // Get the reviews collection
-            var collection = _mongoDbService.GetCollection<Review>(_settings.ReviewsCollectionName);
+            if (!ObjectId.TryParse(id, out _))
+            {
+                throw new FormatException($"'{id}' is not a valid 24-digit hex string.");
+            }
 
-            // Find the review with the specified ID
+            var collection = _mongoDbService.GetCollection<Review>(_settings.ReviewsCollectionName);
             return await collection.Find(r => r.Id == id).FirstOrDefaultAsync();
         }
 

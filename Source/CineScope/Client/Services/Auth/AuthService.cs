@@ -58,8 +58,12 @@ namespace CineScope.Client.Services.Auth
         {
             try
             {
+                Console.WriteLine($"Attempting login for user: {loginRequest.Username}");
+
                 // Send login request to the API
                 var response = await _httpClient.PostAsJsonAsync("api/Auth/login", loginRequest);
+
+                Console.WriteLine($"Login response status: {response.StatusCode}");
 
                 // Parse the response
                 var result = await response.Content.ReadFromJsonAsync<AuthResponse>();
@@ -67,7 +71,12 @@ namespace CineScope.Client.Services.Auth
                 // If login was successful, store the token and notify the auth state provider
                 if (result.Success)
                 {
+                    Console.WriteLine("Login successful, updating authentication state");
                     await _authStateProvider.NotifyUserAuthentication(result.Token, result.User);
+                }
+                else
+                {
+                    Console.WriteLine($"Login failed: {result.Message}");
                 }
 
                 return result;
@@ -75,6 +84,7 @@ namespace CineScope.Client.Services.Auth
             catch (Exception ex)
             {
                 // Return error response
+                Console.WriteLine($"Exception in Login: {ex.Message}");
                 return new AuthResponse
                 {
                     Success = false,
@@ -92,8 +102,12 @@ namespace CineScope.Client.Services.Auth
         {
             try
             {
+                Console.WriteLine($"Attempting registration for user: {registerRequest.Username}");
+
                 // Send registration request to the API
                 var response = await _httpClient.PostAsJsonAsync("api/Auth/register", registerRequest);
+
+                Console.WriteLine($"Registration response status: {response.StatusCode}");
 
                 // Parse the response
                 var result = await response.Content.ReadFromJsonAsync<AuthResponse>();
@@ -101,7 +115,12 @@ namespace CineScope.Client.Services.Auth
                 // If registration was successful, store the token and notify the auth state provider
                 if (result.Success)
                 {
+                    Console.WriteLine("Registration successful, updating authentication state");
                     await _authStateProvider.NotifyUserAuthentication(result.Token, result.User);
+                }
+                else
+                {
+                    Console.WriteLine($"Registration failed: {result.Message}");
                 }
 
                 return result;
@@ -109,6 +128,7 @@ namespace CineScope.Client.Services.Auth
             catch (Exception ex)
             {
                 // Return error response
+                Console.WriteLine($"Exception in Register: {ex.Message}");
                 return new AuthResponse
                 {
                     Success = false,
@@ -122,9 +142,13 @@ namespace CineScope.Client.Services.Auth
         /// </summary>
         public async Task Logout()
         {
+            Console.WriteLine("Performing logout");
+
             // No need to call the server for logout in a JWT-based auth system
             // Simply remove the token and update the auth state
             await _authStateProvider.NotifyUserLogout();
+
+            Console.WriteLine("Logout completed");
         }
 
         /// <summary>
@@ -133,7 +157,24 @@ namespace CineScope.Client.Services.Auth
         /// <returns>Current user or null if not authenticated</returns>
         public async Task<UserDto> GetCurrentUser()
         {
-            return await _authStateProvider.GetCurrentUserAsync();
+            try
+            {
+                var user = await _authStateProvider.GetCurrentUserAsync();
+                if (user != null)
+                {
+                    Console.WriteLine($"Current user: {user.Username} (ID: {user.Id})");
+                }
+                else
+                {
+                    Console.WriteLine("No current user found");
+                }
+                return user;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetCurrentUser: {ex.Message}");
+                return null;
+            }
         }
 
         /// <summary>
@@ -142,8 +183,18 @@ namespace CineScope.Client.Services.Auth
         /// <returns>True if the user is authenticated, false otherwise</returns>
         public async Task<bool> IsAuthenticated()
         {
-            var authState = await _authStateProvider.GetAuthenticationStateAsync();
-            return authState.User.Identity.IsAuthenticated;
+            try
+            {
+                var authState = await _authStateProvider.GetAuthenticationStateAsync();
+                var isAuthenticated = authState.User.Identity.IsAuthenticated;
+                Console.WriteLine($"IsAuthenticated check: {isAuthenticated}");
+                return isAuthenticated;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in IsAuthenticated: {ex.Message}");
+                return false;
+            }
         }
 
         /// <summary>
@@ -153,21 +204,30 @@ namespace CineScope.Client.Services.Auth
         /// </summary>
         public async Task EnsureAuthHeaderAsync()
         {
-            // First, try to refresh the token if needed
-            await RefreshTokenIfNeededAsync();
+            try
+            {
+                // First, try to refresh the token if needed
+                await RefreshTokenIfNeededAsync();
 
-            // Then set the authorization header with the current token
-            var token = await _localStorage.GetItemAsync<string>(TOKEN_STORAGE_KEY);
-            if (!string.IsNullOrEmpty(token))
-            {
-                _httpClient.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", token);
-                Console.WriteLine("Auth header set with current token");
+                // Then set the authorization header with the current token
+                var token = await _localStorage.GetItemAsync<string>(TOKEN_STORAGE_KEY);
+                if (!string.IsNullOrEmpty(token))
+                {
+                    _httpClient.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", token);
+                    Console.WriteLine("Auth header set with current token");
+                }
+                else
+                {
+                    Console.WriteLine("Warning: No auth token available for header");
+                    // Remove auth header if no token exists
+                    _httpClient.DefaultRequestHeaders.Authorization = null;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine("Warning: No auth token available for header");
-                // Remove auth header if no token exists
+                Console.WriteLine($"Error in EnsureAuthHeaderAsync: {ex.Message}");
+                // Ensure headers are clean in case of error
                 _httpClient.DefaultRequestHeaders.Authorization = null;
             }
         }
@@ -326,10 +386,19 @@ namespace CineScope.Client.Services.Auth
         {
             try
             {
+                Console.WriteLine("Refreshing user authentication state");
+
                 // Get the current token
                 var currentToken = await _localStorage.GetItemAsync<string>("authToken");
                 if (string.IsNullOrEmpty(currentToken))
+                {
+                    Console.WriteLine("No token available for refresh");
                     return false;
+                }
+
+                // Set the authorization header with the current token
+                _httpClient.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", currentToken);
 
                 // Call the API endpoint to refresh the token with updated user information
                 var response = await _httpClient.PostAsync("api/Auth/refresh", null);
@@ -344,6 +413,14 @@ namespace CineScope.Client.Services.Auth
                         Console.WriteLine("Authentication state refreshed successfully");
                         return true;
                     }
+                    else
+                    {
+                        Console.WriteLine($"Authentication refresh failed: {result.Message}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"Authentication refresh API call failed: {response.StatusCode}");
                 }
 
                 return false;
@@ -362,10 +439,19 @@ namespace CineScope.Client.Services.Auth
         {
             try
             {
+                Console.WriteLine("Refreshing user profile");
+
                 // Get the current token
                 var token = await _localStorage.GetItemAsync<string>("authToken");
                 if (string.IsNullOrEmpty(token))
+                {
+                    Console.WriteLine("No token available for profile refresh");
                     return;
+                }
+
+                // Set the authorization header with the current token
+                _httpClient.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
 
                 // Get updated user profile from the server
                 var response = await _httpClient.GetAsync("api/User/profile");
@@ -375,13 +461,15 @@ namespace CineScope.Client.Services.Auth
                     var updatedUser = await response.Content.ReadFromJsonAsync<UserProfileDto>();
                     if (updatedUser != null)
                     {
+                        Console.WriteLine($"Received updated profile for user: {updatedUser.Username}");
+
                         // Convert UserProfileDto to UserDto
                         var userDto = new UserDto
                         {
                             Id = updatedUser.Id,
                             Username = updatedUser.Username,
                             Email = updatedUser.Email,
-                            ProfilePictureUrl = updatedUser.ProfilePictureUrl,
+                            ProfilePictureUrl = updatedUser.ProfilePictureUrl ?? "/profile-pictures/default.svg",
                             Roles = await GetUserRoles()
                         };
 
@@ -404,7 +492,7 @@ namespace CineScope.Client.Services.Auth
                         }
 
                         // Add the updated profile picture URL
-                        claims.Add(new Claim("ProfilePictureUrl", updatedUser.ProfilePictureUrl ?? ""));
+                        claims.Add(new Claim("ProfilePictureUrl", userDto.ProfilePictureUrl ?? ""));
 
                         // Create a new identity and principal
                         var identity = new ClaimsIdentity(claims, "jwt");
@@ -413,8 +501,16 @@ namespace CineScope.Client.Services.Auth
                         // Use the new public method instead of the protected one
                         _authStateProvider.UpdateAuthenticationState(Task.FromResult(new AuthenticationState(principal)));
 
-                        Console.WriteLine("User profile refreshed with updated profile picture");
+                        Console.WriteLine("User profile refreshed with updated information");
                     }
+                    else
+                    {
+                        Console.WriteLine("Profile refresh returned null user");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"Profile refresh API call failed: {response.StatusCode}");
                 }
             }
             catch (Exception ex)
@@ -426,23 +522,34 @@ namespace CineScope.Client.Services.Auth
         // Helper method to get user roles from the current authentication state
         private async Task<List<string>> GetUserRoles()
         {
-            var authState = await _authStateProvider.GetAuthenticationStateAsync();
-            var roles = new List<string>();
-
-            if (authState.User.Identity.IsAuthenticated)
+            try
             {
-                // Check for role claims
-                var roleClaims = authState.User.Claims.Where(c => c.Type == ClaimTypes.Role);
-                roles.AddRange(roleClaims.Select(c => c.Value));
-            }
+                var authState = await _authStateProvider.GetAuthenticationStateAsync();
+                var roles = new List<string>();
 
-            if (roles.Count == 0)
+                if (authState.User.Identity.IsAuthenticated)
+                {
+                    // Check for role claims
+                    var roleClaims = authState.User.Claims.Where(c => c.Type == ClaimTypes.Role);
+                    roles.AddRange(roleClaims.Select(c => c.Value));
+
+                    Console.WriteLine($"Found {roles.Count} roles for current user");
+                }
+
+                if (roles.Count == 0)
+                {
+                    // Default role if none found
+                    roles.Add("User");
+                    Console.WriteLine("No roles found, using default 'User' role");
+                }
+
+                return roles;
+            }
+            catch (Exception ex)
             {
-                // Default role if none found
-                roles.Add("User");
+                Console.WriteLine($"Error getting user roles: {ex.Message}");
+                return new List<string> { "User" }; // Default role on error
             }
-
-            return roles;
         }
     }
 }
