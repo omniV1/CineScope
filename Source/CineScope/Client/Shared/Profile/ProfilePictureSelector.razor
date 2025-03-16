@@ -60,12 +60,24 @@
     [Parameter]
     public EventCallback<string> OnProfilePictureSelected { get; set; }
 
+    protected override void OnInitialized()
+    {
+        // Ensure a default picture if none is selected
+        if (string.IsNullOrEmpty(SelectedProfilePicture))
+        {
+            SelectedProfilePicture = ProfilePictureOptions.DefaultProfilePicture;
+        }
+
+        Console.WriteLine($"ProfilePictureSelector initialized with URL: {SelectedProfilePicture}");
+    }
+
     private async Task SelectProfilePicture(string pictureUrl)
     {
         // Only trigger event if selection has changed
         if (pictureUrl != SelectedProfilePicture)
         {
             SelectedProfilePicture = pictureUrl;
+            Console.WriteLine($"Selected profile picture: {pictureUrl}");
             await OnProfilePictureSelected.InvokeAsync(pictureUrl);
             Snackbar.Add("Profile picture selected", Severity.Success);
         }

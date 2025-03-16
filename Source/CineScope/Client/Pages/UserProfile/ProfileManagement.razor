@@ -154,9 +154,31 @@
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        await LoadUserProfile();
-        await LoadUserReviewCount();
-        await LoadUserReviews();
+        try
+        {
+            // Get current user to verify authentication
+            var currentUser = await AuthService.GetCurrentUser();
+            if (currentUser == null)
+            {
+                errorMessage = "User not authenticated";
+                Snackbar.Add("Please log in to view your profile", Severity.Warning);
+                isLoading = false;
+                return;
+            }
+
+            Console.WriteLine($"Initializing profile for user: {currentUser.Username} (ID: {currentUser.Id})");
+
+            // Load user profile and related data
+            await LoadUserProfile();
+            await LoadUserReviewCount();
+            await LoadUserReviews();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Initialization error: {ex.Message}";
+            Snackbar.Add(errorMessage, Severity.Error);
+            isLoading = false;
+        }
     }
 
     /// <summary>
@@ -168,7 +190,15 @@
         {
             isLoading = true;
 
+            // Ensure authentication header is up to date before making the request
+            await AuthService.EnsureAuthHeaderAsync();
+
+            // Add console logs for debugging
+            Console.WriteLine("Making API call to fetch user profile...");
+
             var response = await Http.GetAsync("api/User/profile");
+
+            Console.WriteLine($"Profile API response status: {response.StatusCode}");
 
             if (response.IsSuccessStatusCode)
             {
@@ -179,16 +209,31 @@
                 {
                     user.ProfilePictureUrl = ProfilePictureOptions.DefaultProfilePicture;
                 }
+
+                Console.WriteLine($"Loaded profile for: {user.Username} (ID: {user.Id})");
             }
             else
             {
-                errorMessage = "Failed to load profile data";
-                Snackbar.Add("Error loading profile", Severity.Error);
+                // Try to get more detailed error information
+                var errorContent = await response.Content.ReadAsStringAsync();
+                errorMessage = $"Failed to load profile data: {response.StatusCode}";
+                Console.WriteLine($"API Error: {response.StatusCode} - {errorContent}");
+
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    Snackbar.Add("Authentication error. Please log in again.", Severity.Warning);
+                }
+                else
+                {
+                    Snackbar.Add($"Error loading profile: {response.StatusCode}", Severity.Error);
+                }
             }
         }
         catch (Exception ex)
         {
-            errorMessage = "Failed to load profile data";
+            errorMessage = $"Failed to load profile data: {ex.Message}";
+            Console.WriteLine($"Exception in LoadUserProfile: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
             Snackbar.Add($"Error: {ex.Message}", Severity.Error);
         }
         finally
@@ -204,11 +249,25 @@
     {
         try
         {
+            // Don't try to load if user ID is null
+            if (user == null || string.IsNullOrEmpty(user.Id))
+            {
+                reviewCount = 0;
+                return;
+            }
+
+            await AuthService.EnsureAuthHeaderAsync();
             var response = await Http.GetAsync($"api/Review/user/{user.Id}/count");
 
             if (response.IsSuccessStatusCode)
             {
                 reviewCount = await response.Content.ReadFromJsonAsync<int>();
+                Console.WriteLine($"Loaded {reviewCount} reviews for user");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to load review count: {response.StatusCode}");
+                reviewCount = 0;
             }
         }
         catch (Exception ex)
@@ -225,12 +284,26 @@
     {
         try
         {
+            // Don't try to load if user ID is null
+            if (user == null || string.IsNullOrEmpty(user.Id))
+            {
+                userReviews = new List<UserReviewDto>();
+                return;
+            }
+
+            await AuthService.EnsureAuthHeaderAsync();
             var response = await Http.GetAsync($"api/Review/user/{user.Id}");
 
             if (response.IsSuccessStatusCode)
             {
                 var reviews = await response.Content.ReadFromJsonAsync<List<ReviewDto>>();
                 userReviews = MapToUserReviewDto(reviews);
+                Console.WriteLine($"Loaded {userReviews.Count} review details");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to load reviews: {response.StatusCode}");
+                userReviews = new List<UserReviewDto>();
             }
         }
         catch (Exception ex)
@@ -246,6 +319,9 @@
     private List<UserReviewDto> MapToUserReviewDto(List<ReviewDto> reviews)
     {
         var result = new List<UserReviewDto>();
+
+        if (reviews == null)
+            return result;
 
         foreach (var review in reviews)
         {
@@ -279,6 +355,11 @@
     /// </summary>
     private void UpdateProfilePicture(string pictureUrl)
     {
+        if (string.IsNullOrEmpty(pictureUrl))
+        {
+            pictureUrl = ProfilePictureOptions.DefaultProfilePicture;
+        }
+
         user.ProfilePictureUrl = pictureUrl;
         profilePictureUpdated = true;
 
@@ -300,14 +381,17 @@
         try
         {
             isSaving = true;
+            await AuthService.EnsureAuthHeaderAsync();
 
             // Create request with just the profile picture
             var updateRequest = new UpdateProfileRequest
                 {
                     Username = user.Username,
                     Email = user.Email,
-                    ProfilePictureUrl = user.ProfilePictureUrl
+                    ProfilePictureUrl = user.ProfilePictureUrl ?? ProfilePictureOptions.DefaultProfilePicture
                 };
+
+            Console.WriteLine($"Saving profile picture: {updateRequest.ProfilePictureUrl}");
 
             // Call API to update the profile picture
             var response = await Http.PutAsJsonAsync("api/User/profile-picture", updateRequest);
@@ -323,11 +407,13 @@
             else
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Failed to update profile picture: {response.StatusCode} - {errorContent}");
                 Snackbar.Add($"Error: {errorContent}", Severity.Error);
             }
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"Error updating profile picture: {ex.Message}");
             Snackbar.Add($"Error: {ex.Message}", Severity.Error);
         }
         finally
@@ -390,16 +476,19 @@
         try
         {
             isSaving = true;
+            await AuthService.EnsureAuthHeaderAsync();
 
             // Create request object
             var updateRequest = new UpdateProfileRequest
                 {
                     Username = user.Username,
                     Email = user.Email,
-                    ProfilePictureUrl = user.ProfilePictureUrl,
+                    ProfilePictureUrl = user.ProfilePictureUrl ?? ProfilePictureOptions.DefaultProfilePicture,
                     CurrentPassword = currentPassword,
                     NewPassword = newPassword
                 };
+
+            Console.WriteLine("Sending profile update request...");
 
             // Send update request to the API
             var response = await Http.PutAsJsonAsync("api/User/profile", updateRequest);
@@ -418,12 +507,14 @@
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
                 errorMessage = $"Failed to update profile: {errorContent}";
+                Console.WriteLine($"Profile update failed: {response.StatusCode} - {errorContent}");
                 Snackbar.Add(errorMessage, Severity.Error);
             }
         }
         catch (Exception ex)
         {
             errorMessage = "Failed to update profile";
+            Console.WriteLine($"Exception in SaveChanges: {ex.Message}");
             Snackbar.Add($"Error: {ex.Message}", Severity.Error);
         }
         finally
@@ -448,6 +539,7 @@
         // Implement deletion with confirmation dialog
         try
         {
+            await AuthService.EnsureAuthHeaderAsync();
             var response = await Http.DeleteAsync($"api/Review/{reviewId}");
 
             if (response.IsSuccessStatusCode)
