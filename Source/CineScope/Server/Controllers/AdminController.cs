@@ -135,5 +135,20 @@ namespace CineScope.Server.Controllers
                 return StatusCode(500, new { Message = "Error moderating content", Error = ex.Message });
             }
         }
+
+        [HttpGet("flagged-reviews")]
+        public async Task<ActionResult<List<ReviewModerationDto>>> GetFlaggedReviews()
+        {
+            try
+            {
+                var flaggedReviews = await _adminService.GetFlaggedReviewsAsync();
+                return Ok(flaggedReviews);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting flagged reviews");
+                return StatusCode(500, new { Message = "Error retrieving flagged reviews", Error = ex.Message });
+            }
+        }
     }
 }

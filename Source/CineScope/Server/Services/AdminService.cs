@@ -27,6 +27,52 @@ namespace CineScope.Server.Services
             _logger = logger;
         }
 
+        public async Task<List<ReviewModerationDto>> GetFlaggedReviewsAsync()
+        {
+            try
+            {
+                var reviewsCollection = _mongoDbService.GetCollection<Review>(_settings.ReviewsCollectionName);
+                var usersCollection = _mongoDbService.GetCollection<User>(_settings.UsersCollectionName);
+                var moviesCollection = _mongoDbService.GetCollection<Movie>(_settings.MoviesCollectionName);
+
+                // Get all flagged/non-approved reviews
+                var flaggedReviews = await reviewsCollection
+                    .Find(r => !r.IsApproved)
+                    .ToListAsync();
+
+                // Convert to DTOs with usernames and movie titles
+                var result = new List<ReviewModerationDto>();
+                foreach (var review in flaggedReviews)
+                {
+                    var user = await usersCollection.Find(u => u.Id == review.UserId).FirstOrDefaultAsync();
+                    var movie = await moviesCollection.Find(m => m.Id == review.MovieId).FirstOrDefaultAsync();
+
+                    result.Add(new ReviewModerationDto
+                    {
+                        Id = review.Id,
+                        UserId = review.UserId,
+                        Username = user?.Username ?? "Unknown User",
+                        MovieId = review.MovieId,
+                        MovieTitle = movie?.Title ?? "Unknown Movie",
+                        Rating = review.Rating,
+                        Text = review.Text,
+                        CreatedAt = review.CreatedAt,
+                        FlaggedWords = review.FlaggedWords?.ToList() ?? new List<string>(),
+                        ModerationStatus = "Pending"
+                    });
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting flagged reviews");
+                throw;
+            }
+        }
+
+
+
         /// <summary>
         /// Gets dashboard statistics for the admin dashboard.
         /// </summary>

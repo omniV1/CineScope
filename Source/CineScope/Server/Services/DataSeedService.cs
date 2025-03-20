@@ -1,8 +1,12 @@
-﻿using CineScope.Server.Data;
+﻿using MongoDB.Driver;
+using Microsoft.Extensions.Options;
 using CineScope.Server.Interfaces;
 using CineScope.Server.Models;
-using Microsoft.Extensions.Options;
-using MongoDB.Driver;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using CineScope.Server.Data;
 
 namespace CineScope.Server.Services
 {
@@ -124,32 +128,47 @@ namespace CineScope.Server.Services
         {
             try
             {
-                // Users collection indexes
+                // Users collection indexes - simplify this to just try and catch errors
                 var usersCollection = _mongoDbService.GetCollection<User>(_settings.UsersCollectionName);
-                await usersCollection.Indexes.CreateOneAsync(
-                    new CreateIndexModel<User>(Builders<User>.IndexKeys.Ascending(u => u.Username),
-                    new CreateIndexOptions { Unique = true }));
-                await usersCollection.Indexes.CreateOneAsync(
-                    new CreateIndexModel<User>(Builders<User>.IndexKeys.Ascending(u => u.Email),
-                    new CreateIndexOptions { Unique = true }));
+                await SafeCreateIndexAsync(usersCollection, Builders<User>.IndexKeys.Ascending(u => u.Username), new CreateIndexOptions { Unique = true });
+                await SafeCreateIndexAsync(usersCollection, Builders<User>.IndexKeys.Ascending(u => u.Email), new CreateIndexOptions { Unique = true });
 
                 // Reviews collection indexes
                 var reviewsCollection = _mongoDbService.GetCollection<Review>(_settings.ReviewsCollectionName);
-                await reviewsCollection.Indexes.CreateOneAsync(
-                    Builders<Review>.IndexKeys.Ascending(r => r.MovieId));
-                await reviewsCollection.Indexes.CreateOneAsync(
-                    Builders<Review>.IndexKeys.Ascending(r => r.UserId));
+                await SafeCreateIndexAsync(reviewsCollection, Builders<Review>.IndexKeys.Ascending(r => r.MovieId));
+                await SafeCreateIndexAsync(reviewsCollection, Builders<Review>.IndexKeys.Ascending(r => r.UserId));
 
                 // Movies collection indexes
                 var moviesCollection = _mongoDbService.GetCollection<Movie>(_settings.MoviesCollectionName);
-                await moviesCollection.Indexes.CreateOneAsync(
-                    Builders<Movie>.IndexKeys.Text(m => m.Title));
+                await SafeCreateIndexAsync(moviesCollection, Builders<Movie>.IndexKeys.Text(m => m.Title));
 
-                _logger.LogInformation("Created MongoDB indexes");
+                _logger.LogInformation("MongoDB indexes verification completed");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating MongoDB indexes");
+            }
+        }
+
+        /// <summary>
+        /// Creates an index, ignoring errors if the index already exists.
+        /// </summary>
+        private async Task SafeCreateIndexAsync<T>(IMongoCollection<T> collection, IndexKeysDefinition<T> keys, CreateIndexOptions options = null)
+        {
+            try
+            {
+                var indexModel = new CreateIndexModel<T>(keys, options);
+                await collection.Indexes.CreateOneAsync(indexModel);
+            }
+            catch (MongoCommandException ex) when (ex.Message.Contains("already exists"))
+            {
+                // Index already exists, this is OK
+                _logger.LogInformation($"Index for {typeof(T).Name} already exists. Continuing.");
+            }
+            catch (Exception ex)
+            {
+                // Log but don't rethrow to allow the application to continue
+                _logger.LogWarning(ex, $"Non-critical error creating index for {typeof(T).Name}");
             }
         }
     }

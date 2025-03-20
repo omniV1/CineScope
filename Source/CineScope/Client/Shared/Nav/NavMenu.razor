@@ -1,4 +1,6 @@
 ﻿@using MudBlazor
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthStateProvider
 
 <!-- Navigation menu for the application -->
 <MudNavMenu>
@@ -11,15 +13,47 @@
     <!-- Divider between main navigation and authentication -->
     <MudDivider Class="my-2" />
 
-    <!-- Login link -->
-    <MudNavLink Href="login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Login">Login</MudNavLink>
+    <!-- Add debugging information -->
+    <AuthorizeView>
+        <Authorized Context="authContext">
+            <MudText Typo="Typo.caption">
+                Logged in as: @authContext.User.Identity.Name
+                <br />
+                User claims:
+            </MudText>
+            <MudText Typo="Typo.caption">
+                @foreach (var claim in authContext.User.Claims)
+                {
+                    <span>@claim.Type: @claim.Value<br /></span>
+                }
+            </MudText>
 
-    <!-- Register link -->
-    <MudNavLink Href="register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonAdd">Register</MudNavLink>
+            <!-- User profile link when logged in -->
+            <MudNavLink Href="profile" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">My Profile</MudNavLink>
+
+            <!-- Admin dashboard link - only shown for admins -->
+            <AuthorizeView Roles="Admin">
+                <Authorized Context="adminContext">
+                    <MudNavLink Href="/admin" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AdminPanelSettings">
+                        Admin Dashboard
+                    </MudNavLink>
+                </Authorized>
+                <NotAuthorized Context="notAdminContext">
+                    <MudText Typo="Typo.caption" Class="mud-error-text">
+                        Not authorized for Admin role
+                    </MudText>
+                </NotAuthorized>
+            </AuthorizeView>
+
+            <!-- Logout link -->
+            <MudNavLink Href="logout" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Logout">Logout</MudNavLink>
+        </Authorized>
+        <NotAuthorized Context="notAuthContext">
+            <!-- Login link -->
+            <MudNavLink Href="login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Login">Login</MudNavLink>
+
+            <!-- Register link -->
+            <MudNavLink Href="register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonAdd">Register</MudNavLink>
+        </NotAuthorized>
+    </AuthorizeView>
 </MudNavMenu>
-<!-- Admin interface link -->
-<AuthorizeView Roles="Admin">
-    <MudNavLink Href="/admin" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AdminPanelSettings">
-        Admin Dashboard
-    </MudNavLink>
-</AuthorizeView>

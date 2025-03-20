@@ -551,5 +551,7 @@ namespace CineScope.Client.Services.Auth
                 return new List<string> { "User" }; // Default role on error
             }
         }
+
+
     }
 }
