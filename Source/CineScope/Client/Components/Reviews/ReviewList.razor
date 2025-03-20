@@ -51,7 +51,7 @@
 
                     @if (currentFilter != "all")
                     {
-                        <MudChip Size="Size.Small" Color="Color.Primary" Variant="Variant.Outlined"
+                        <MudChip T="string" Value="@currentFilter" Size="Size.Small" Color="Color.Primary" Variant="Variant.Outlined"
                                  OnClose="@(() => FilterReviews("all"))">
                             @GetFilterName(currentFilter)
                         </MudChip>
@@ -59,7 +59,7 @@
 
                     @if (currentSort != "newest")
                     {
-                        <MudChip Size="Size.Small" Color="Color.Secondary" Variant="Variant.Outlined"
+                        <MudChip T="string" Value="@currentSort" Size="Size.Small" Color="Color.Secondary" Variant="Variant.Outlined"
                                  OnClose="@(() => SortReviews("newest"))">
                             @GetSortName(currentSort)
                         </MudChip>
@@ -72,10 +72,10 @@
         }
 
         <!-- Review List -->
-        <MudList Clickable="false" Dense="false">
+        <MudList T="ReviewDto" Clickable="false" Dense="false">
             @foreach (var review in displayedReviews)
             {
-                <MudListItem Class="pa-0 mb-4">
+                <MudListItem T="ReviewDto" Value="@review" Class="pa-0 mb-4">
                     <MudCard Elevation="2" Class="review-card">
                         <MudCardContent>
                             <!-- Review Header -->

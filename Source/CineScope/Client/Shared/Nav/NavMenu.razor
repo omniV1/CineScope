@@ -17,3 +17,9 @@
     <!-- Register link -->
     <MudNavLink Href="register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonAdd">Register</MudNavLink>
 </MudNavMenu>
+<!-- Admin interface link -->
+<AuthorizeView Roles="Admin">
+    <MudNavLink Href="/admin" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AdminPanelSettings">
+        Admin Dashboard
+    </MudNavLink>
+</AuthorizeView>
