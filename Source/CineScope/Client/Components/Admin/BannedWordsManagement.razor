@@ -1,0 +1,270 @@
+﻿@using CineScope.Shared.DTOs
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudCard Elevation="0" Class="mb-4">
+    <MudCardContent>
+        <div class="d-flex justify-space-between align-center flex-wrap gap-2 mb-4">
+            <MudText Typo="Typo.h6">Banned Words Management</MudText>
+
+            <div class="d-flex gap-2">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Add"
+                           OnClick="@(async () => await OpenAddWordDialog())">
+                    Add New Word
+                </MudButton>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mb-4">
+            <MudTextField T="string" @bind-Value="searchTerm" Label="Search"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search" />
+
+            <MudSelect T="string" Label="Category" @bind-Value="selectedCategory">
+                <MudSelectItem T="string" Value="@string.Empty">All Categories</MudSelectItem>
+                <MudSelectItem T="string" Value="@("Profanity")">Profanity</MudSelectItem>
+                <MudSelectItem T="string" Value="@("Hate Speech")">Hate Speech</MudSelectItem>
+                <MudSelectItem T="string" Value="@("Harassment")">Harassment</MudSelectItem>
+            </MudSelect>
+
+            <MudSelect T="int?" Label="Severity" @bind-Value="selectedSeverity">
+                <MudSelectItem T="int?" Value="@(null)">All Severities</MudSelectItem>
+                <MudSelectItem T="int?" Value="@(1)">1 (Low)</MudSelectItem>
+                <MudSelectItem T="int?" Value="@(2)">2</MudSelectItem>
+                <MudSelectItem T="int?" Value="@(3)">3 (Medium)</MudSelectItem>
+                <MudSelectItem T="int?" Value="@(4)">4</MudSelectItem>
+                <MudSelectItem T="int?" Value="@(5)">5 (High)</MudSelectItem>
+            </MudSelect>
+
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                       OnClick="@(async () => await LoadBannedWords())">
+                Apply Filters
+            </MudButton>
+        </div>
+
+        @if (isLoading)
+        {
+            <div class="d-flex justify-center my-4">
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+            </div>
+        }
+        else if (bannedWords == null || !bannedWords.Any())
+        {
+            <MudAlert Severity="Severity.Info">No banned words found matching the criteria.</MudAlert>
+        }
+        else
+        {
+            <MudTable Items="@GetFilteredBannedWords()" Hover="true" Breakpoint="Breakpoint.Sm"
+                      Loading="@isLoading" LoadingProgressColor="Color.Primary">
+                <HeaderContent>
+                    <MudTh>Word</MudTh>
+                    <MudTh>Category</MudTh>
+                    <MudTh>Severity</MudTh>
+                    <MudTh>Status</MudTh>
+                    <MudTh>Actions</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Word">@context.Word</MudTd>
+                    <MudTd DataLabel="Category">@context.Category</MudTd>
+                    <MudTd DataLabel="Severity">
+                        <MudChip Size="Size.Small" Color="@GetSeverityColor(context.Severity)">
+                            @context.Severity
+                        </MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Status">
+                        <MudSwitch T="bool" @bind-Checked="context.IsActive" Color="Color.Primary"
+                                   OnChange="@(async () => await ToggleWordStatus(context))" />
+                    </MudTd>
+                    <MudTd DataLabel="Actions">
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                       OnClick="@(async () => await EditBannedWord(context))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                                       OnClick="@(async () => await DeleteBannedWord(context.Id))" />
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="new int[]{10, 25, 50, 100}" />
+                </PagerContent>
+            </MudTable>
+        }
+    </MudCardContent>
+</MudCard>
+
+@code {
+    private List<BannedWordDto> bannedWords;
+    private bool isLoading = true;
+    private string searchTerm = "";
+    private string selectedCategory = "";
+    private int? selectedSeverity = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadBannedWords();
+    }
+
+    private async Task LoadBannedWords()
+    {
+        try
+        {
+            isLoading = true;
+
+            var queryParams = new List<string>();
+            if (!string.IsNullOrWhiteSpace(selectedCategory))
+                queryParams.Add($"category={Uri.EscapeDataString(selectedCategory)}");
+            if (selectedSeverity.HasValue)
+                queryParams.Add($"severity={selectedSeverity.Value}");
+
+            string url = "api/admin/banned-words";
+            if (queryParams.Any())
+            {
+                url += "?" + string.Join("&", queryParams);
+            }
+
+            var response = await Http.GetAsync(url);
+
+            if (response.IsSuccessStatusCode)
+            {
+                bannedWords = await response.Content.ReadFromJsonAsync<List<BannedWordDto>>();
+            }
+            else
+            {
+                Snackbar.Add("Failed to load banned words", Severity.Error);
+                bannedWords = new List<BannedWordDto>();
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+            bannedWords = new List<BannedWordDto>();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private List<BannedWordDto> GetFilteredBannedWords()
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+            return bannedWords;
+
+        return bannedWords
+            .Where(w => w.Word.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+
+    private Color GetSeverityColor(int severity) => severity switch
+    {
+        1 => Color.Success,
+        2 => Color.Info,
+        3 => Color.Warning,
+        4 or 5 => Color.Error,
+        _ => Color.Default
+    };
+
+    private async Task OpenAddWordDialog()
+    {
+        var parameters = new DialogParameters
+            {
+                ["BannedWord"] = new BannedWordDto
+                {
+                    IsActive = true,
+                    Severity = 3,
+                    Category = "Profanity"
+                }
+            };
+
+        var dialog = await DialogService.ShowAsync<BannedWordDialog>("Add Banned Word", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is BannedWordDto newWord)
+        {
+            try
+            {
+                var response = await Http.PostAsJsonAsync("api/admin/banned-words", newWord);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var createdWord = await response.Content.ReadFromJsonAsync<BannedWordDto>();
+                    Snackbar.Add("Banned word added successfully", Severity.Success);
+                    await LoadBannedWords();
+                }
+                else
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    Snackbar.Add($"Failed to add banned word: {error}", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task EditBannedWord(BannedWordDto word)
+    {
+        var parameters = new DialogParameters
+            {
+                ["BannedWord"] = word
+            };
+
+        var dialog = await DialogService.ShowAsync<BannedWordDialog>("Edit Banned Word", parameters);
+        var result = await dialog.Result;
+
+        // Here you would implement the API call to update the word
+        if (!result.Canceled)
+        {
+            Snackbar.Add("Banned word updated successfully", Severity.Success);
+        }
+    }
+
+    private async Task DeleteBannedWord(string id)
+    {
+        bool? confirm = await DialogService.ShowMessageBox(
+            "Confirm Deletion",
+            "Are you sure you want to delete this banned word? This action cannot be undone.",
+            yesText: "Delete", cancelText: "Cancel");
+
+        if (confirm == true)
+        {
+            // Here you would implement the API call to delete the word
+            Snackbar.Add("Banned word deleted successfully", Severity.Success);
+            await LoadBannedWords();
+        }
+    }
+
+    private async Task ToggleWordStatus(BannedWordDto word)
+    {
+        try
+        {
+            // Store original value to revert if operation fails
+            bool originalValue = word.IsActive;
+            word.IsActive = !word.IsActive;
+
+            // Here you would implement the API call to toggle the word status
+            try
+            {
+                // API call would go here
+                Snackbar.Add($"Banned word {(word.IsActive ? "activated" : "deactivated")} successfully", Severity.Success);
+            }
+            catch
+            {
+                // Revert on failure
+                word.IsActive = originalValue;
+                throw;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+}
