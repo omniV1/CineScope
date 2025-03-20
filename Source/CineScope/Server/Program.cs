@@ -48,6 +48,13 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Add authorization policies
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("Admin"));
+});
+
 /// <summary>
 /// Configure MongoDB connection settings from appsettings.json.
 /// Bind the MongoDbSettings section to the MongoDbSettings class.
@@ -106,6 +113,8 @@ builder.Services.AddSingleton<IMongoDbService, MongoDbService>();
 /// </summary>
 builder.Services.AddSingleton<MovieCacheService>();
 
+builder.Services.AddScoped<AdminService>();
+builder.Services.AddScoped<DataSeedService>();
 
 /// <summary>
 /// Register services as scoped services.
@@ -207,6 +216,13 @@ void ConfigureMongoDb()
     // when creating the client instance
 
     Console.WriteLine("MongoDB serialization configured successfully");
+}
+
+// Seed data and create indexes
+using (var scope = app.Services.CreateScope())
+{
+    var seedService = scope.ServiceProvider.GetRequiredService<DataSeedService>();
+    await seedService.SeedInitialDataAsync();
 }
 
 /// <summary>
