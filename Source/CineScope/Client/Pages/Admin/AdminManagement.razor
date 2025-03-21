@@ -1,0 +1,159 @@
+﻿@page "/admin/manage"
+@attribute [Authorize(Roles = "Admin")]
+@using CineScope.Shared.DTOs
+@using CineScope.Client.Components.Admin
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<PageTitle>CineScope - Admin Management</PageTitle>
+
+<!-- Breadcrumbs for navigation -->
+<AdminBreadCrumb CurrentPage="Management" />
+
+<MudText Typo="Typo.h4" Class="mb-4">Administration Management</MudText>
+
+<!-- Statistics summary cards -->
+<MudGrid Class="mb-4">
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper Class="d-flex flex-column pa-4" Elevation="2">
+            <MudText Typo="Typo.subtitle1">Total Users</MudText>
+            <MudText Typo="Typo.h3" Color="Color.Primary">@userCount</MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper Class="d-flex flex-column pa-4" Elevation="2">
+            <MudText Typo="Typo.subtitle1">Total Movies</MudText>
+            <MudText Typo="Typo.h3" Color="Color.Primary">@movieCount</MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper Class="d-flex flex-column pa-4" Elevation="2">
+            <MudText Typo="Typo.subtitle1">Total Reviews</MudText>
+            <MudText Typo="Typo.h3" Color="Color.Primary">@reviewCount</MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper Class="d-flex flex-column pa-4" Elevation="2">
+            <MudText Typo="Typo.subtitle1">Flagged Content</MudText>
+            <MudText Typo="Typo.h3" Color="Color.Error">@flaggedCount</MudText>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+<!-- Tabbed interface for different management functions -->
+<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" @bind-ActivePanelIndex="activeTabIndex">
+    <MudTabPanel Text="Users" Icon="@Icons.Material.Filled.People">
+        <UserManagement />
+    </MudTabPanel>
+    
+    <MudTabPanel Text="Movies" Icon="@Icons.Material.Filled.Movie">
+        <MovieManagement />
+    </MudTabPanel>
+    
+    <MudTabPanel Text="Content Filtering" Icon="@Icons.Material.Filled.FilterAlt">
+        <BannedWordsManagement />
+    </MudTabPanel>
+    
+    <MudTabPanel Text="Moderation" Icon="@Icons.Material.Filled.Report">
+        <ContentModerationPanel />
+    </MudTabPanel>
+</MudTabs>
+
+@code {
+    // State variables to store statistics
+    private int userCount = 0;
+    private int movieCount = 0;
+    private int reviewCount = 0;
+    private int flaggedCount = 0;
+    private int activeTabIndex = 0;
+
+    // Load data when component initializes
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStatistics();
+        ParseTabFromUrl();
+    }
+
+    // Parse URL to determine which tab should be active
+    private void ParseTabFromUrl()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        
+        if (Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query)
+            .TryGetValue("tab", out var tabValue))
+        {
+            if (int.TryParse(tabValue, out var tabIndex) && tabIndex >= 0 && tabIndex <= 3)
+            {
+                activeTabIndex = tabIndex;
+                StateHasChanged();
+            }
+        }
+    }
+
+    // Load statistics data from the API
+    private async Task LoadStatistics()
+    {
+        try
+        {
+            // Get collection statistics from the API
+            var response = await Http.GetAsync("api/admin/collection-stats");
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var stats = await response.Content.ReadFromJsonAsync<Dictionary<string, long>>();
+                
+                if (stats != null)
+                {
+                    // Extract statistics from the response
+                    if (stats.TryGetValue("Users", out var users)) userCount = (int)users;
+                    if (stats.TryGetValue("Movies", out var movies)) movieCount = (int)movies;
+                    if (stats.TryGetValue("Reviews", out var reviews)) reviewCount = (int)reviews;
+                    
+                    // Get flagged content count (separate endpoint)
+                    var flaggedResponse = await Http.GetAsync("api/admin/flagged-reviews");
+                    if (flaggedResponse.IsSuccessStatusCode)
+                    {
+                        var flaggedReviews = await flaggedResponse.Content
+                            .ReadFromJsonAsync<List<ReviewModerationDto>>();
+                        
+                        flaggedCount = flaggedReviews?.Count ?? 0;
+                    }
+                }
+            }
+            else
+            {
+                // Show error message if request fails
+                Snackbar.Add("Failed to load statistics", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+            Console.WriteLine($"Error loading statistics: {ex.Message}");
+        }
+    }
+
+    // Called when user changes tabs manually
+    private async Task OnTabChanged(int index)
+    {
+        activeTabIndex = index;
+        
+        // Update URL to reflect the current tab without navigating
+        var uri = NavigationManager.Uri.Split('?')[0]; // Remove existing query params
+        NavigationManager.NavigateTo($"{uri}?tab={index}", false);
+    }
+
+    // When navigating away, check if there are unsaved changes
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Set up beforeunload handler to warn about unsaved changes
+            await JSRuntime.InvokeVoidAsync("window.onbeforeunload", 
+                "You may have unsaved changes. Are you sure you want to leave?");
+        }
+    }
+}

@@ -1,0 +1,128 @@
+﻿@using CineScope.Shared.DTOs
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-width: 600px; padding: 0;">
+            <MudPaper Class="pa-4" Elevation="0">
+                <!-- Review Details -->
+                <MudText Typo="Typo.h6" Class="mb-2">Review Details</MudText>
+
+                <MudGrid>
+                    <MudItem xs="12" md="6">
+                        <MudField Label="Username" Variant="Variant.Text">@Review.Username</MudField>
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudField Label="Posted On" Variant="Variant.Text">@Review.CreatedAt.ToString("MMMM dd, yyyy")</MudField>
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudField Label="Movie" Variant="Variant.Text">@Review.MovieTitle</MudField>
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudField Label="Rating" Variant="Variant.Text">@Review.Rating.ToString("0.0") stars</MudField>
+                    </MudItem>
+                </MudGrid>
+
+                <MudDivider Class="my-4" />
+
+                <!-- Flagged Content -->
+                <MudText Typo="Typo.subtitle1" Class="mb-2">Flagged Content</MudText>
+
+                <MudPaper Class="pa-4 mb-4" Elevation="0" Style="background-color: var(--mud-palette-background-grey);">
+                    <MudText>@Review.Text</MudText>
+                </MudPaper>
+
+                <MudAlert Severity="Severity.Warning" Class="mb-4">
+                    <MudText>Flagged Words:</MudText>
+                    <div class="d-flex gap-2 mt-2 flex-wrap">
+                        @foreach (var word in Review.FlaggedWords)
+                        {
+                            <MudChip Color="Color.Error">@word</MudChip>
+                        }
+                    </div>
+                </MudAlert>
+
+                <!-- Moderation Options -->
+                <MudText Typo="Typo.subtitle1" Class="mb-2">Moderation Action</MudText>
+
+                <MudRadioGroup @bind-SelectedOption="@selectedAction">
+                    <MudRadio Option="@("Approve")" Color="Color.Success">Approve Review</MudRadio>
+                    <MudRadio Option="@("Reject")" Color="Color.Error">Reject Review</MudRadio>
+                    <MudRadio Option="@("Modify")" Color="Color.Info">Modify and Approve</MudRadio>
+                </MudRadioGroup>
+
+                @if (selectedAction == "Modify")
+                {
+                    <MudTextField @bind-Value="modifiedText" Label="Modified Text"
+                                  Variant="Variant.Outlined" Lines="5"
+                                  Class="mt-4" />
+                }
+
+                <MudTextField @bind-Value="moderationReason" Label="Reason (optional)"
+                              Variant="Variant.Outlined" Class="mt-4" />
+            </MudPaper>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="Cancel">Cancel</MudButton>
+        <MudButton Variant="Variant.Filled"
+                   Color="@GetActionColor(selectedAction)"
+                   OnClick="Submit"
+                   Disabled="@(selectedAction == "Modify" && string.IsNullOrEmpty(modifiedText))">
+            @GetActionButtonText()
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public ReviewModerationDto Review { get; set; }
+
+    private string selectedAction = "Approve";
+    private string moderationReason = "";
+    private string modifiedText = "";
+
+    protected override void OnParametersSet()
+    {
+        // Initialize the modified text with the original text
+        modifiedText = Review.Text;
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void Submit()
+    {
+        try
+        {
+            var action = new ModerationActionDto
+                {
+                    ActionType = selectedAction,
+                    Reason = moderationReason,
+                    ModifiedContent = selectedAction == "Modify" ? modifiedText : ""
+                };
+
+            MudDialog.Close(DialogResult.Ok(action));
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private Color GetActionColor(string action) => action switch
+    {
+        "Approve" => Color.Success,
+        "Reject" => Color.Error,
+        "Modify" => Color.Info,
+        _ => Color.Default
+    };
+
+    private string GetActionButtonText() => selectedAction switch
+    {
+        "Approve" => "Approve Review",
+        "Reject" => "Reject Review",
+        "Modify" => "Modify and Approve",
+        _ => "Submit"
+    };
+}

@@ -1,0 +1,60 @@
+﻿@inherits LayoutComponentBase
+@using CineScope.Client.Components.Admin
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+@inject AuthenticationStateProvider AuthStateProvider
+
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        <MudLayout>
+            <MudAppBar Elevation="1" Color="Color.Error">
+                <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+                <MudText Typo="Typo.h6" Class="ml-2">CineScope Admin</MudText>
+                <MudSpacer />
+                <MudText>@context.User.Identity.Name</MudText>
+                <MudIconButton Icon="@Icons.Material.Filled.ExitToApp" Color="Color.Inherit" Edge="Edge.End" OnClick="@ReturnToMain" />
+            </MudAppBar>
+
+            <MudDrawer @bind-Open="@drawerOpen" Elevation="1" ClipMode="DrawerClipMode.Always">
+                <MudNavMenu Color="Color.Error">
+                    <MudText Typo="Typo.subtitle2" Class="px-4 py-2">ADMIN PANEL</MudText>
+                    <MudDivider Class="mb-2" />
+                    <MudNavLink Href="/admin" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">Dashboard</MudNavLink>
+                    <MudNavLink Href="/admin/manage" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Settings">Management</MudNavLink>
+                    <MudDivider Class="my-2" />
+                    <MudNavLink OnClick="@ReturnToMain" Icon="@Icons.Material.Filled.ArrowBack">Return to Main Site</MudNavLink>
+                </MudNavMenu>
+            </MudDrawer>
+
+            <MudMainContent>
+                <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="pa-4">
+                    @Body
+                </MudContainer>
+            </MudMainContent>
+        </MudLayout>
+    </Authorized>
+    <NotAuthorized>
+        <MudContainer MaxWidth="MaxWidth.Small" Class="d-flex flex-column align-center justify-center" Style="height: 100vh;">
+            <MudAlert Severity="Severity.Error" Class="mb-4">
+                <MudText Typo="Typo.h5">Access Denied</MudText>
+                <MudText Typo="Typo.body1">You don't have permission to access the admin area.</MudText>
+            </MudAlert>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@ReturnToMain">Return to Main Site</MudButton>
+        </MudContainer>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private bool drawerOpen = true;
+
+    private void ToggleDrawer()
+    {
+        drawerOpen = !drawerOpen;
+    }
+
+    private void ReturnToMain()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}
