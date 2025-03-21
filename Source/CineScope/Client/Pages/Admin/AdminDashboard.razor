@@ -72,10 +72,10 @@ else if (stats != null)
                                         <td>@stat.Key</td>
                                         <td>@stat.Value</td>
                                         <td>
-                                            <MudButton Size="Size.Small" 
-                                                     Variant="Variant.Outlined" 
-                                                     Color="Color.Primary"
-                                                     OnClick="@(() => NavigateToManageCollection(stat.Key))">
+                                            <MudButton Size="Size.Small"
+                                                       Variant="Variant.Outlined"
+                                                       Color="Color.Primary"
+                                                       OnClick="@(() => NavigateToManageCollection(stat.Key))">
                                                 Manage
                                             </MudButton>
                                         </td>
@@ -100,7 +100,7 @@ else if (stats != null)
                     </CardHeaderActions>
                 </MudCardHeader>
                 <MudCardContent>
-                    <MudTable Items="@stats.RecentActivity" Hover="true" Breakpoint="Breakpoint.Sm">
+                    <MudTable Items="@(stats.RecentActivity ?? new List<RecentActivityDto>())" Hover="true" Breakpoint="Breakpoint.Sm">
                         <HeaderContent>
                             <MudTh>Timestamp</MudTh>
                             <MudTh>User</MudTh>
@@ -142,7 +142,7 @@ else
         {
             isLoading = true;
             var response = await Http.GetAsync("api/admin/dashboard");
-            
+
             if (response.IsSuccessStatusCode)
             {
                 stats = await response.Content.ReadFromJsonAsync<DashboardStatsDto>();
@@ -168,24 +168,27 @@ else
         await LoadDashboardData();
     }
 
-    private Color GetActionColor(string actionType) => actionType switch
+    private Color GetActionColor(string actionType) => actionType?.ToLowerInvariant() switch
     {
-        "NewReview" => Color.Success,
-        "FlaggedReview" => Color.Error,
-        "NewAccount" => Color.Info,
+        "newreview" => Color.Success,
+        "flaggedreview" => Color.Error,
+        "newaccount" => Color.Info,
         _ => Color.Default
     };
-    
+
     private void NavigateToManageCollection(string collectionName)
     {
-        var tabIndex = collectionName switch
+        // Case-insensitive collection name matching
+        var normalizedName = collectionName?.ToLowerInvariant() ?? "";
+
+        var tabIndex = normalizedName switch
         {
-            "Users" => 0,
-            "Movies" => 1,
-            "BannedWords" => 2,
+            var n when n.Contains("user") => 0,
+            var n when n.Contains("movie") => 1,
+            var n when n.Contains("banned") || n.Contains("word") => 2,
             _ => 0
         };
-        
+
         NavigationManager.NavigateTo($"/admin/manage?tab={tabIndex}");
     }
 }
