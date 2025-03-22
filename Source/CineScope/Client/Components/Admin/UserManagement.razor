@@ -51,16 +51,16 @@
             Loading="@isLoading" LoadingProgressColor="Color.Primary">
                 <HeaderContent>
                     <MudTh>Username</MudTh>
-                    <MudTh>Role</MudTh>
+                    <MudTh>Role(s)</MudTh>
                     <MudTh>Status</MudTh>
-                    <MudTh>Edit</MudTh>
+                    <MudTh>View</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Username">
                         <div class="d-flex align-center">
                             <MudAvatar Class="mr-2" Style="height: 30px; width: 30px;">
                                 <img src="@(string.IsNullOrEmpty(context.ProfilePictureUrl) ? "/profile-pictures/default.svg" : context.ProfilePictureUrl)"
-                                alt="@context.Username" />
+                                alt="No profile picture chosen" />
                             </MudAvatar>
                             @context.Username
                         </div>
@@ -80,8 +80,8 @@
                     </MudTd>
                     <MudTd DataLabel="Edit">
                         <MudButton Variant="Variant.Outlined" Color="Color.Primary"
-                        OnClick="@OpenUserManagementDialog">
-                            Edit @context.Username
+                            OnClick="@(async () => await OpenUserActionsDialog(context))">
+                            View @context.Username
                         </MudButton>
                     </MudTd>
                 </RowTemplate>
@@ -196,8 +196,15 @@
         Snackbar.Add($"Toggling admin role for {user.Username} is not implemented yet", Severity.Info);
     }
 
-    private async Task OpenUserManagementDialog()
+    private async Task OpenUserActionsDialog(UserAdminDto user)
     {
-        Snackbar.Add("User edit opened", Severity.Success);
+        var parameters = new DialogParameters
+            {
+                ["User"] = user
+            };
+
+        var dialog = await DialogService.ShowAsync<UserActionsDialog>("User Information and Actions", parameters,
+            new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
+        //Snackbar.Add("User edit opened", Severity.Success);
     }
 }
