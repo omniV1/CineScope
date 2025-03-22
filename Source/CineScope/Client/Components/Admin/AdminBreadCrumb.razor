@@ -1,0 +1,24 @@
+﻿@using Microsoft.AspNetCore.Components
+@inject NavigationManager NavigationManager
+
+<MudBreadcrumbs Items="@breadcrumbs" Separator="→"></MudBreadcrumbs>
+
+@code {
+    private List<BreadcrumbItem> breadcrumbs = new List<BreadcrumbItem>();
+
+    [Parameter]
+    public string CurrentPage { get; set; } = string.Empty;
+
+    protected override void OnParametersSet()
+    {
+        breadcrumbs = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem("Admin", href: "/admin", icon: Icons.Material.Filled.Dashboard)
+        };
+
+        if (!string.IsNullOrEmpty(CurrentPage))
+        {
+            breadcrumbs.Add(new BreadcrumbItem(CurrentPage, href: null, disabled: true));
+        }
+    }
+}

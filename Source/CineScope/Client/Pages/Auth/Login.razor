@@ -1,0 +1,121 @@
+﻿@page "/login"
+@using CineScope.Client.Services
+@using CineScope.Client.Services.Auth
+@using CineScope.Shared.Auth
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+<PageTitle>CineScope - Login</PageTitle>
+
+<MudGrid Justify="Justify.Center" Class="mt-8">
+    <MudItem xs="12" sm="8" md="6" lg="4">
+        <MudCard Elevation="3" Class="pa-4">
+            <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+                <MudCardContent>
+                    <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">Login</MudText>
+                    <MudText Typo="Typo.subtitle1" Align="Align.Center" Class="mb-4">Sign in to your CineScope account</MudText>
+
+                    <MudTextField T="string" Label="Username" @bind-Value="loginRequest.Username"
+                                  Required="true" RequiredError="Username is Required."
+                                  Variant="Variant.Outlined" Class="my-4" />
+
+                    <MudTextField T="string" Label="Password" @bind-Value="loginRequest.Password"
+                                  Required="true" RequiredError="Password is Required."
+                                  Variant="Variant.Outlined" InputType="InputType.Password"
+                                  Class="my-4" />
+
+                    <MudCheckBox T="bool" Label="Remember me" Color="Color.Primary"
+                                 @bind-Checked="loginRequest.RememberMe" Class="ml-n2" />
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <MudAlert Severity="Severity.Error" Class="mt-4" Dense="true">@errorMessage</MudAlert>
+                    }
+                </MudCardContent>
+
+                <MudCardActions Class="d-flex justify-center flex-column gap-4">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large"
+                               FullWidth="true" Disabled="@(!success || isLoading)"
+                               OnClick="HandleLogin">
+                        @if (isLoading)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                            <MudText Class="ms-2">Processing</MudText>
+                        }
+                        else
+                        {
+                            <MudText>Login</MudText>
+                        }
+                    </MudButton>
+
+                    <MudLink Href="/register">Don't have an account? Register here</MudLink>
+                </MudCardActions>
+            </MudForm>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private MudForm form;
+    private bool success;
+    private string[] errors = { };
+    private string errorMessage = string.Empty;
+    private bool isLoading = false;
+
+    /// <summary>
+    /// Model for the login form.
+    /// </summary>
+    private LoginRequest loginRequest = new LoginRequest();
+
+    /// <summary>
+    /// Handles the login form submission.
+    /// Uses the AuthService for authentication.
+    /// </summary>
+    private async Task HandleLogin()
+    {
+        // Validate the form
+        await form.Validate();
+
+        if (!success)
+        {
+            return;
+        }
+
+        try
+        {
+            // Set loading state
+            isLoading = true;
+            errorMessage = string.Empty;
+
+            // Use the AuthService to login
+            var result = await AuthService.Login(loginRequest);
+
+            if (result.Success)
+            {
+                // Show success message
+                Snackbar.Add("Login successful! Welcome to CineScope.", Severity.Success);
+
+                // Redirect to home page
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                // Handle error
+                errorMessage = result.Message ?? "Login failed. Please check your credentials try again.";
+                Snackbar.Add(errorMessage, Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions
+            errorMessage = "An unexpected error occured. Please try again later.";
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            // Reset loading state
+            isLoading = false;
+        }
+    }
+}

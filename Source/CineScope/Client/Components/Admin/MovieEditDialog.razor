@@ -1,0 +1,125 @@
+﻿@using CineScope.Shared.DTOs
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-width: 800px; padding: 16px;">
+            <MudGrid>
+                <!-- Poster Preview -->
+                <MudItem xs="12" sm="4">
+                    <div class="d-flex flex-column align-center">
+                        <MudPaper Width="200px" Height="300px" Elevation="0" Square="true" Class="mb-2">
+                            <img src="@(!string.IsNullOrEmpty(movie.PosterUrl) ? movie.PosterUrl : $"https://via.placeholder.com/200x300?text={Uri.EscapeDataString(movie.Title)}")"
+                                 alt="@movie.Title"
+                                 style="width: 100%; height: 100%; object-fit: cover;" />
+                        </MudPaper>
+
+                        <MudTextField @bind-Value="movie.PosterUrl" Label="Poster URL"
+                                      Variant="Variant.Outlined" FullWidth="true" Class="mb-3" />
+                    </div>
+                </MudItem>
+
+                <!-- Movie Details Form -->
+                <MudItem xs="12" sm="8">
+                    <MudTextField @bind-Value="movie.Title" Label="Title"
+                                  Required="true" RequiredError="Title is required"
+                                  Variant="Variant.Outlined" FullWidth="true" Class="mb-3" />
+
+                    <MudTextField @bind-Value="movie.Description" Label="Description"
+                                  Required="true" RequiredError="Description is required"
+                                  Variant="Variant.Outlined" FullWidth="true" Lines="5" Class="mb-3" />
+
+                    <MudDatePicker @bind-Date="releaseDate" Label="Release Date"
+                                   Required="true" RequiredError="Release date is required"
+                                   Variant="Variant.Outlined" Class="mb-3" />
+
+                    <MudTextField @bind-Value="movie.Director" Label="Director"
+                                  Variant="Variant.Outlined" FullWidth="true" Class="mb-3" />
+
+                    <MudSelect @bind-SelectedValues="selectedGenres" Label="Genres" MultiSelection="true"
+                               Variant="Variant.Outlined" FullWidth="true" Class="mb-3">
+                        @foreach (var genre in availableGenres)
+                        {
+                            <MudSelectItem Value="@genre">@genre</MudSelectItem>
+                        }
+                    </MudSelect>
+
+                    <MudTextField @bind-Value="actorsString" Label="Actors (comma separated)"
+                                  Variant="Variant.Outlined" FullWidth="true" Class="mb-3"
+                                  HelperText="Enter actor names separated by commas" />
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(string.IsNullOrWhiteSpace(movie.Title))">
+            @(IsNew ? "Add Movie" : "Update Movie")
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public MovieDto Movie { get; set; }
+    [Parameter] public bool IsNew { get; set; }
+
+    private MovieDto movie = new MovieDto();
+    private DateTime? releaseDate;
+    private IEnumerable<string> selectedGenres = new List<string>();
+    private string actorsString = "";
+
+    private readonly string[] availableGenres = new[] {
+        "Action", "Adventure", "Animation", "Comedy", "Crime", "Documentary", "Drama",
+        "Family", "Fantasy", "History", "Horror", "Music", "Mystery", "Romance",
+        "Science Fiction", "Thriller", "War", "Western"
+    };
+
+    protected override void OnParametersSet()
+    {
+        // Make a copy of the movie to avoid modifying the original
+        movie = new MovieDto
+            {
+                Id = Movie.Id,
+                Title = Movie.Title,
+                Description = Movie.Description,
+                Director = Movie.Director,
+                PosterUrl = Movie.PosterUrl,
+                ReleaseDate = Movie.ReleaseDate,
+                Genres = new List<string>(Movie.Genres ?? new List<string>()),
+                Actors = new List<string>(Movie.Actors ?? new List<string>()),
+                AverageRating = Movie.AverageRating,
+                ReviewCount = Movie.ReviewCount
+            };
+
+        // Set the release date for the DatePicker
+        releaseDate = movie.ReleaseDate;
+
+        // Set selected genres
+        selectedGenres = movie.Genres;
+
+        // Convert actors list to comma-separated string
+        actorsString = string.Join(", ", movie.Actors ?? new List<string>());
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void Submit()
+    {
+        if (string.IsNullOrWhiteSpace(movie.Title))
+        {
+            return;
+        }
+
+        // Update movie from form fields
+        movie.ReleaseDate = releaseDate ?? DateTime.Now;
+        movie.Genres = selectedGenres.ToList();
+        movie.Actors = actorsString.Split(',')
+            .Select(a => a.Trim())
+            .Where(a => !string.IsNullOrWhiteSpace(a))
+            .ToList();
+
+        MudDialog.Close(DialogResult.Ok(movie));
+    }
+}

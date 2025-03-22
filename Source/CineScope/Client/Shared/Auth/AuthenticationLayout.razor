@@ -1,0 +1,164 @@
+﻿@using CineScope.Client.Services
+@using CineScope.Client.Services.Auth
+@using CineScope.Shared.DTOs
+@using CineScope.Client.Shared.Profile
+@inherits LayoutComponentBase
+@inject AuthService AuthService
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+<CascadingAuthenticationState>
+    <MudLayout>
+        <!-- Application header bar -->
+        <MudAppBar Elevation="1" Dense="true" Class="cinescope-appbar">
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+
+            <!-- Logo and title -->
+            <div class="d-flex align-center" @onclick="@(() => NavigationManager.NavigateTo("/"))">
+                <MudText Typo="Typo.h5" Class="mr-2 ml-2 cursor-pointer">CineScope</MudText>
+            </div>
+
+            <MudSpacer />
+
+            <AuthorizeView>
+                <Authorized>
+                    <!-- Show profile picture and user menu -->
+                    <MudMenu AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                        <ActivatorContent>
+                            <div style="cursor: pointer;">
+                                <ProfilePictureDisplay Url="@GetProfilePictureUrl(context)"
+                                                       Username="@context.User.Identity.Name"
+                                                       Size="Size.Medium"
+                                                       Width="40"
+                                                       Height="40" />
+                            </div>
+                        </ActivatorContent>
+                        <ChildContent>
+                            <MudText Typo="Typo.body2" Class="px-4 py-2">@context.User.Identity.Name</MudText>
+                            <MudDivider Class="mb-2" />
+                            <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("/profile"))">My Profile</MudMenuItem>
+                            <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("/my-reviews"))">My Reviews</MudMenuItem>
+                            <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("/admin"))">Admin Dashboard </MudMenuItem>
+                            <MudMenuItem OnClick="Logout">Logout</MudMenuItem>
+                        </ChildContent>
+                    </MudMenu>
+                </Authorized>
+                <NotAuthorized>
+                    <!-- Login/register buttons -->
+                    <MudButton Variant="Variant.Text" Color="Color.Inherit" OnClick="@(() => NavigationManager.NavigateTo("/login"))">Login</MudButton>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Inherit" OnClick="@(() => NavigationManager.NavigateTo("/register"))">Register</MudButton>
+                </NotAuthorized>
+            </AuthorizeView>
+        </MudAppBar>
+
+        <!-- Navigation drawer for side menu -->
+        <MudDrawer @bind-Open="_drawerOpen" Elevation="1" ClipMode="DrawerClipMode.Always">
+            <!-- Drawer header -->
+            <MudDrawerHeader>
+                <MudText Typo="Typo.h6">CineScope</MudText>
+            </MudDrawerHeader>
+
+            <AuthorizeView>
+                <Authorized>
+                    <!-- Navigation for authenticated users -->
+                    <MudNavMenu>
+                        <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+                        <MudNavLink Href="movies" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Movie">Movies</MudNavLink>
+                        <MudNavLink Href="profile" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">My Profile</MudNavLink>
+                        <MudNavLink Href="my-reviews" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.RateReview">My Reviews</MudNavLink>
+
+                        <MudDivider Class="my-2" />
+
+                        <MudNavLink OnClick="Logout" Icon="@Icons.Material.Filled.Logout">Logout</MudNavLink>
+                    </MudNavMenu>
+                </Authorized>
+                <NotAuthorized>
+                    <!-- Navigation for non-authenticated users -->
+                    <MudNavMenu>
+                        <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+                        <MudNavLink Href="movies" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Movie">Movies</MudNavLink>
+
+                        <MudDivider Class="my-2" />
+
+                        <MudNavLink Href="login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Login">Login</MudNavLink>
+                        <MudNavLink Href="register" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonAdd">Register</MudNavLink>
+                    </MudNavMenu>
+                </NotAuthorized>
+            </AuthorizeView>
+        </MudDrawer>
+
+        <!-- Main content area -->
+        <MudMainContent>
+            <!-- Container for page content with padding -->
+            <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pa-4">
+                <!-- Render the current page content -->
+                @Body
+            </MudContainer>
+        </MudMainContent>
+    </MudLayout>
+</CascadingAuthenticationState>
+
+@code {
+    /// <summary>
+    /// Tracks whether the navigation drawer is open.
+    /// </summary>
+    private bool _drawerOpen = true;
+
+    /// <summary>
+    /// Toggles the navigation drawer open/closed state.
+    /// </summary>
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    /// <summary>
+    /// Logs out the current user.
+    /// </summary>
+    private async Task Logout()
+    {
+        await AuthService.Logout();
+        Snackbar.Add("You have been logged out", Severity.Success);
+        NavigationManager.NavigateTo("/");
+    }
+
+    /// <summary>
+    /// Gets the user's profile picture URL from the authentication context.
+    /// </summary>
+    private string GetProfilePictureUrl(AuthenticationState context)
+    {
+        try
+        {
+            // Debug: list all claims
+            foreach (var claim in context.User.Claims)
+            {
+                Console.WriteLine($"Claim: {claim.Type} = {claim.Value}");
+            }
+
+            // Check for ProfilePictureUrl claim
+            var profilePictureClaim = context.User.FindFirst("ProfilePictureUrl");
+
+            if (profilePictureClaim != null && !string.IsNullOrWhiteSpace(profilePictureClaim.Value))
+            {
+                Console.WriteLine($"Found profile picture URL: {profilePictureClaim.Value}");
+                return profilePictureClaim.Value;
+            }
+
+            // If user is authenticated but no profile picture claim found,
+            // use avatar8.svg since we know it exists
+            if (context.User.Identity.IsAuthenticated)
+            {
+                Console.WriteLine("User authenticated but no profile picture claim found, using avatar8.svg");
+                return "/profile-pictures/avatar8.svg";
+            }
+
+            // Default fallback
+            return "/profile-pictures/default.svg";
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting profile picture: {ex.Message}");
+            return "/profile-pictures/default.svg";
+        }
+    }
+}

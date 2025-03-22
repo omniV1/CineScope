@@ -1,0 +1,574 @@
+﻿@page "/profile"
+@using CineScope.Shared.DTOs
+@using CineScope.Client.Shared.Profile
+@using CineScope.Shared.Auth;
+@using CineScope.Client.Services.Auth;
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject AuthService AuthService
+@inject ISnackbar Snackbar
+@attribute [Authorize]
+
+<PageTitle>CineScope - My Profile</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-6">
+    <MudGrid>
+        <MudItem xs="12">
+            <MudText Typo="Typo.h4">Profile Management</MudText>
+            <MudText Typo="Typo.subtitle1">Update your account information</MudText>
+        </MudItem>
+    </MudGrid>
+
+    <MudDivider Class="my-6" />
+
+    @if (isLoading)
+    {
+        <MudProgressCircular Indeterminate="true" Size="Size.Large" Class="my-8" />
+    }
+    else
+    {
+        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+            <MudCard Elevation="3" Class="pa-4">
+                <MudCardContent>
+                    <MudGrid>
+                        <!-- Profile Picture Section -->
+                        <MudItem xs="12" md="12" Class="mb-6">
+                            <MudText Typo="Typo.h6" Class="mb-4">Profile Picture</MudText>
+                            <ProfilePictureSelector SelectedProfilePicture="@user.ProfilePictureUrl"
+                                                    OnProfilePictureSelected="@UpdateProfilePicture" />
+                        </MudItem>
+
+                        <!-- Profile Details Section -->
+                        <MudItem xs="12" md="6">
+                            <MudText Typo="Typo.h6" Class="mb-4">Account Details</MudText>
+
+                            <MudTextField @bind-Value="user.Username" Label="Username"
+                                          Variant="Variant.Outlined" Class="mb-4"
+                                          Disabled="@(!isEditing)"
+                                          Required="true" RequiredError="Please enter a username." />
+
+                            <MudTextField @bind-Value="user.Email" Label="Email"
+                                          Variant="Variant.Outlined" Class="mb-4"
+                                          Disabled="@(!isEditing)"
+                                          Required="true" RequiredError="A valid email address is required." />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <!-- Only show password fields in edit mode -->
+                            @if (isEditing)
+                            {
+                                <MudText Typo="Typo.h6" Class="mb-4">Change Password</MudText>
+
+                                <MudTextField @bind-Value="currentPassword" Label="Current Password"
+                                              Variant="Variant.Outlined" InputType="InputType.Password"
+                                              HelperText="Required to change password" Class="mb-4" />
+
+                                <MudTextField @bind-Value="newPassword" Label="New Password"
+                                              Variant="Variant.Outlined" InputType="InputType.Password"
+                                              HelperText="Leave blank to keep current password" Class="mb-4" />
+
+                                <MudTextField @bind-Value="confirmPassword" Label="Confirm New Password"
+                                              Variant="Variant.Outlined" InputType="InputType.Password"
+                                              HelperText="Must match new password" Class="mb-4" />
+                            }
+                            else
+                            {
+                                <!-- Profile stats when not editing -->
+                                <MudText Typo="Typo.h6" Class="mb-4">Profile Statistics</MudText>
+
+                                <MudPaper Elevation="0" Class="pa-4 mb-2" Style="background-color:var(--mud-palette-background-grey)">
+                                    <MudText><b>Member Since:</b> @user.CreatedAt.ToString("MMMM dd, yyyy")</MudText>
+                                </MudPaper>
+
+                                <MudPaper Elevation="0" Class="pa-4 mb-2" Style="background-color:var(--mud-palette-background-grey)">
+                                    <MudText><b>Reviews Posted:</b> @reviewCount</MudText>
+                                </MudPaper>
+                            }
+                        </MudItem>
+                    </MudGrid>
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <MudAlert Severity="Severity.Error" Class="mt-4">
+                            <i class="fas fa-exclamation-circle"></i> @errorMessage
+                        </MudAlert>
+                    }
+                </MudCardContent>
+
+                <MudCardActions>
+                    @if (isEditing)
+                    {
+                        <MudButton Variant="Variant.Text" Color="Color.Secondary"
+                                   OnClick="@CancelEdit">Cancel</MudButton>
+                        <MudSpacer />
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                                   Disabled="@(!success || isSaving)" OnClick="@SaveChanges">
+                            @if (isSaving)
+                            {
+                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                <MudText Class="ms-2">Saving</MudText>
+                            }
+                            else
+                            {
+                                <MudText>Save Changes</MudText>
+                            }
+                        </MudButton>
+                    }
+                    else
+                    {
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                                   OnClick="@EnableEdit">Edit Profile</MudButton>
+                    }
+                </MudCardActions>
+            </MudCard>
+        </MudForm>
+    }
+
+    <MudDivider Class="my-6" />
+</MudContainer>
+
+@code {
+    private MudForm form;
+    private bool success;
+    private string[] errors = { };
+    private string errorMessage = string.Empty;
+    private bool isLoading = true;
+    private bool isEditing = false;
+    private bool isSaving = false;
+
+    // User profile data
+    private UserProfileDto user = new UserProfileDto();
+    private string currentPassword = string.Empty;
+    private string newPassword = string.Empty;
+    private string confirmPassword = string.Empty;
+
+    // User reviews
+    private List<UserReviewDto> userReviews = new List<UserReviewDto>();
+    private int reviewCount = 0;
+
+    // Track if profile picture has been updated
+    private bool profilePictureUpdated = false;
+
+    /// <summary>
+    /// Initializes the component and loads user data.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Get current user to verify authentication
+            var currentUser = await AuthService.GetCurrentUser();
+            if (currentUser == null)
+            {
+                errorMessage = "User not authenticated";
+                Snackbar.Add("Please log in to view your profile", Severity.Warning);
+                isLoading = false;
+                return;
+            }
+
+            Console.WriteLine($"Initializing profile for user: {currentUser.Username} (ID: {currentUser.Id})");
+
+            // Load user profile and related data
+            await LoadUserProfile();
+            await LoadUserReviewCount();
+            await LoadUserReviews();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Initialization error: {ex.Message}";
+            Snackbar.Add(errorMessage, Severity.Error);
+            isLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Loads the user profile data from the API.
+    /// </summary>
+    private async Task LoadUserProfile()
+    {
+        try
+        {
+            isLoading = true;
+
+            // Ensure authentication header is up to date before making the request
+            await AuthService.EnsureAuthHeaderAsync();
+
+            // Add console logs for debugging
+            Console.WriteLine("Making API call to fetch user profile...");
+
+            var response = await Http.GetAsync("api/User/profile");
+
+            Console.WriteLine($"Profile API response status: {response.StatusCode}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                user = await response.Content.ReadFromJsonAsync<UserProfileDto>();
+
+                // If profile picture is null or empty, set to default
+                if (string.IsNullOrEmpty(user.ProfilePictureUrl))
+                {
+                    user.ProfilePictureUrl = ProfilePictureOptions.DefaultProfilePicture;
+                }
+
+                Console.WriteLine($"Loaded profile for: {user.Username} (ID: {user.Id})");
+            }
+            else
+            {
+                // Try to get more detailed error information
+                var errorContent = await response.Content.ReadAsStringAsync();
+                errorMessage = $"Failed to load profile data: {response.StatusCode}";
+                Console.WriteLine($"API Error: {response.StatusCode} - {errorContent}");
+
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    Snackbar.Add("Authentication error. Please log in again.", Severity.Warning);
+                }
+                else
+                {
+                    Snackbar.Add($"Error loading profile: {response.StatusCode}", Severity.Error);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to load profile data: {ex.Message}";
+            Console.WriteLine($"Exception in LoadUserProfile: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Loads the count of user's reviews.
+    /// </summary>
+    private async Task LoadUserReviewCount()
+    {
+        try
+        {
+            // Don't try to load if user ID is null
+            if (user == null || string.IsNullOrEmpty(user.Id))
+            {
+                reviewCount = 0;
+                return;
+            }
+
+            await AuthService.EnsureAuthHeaderAsync();
+            var response = await Http.GetAsync($"api/Review/user/{user.Id}/count");
+
+            if (response.IsSuccessStatusCode)
+            {
+                reviewCount = await response.Content.ReadFromJsonAsync<int>();
+                Console.WriteLine($"Loaded {reviewCount} reviews for user");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to load review count: {response.StatusCode}");
+                reviewCount = 0;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading review count: {ex.Message}");
+            reviewCount = 0;
+        }
+    }
+
+    /// <summary>
+    /// Loads the user's reviews.
+    /// </summary>
+    private async Task LoadUserReviews()
+    {
+        try
+        {
+            // Don't try to load if user ID is null
+            if (user == null || string.IsNullOrEmpty(user.Id))
+            {
+                userReviews = new List<UserReviewDto>();
+                return;
+            }
+
+            await AuthService.EnsureAuthHeaderAsync();
+            var response = await Http.GetAsync($"api/Review/user/{user.Id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var reviews = await response.Content.ReadFromJsonAsync<List<ReviewDto>>();
+                userReviews = MapToUserReviewDto(reviews);
+                Console.WriteLine($"Loaded {userReviews.Count} review details");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to load reviews: {response.StatusCode}");
+                userReviews = new List<UserReviewDto>();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading reviews: {ex.Message}");
+            userReviews = new List<UserReviewDto>();
+        }
+    }
+
+    /// <summary>
+    /// Maps ReviewDto objects to UserReviewDto objects with movie titles.
+    /// </summary>
+    private List<UserReviewDto> MapToUserReviewDto(List<ReviewDto> reviews)
+    {
+        var result = new List<UserReviewDto>();
+
+        if (reviews == null)
+            return result;
+
+        foreach (var review in reviews)
+        {
+            result.Add(new UserReviewDto
+                {
+                    Id = review.Id,
+                    MovieId = review.MovieId,
+                    MovieTitle = GetMovieTitle(review.MovieId), // You'll need to implement this method
+                    Rating = review.Rating,
+                    Text = review.Text,
+                    CreatedAt = review.CreatedAt
+                });
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Gets the title of a movie by its ID. In a real implementation,
+    /// this would fetch the title from a cache or API.
+    /// </summary>
+    private string GetMovieTitle(string movieId)
+    {
+        // Implement this method to get movie titles
+        // For now returning a placeholder
+        return $"Movie {movieId}";
+    }
+
+    /// <summary>
+    /// Updates the selected profile picture.
+    /// </summary>
+    private void UpdateProfilePicture(string pictureUrl)
+    {
+        if (string.IsNullOrEmpty(pictureUrl))
+        {
+            pictureUrl = ProfilePictureOptions.DefaultProfilePicture;
+        }
+
+        user.ProfilePictureUrl = pictureUrl;
+        profilePictureUpdated = true;
+
+        // If not in edit mode, save immediately
+        if (!isEditing)
+        {
+            SaveProfilePicture();
+        }
+    }
+
+    /// <summary>
+    /// Saves just the profile picture change.
+    /// </summary>
+    private async Task SaveProfilePicture()
+    {
+        if (!profilePictureUpdated)
+            return;
+
+        try
+        {
+            isSaving = true;
+            await AuthService.EnsureAuthHeaderAsync();
+
+            // Create request with just the profile picture
+            var updateRequest = new UpdateProfileRequest
+                {
+                    Username = user.Username,
+                    Email = user.Email,
+                    ProfilePictureUrl = user.ProfilePictureUrl ?? ProfilePictureOptions.DefaultProfilePicture
+                };
+
+            Console.WriteLine($"Saving profile picture: {updateRequest.ProfilePictureUrl}");
+
+            // Call API to update the profile picture
+            var response = await Http.PutAsJsonAsync("api/User/profile-picture", updateRequest);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Use the RefreshUserProfile method which is already correctly implemented
+                await AuthService.RefreshUserProfile();
+
+                Snackbar.Add("Profile picture updated", Severity.Success);
+                profilePictureUpdated = false;
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Failed to update profile picture: {response.StatusCode} - {errorContent}");
+                Snackbar.Add($"Error: {errorContent}", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating profile picture: {ex.Message}");
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    /// <summary>
+    /// Enables edit mode for the profile.
+    /// </summary>
+    private void EnableEdit()
+    {
+        isEditing = true;
+        // Reset password fields
+        currentPassword = string.Empty;
+        newPassword = string.Empty;
+        confirmPassword = string.Empty;
+    }
+
+    /// <summary>
+    /// Cancels edit mode and reverts changes.
+    /// </summary>
+    private async Task CancelEdit()
+    {
+        isEditing = false;
+        errorMessage = string.Empty;
+        // Reload original data
+        await LoadUserProfile();
+    }
+
+    /// <summary>
+    /// Saves profile changes to the database.
+    /// </summary>
+    private async Task SaveChanges()
+    {
+        await form.Validate();
+
+        if (!success)
+        {
+            return;
+        }
+
+        // Validate password if attempting to change it
+        if (!string.IsNullOrEmpty(newPassword))
+        {
+            if (string.IsNullOrEmpty(currentPassword))
+            {
+                errorMessage = "Current password is required to change password";
+                return;
+            }
+
+            if (newPassword != confirmPassword)
+            {
+                errorMessage = "New password and confirmation do not match";
+                return;
+            }
+        }
+
+        try
+        {
+            isSaving = true;
+            await AuthService.EnsureAuthHeaderAsync();
+
+            // Create request object
+            var updateRequest = new UpdateProfileRequest
+                {
+                    Username = user.Username,
+                    Email = user.Email,
+                    ProfilePictureUrl = user.ProfilePictureUrl ?? ProfilePictureOptions.DefaultProfilePicture,
+                    CurrentPassword = currentPassword,
+                    NewPassword = newPassword
+                };
+
+            Console.WriteLine("Sending profile update request...");
+
+            // Send update request to the API
+            var response = await Http.PutAsJsonAsync("api/User/profile", updateRequest);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Refresh the authentication state to update the navbar
+                await AuthService.RefreshUserStateAsync();
+
+                Snackbar.Add("Profile updated successfully", Severity.Success);
+                isEditing = false;
+                errorMessage = string.Empty;
+                profilePictureUpdated = false;
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                errorMessage = $"Failed to update profile: {errorContent}";
+                Console.WriteLine($"Profile update failed: {response.StatusCode} - {errorContent}");
+                Snackbar.Add(errorMessage, Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Failed to update profile";
+            Console.WriteLine($"Exception in SaveChanges: {ex.Message}");
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    /// <summary>
+    /// Opens the edit dialog for a review.
+    /// </summary>
+    private void EditReview(UserReviewDto review)
+    {
+        // Implement opening an edit dialog for the review
+    }
+
+    /// <summary>
+    /// Deletes a review after confirmation.
+    /// </summary>
+    private async Task DeleteReview(string reviewId)
+    {
+        // Implement deletion with confirmation dialog
+        try
+        {
+            await AuthService.EnsureAuthHeaderAsync();
+            var response = await Http.DeleteAsync($"api/Review/{reviewId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                userReviews.RemoveAll(r => r.Id == reviewId);
+                reviewCount--;
+                Snackbar.Add("Review deleted successfully", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Failed to delete review", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
+
+    /// <summary>
+    /// Data model for a user's review with movie title.
+    /// </summary>
+    private class UserReviewDto
+    {
+        public string Id { get; set; } = string.Empty;
+        public string MovieId { get; set; } = string.Empty;
+        public string MovieTitle { get; set; } = string.Empty;
+        public double Rating { get; set; }
+        public string Text { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+    }
+}

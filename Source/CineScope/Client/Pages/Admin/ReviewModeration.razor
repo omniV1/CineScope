@@ -1,0 +1,223 @@
+﻿@page "/admin/moderation"
+@attribute [Authorize(Roles = "Admin")]
+@using CineScope.Shared.DTOs
+@using System.Net.Http.Json
+@using CineScope.Client.Components.Admin
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<PageTitle>CineScope - Content Moderation</PageTitle>
+
+<AdminBreadcrumb CurrentPage="Content Moderation" />
+
+<MudText Typo="Typo.h4" Class="mb-4">Content Moderation</MudText>
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudCard Elevation="2">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Flagged Reviews</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" 
+                               StartIcon="@Icons.Material.Filled.Refresh"
+                               OnClick="@LoadFlaggedReviews">Refresh</MudButton>
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                @if (isLoading)
+                {
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+                }
+                else if (flaggedReviews != null && flaggedReviews.Any())
+                {
+                    <MudTable Items="@flaggedReviews" Hover="true" Breakpoint="Breakpoint.Sm"
+                             T="ReviewModerationDto" Filter="@FilterFlaggedReviews">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">@flaggedReviews.Count Flagged Reviews</MudText>
+                            <MudSpacer />
+                            <MudTextField @bind-Value="searchString" Placeholder="Search"
+                                         Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                                         IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                        </ToolBarContent>
+                        <HeaderContent>
+                            <MudTh>Username</MudTh>
+                            <MudTh>Movie</MudTh>
+                            <MudTh>Posted</MudTh>
+                            <MudTh>Rating</MudTh>
+                            <MudTh>Flagged Words</MudTh>
+                            <MudTh>Actions</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Username">@context.Username</MudTd>
+                            <MudTd DataLabel="Movie">@context.MovieTitle</MudTd>
+                            <MudTd DataLabel="Posted">@context.CreatedAt.ToString("MMM dd, yyyy")</MudTd>
+                            <MudTd DataLabel="Rating">@context.Rating.ToString("0.0")</MudTd>
+                            <MudTd DataLabel="Flagged Words">
+                                @foreach (var word in context.FlaggedWords)
+                                {
+                                    <MudChip Size="Size.Small" Color="Color.Error">@word</MudChip>
+                                }
+                            </MudTd>
+                            <MudTd DataLabel="Actions">
+                                <MudButton Size="Size.Small" Variant="Variant.Outlined" Color="Color.Primary"
+                                          OnClick="@(() => ViewReviewDetails(context))">View</MudButton>
+                                <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Success"
+                                          OnClick="@(() => ApproveReview(context.Id))">Approve</MudButton>
+                                <MudButton Size="Size.Small" Variant="Variant.Filled" Color="Color.Error"
+                                          OnClick="@(() => RejectReview(context.Id))">Reject</MudButton>
+                            </MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager PageSizeOptions="new int[]{5, 10, 25, 50}" />
+                        </PagerContent>
+                    </MudTable>
+                }
+                else
+                {
+                    <MudAlert Severity="Severity.Success">No flagged reviews requiring moderation.</MudAlert>
+                }
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private List<ReviewModerationDto> flaggedReviews;
+    private bool isLoading = true;
+    private string searchString = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadFlaggedReviews();
+    }
+
+    private async Task LoadFlaggedReviews()
+    {
+        try
+        {
+            isLoading = true;
+            
+            // In a real implementation, this would call an API endpoint to get flagged reviews
+            // For now, we'll simulate with sample data
+            await Task.Delay(500); // Simulate network delay
+            
+            flaggedReviews = new List<ReviewModerationDto>
+            {
+                new ReviewModerationDto
+                {
+                    Id = "123",
+                    UserId = "user1",
+                    Username = "JohnDoe",
+                    MovieId = "movie1",
+                    MovieTitle = "The Matrix",
+                    Rating = 4.5,
+                    Text = "This movie was great, but [profanity1] the special effects were mind-blowing!",
+                    CreatedAt = DateTime.Now.AddDays(-2),
+                    FlaggedWords = new List<string> { "profanity1" },
+                    ModerationStatus = "Pending"
+                },
+                new ReviewModerationDto
+                {
+                    Id = "456",
+                    UserId = "user2",
+                    Username = "JaneSmith",
+                    MovieId = "movie2",
+                    MovieTitle = "Inception",
+                    Rating = 3.0,
+                    Text = "I found the plot confusing and [profanity2] unnecessarily complex.",
+                    CreatedAt = DateTime.Now.AddDays(-1),
+                    FlaggedWords = new List<string> { "profanity2" },
+                    ModerationStatus = "Pending"
+                }
+            };
+            
+            // In a real implementation, replace the above with:
+            // var response = await Http.GetAsync("api/admin/flagged-reviews");
+            // if (response.IsSuccessStatusCode)
+            // {
+            //     flaggedReviews = await response.Content.ReadFromJsonAsync<List<ReviewModerationDto>>();
+            // }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading flagged reviews: {ex.Message}", Severity.Error);
+            flaggedReviews = new List<ReviewModerationDto>();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private bool FilterFlaggedReviews(ReviewModerationDto review)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+            
+        return review.Username.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
+               review.MovieTitle.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
+               review.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private async Task ViewReviewDetails(ReviewModerationDto review)
+    {
+        var parameters = new DialogParameters
+        {
+            ["Review"] = review
+        };
+
+        var dialog = await DialogService.ShowAsync<ReviewModerationDialog>("Review Details", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is ModerationActionDto action)
+        {
+            await ProcessModeration(review.Id, action);
+        }
+    }
+
+    private async Task ApproveReview(string reviewId)
+    {
+        var action = new ModerationActionDto
+        {
+            ActionType = "Approve",
+            Reason = "Approved by administrator"
+        };
+        
+        await ProcessModeration(reviewId, action);
+    }
+
+    private async Task RejectReview(string reviewId)
+    {
+        var action = new ModerationActionDto
+        {
+            ActionType = "Reject",
+            Reason = "Rejected by administrator"
+        };
+        
+        await ProcessModeration(reviewId, action);
+    }
+
+    private async Task ProcessModeration(string reviewId, ModerationActionDto action)
+    {
+        try
+        {
+            // In a real implementation, this would call an API endpoint
+            // var response = await Http.PostAsJsonAsync($"api/admin/moderate/{reviewId}", action);
+            
+            // Simulate API call
+            await Task.Delay(500);
+            
+            // Remove the review from the list
+            flaggedReviews.RemoveAll(r => r.Id == reviewId);
+            
+            Snackbar.Add($"Review {action.ActionType.ToLower()}d successfully", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error processing moderation: {ex.Message}", Severity.Error);
+        }
+    }
+}

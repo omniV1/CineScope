@@ -1,0 +1,57 @@
+﻿@inherits LayoutComponentBase
+@using MudBlazor
+@using Microsoft.AspNetCore.Components.Authorization
+
+<!-- Main layout container for the application -->
+<MudLayout>
+    <!-- Application header bar -->
+    <MudAppBar Elevation="1" Dense="true" Class="cinescope-appbar">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+
+        <!-- Logo and title -->
+        <div class="d-flex align-center">
+            <img src="/images/cinescope-logo.png" alt="CineScope" height="40" class="mr-2" />
+            <MudText Typo="Typo.h5" Class="ml-2">CineScope</MudText>
+        </div>
+
+        <MudSpacer />
+
+        <MudIconButton Icon="@Icons.Material.Filled.Search" Color="Color.Inherit" />
+        <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" />
+    </MudAppBar>
+
+    <!-- Navigation drawer for side menu -->
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="1" ClipMode="DrawerClipMode.Always">
+        <!-- Drawer header -->
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">CineScope</MudText>
+        </MudDrawerHeader>
+
+        <!-- Navigation menu component -->
+        <NavMenu />
+    </MudDrawer>
+
+    <!-- Main content area -->
+    <MudMainContent>
+        <!-- Container for page content with padding -->
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pa-4">
+            <!-- Render the current page content -->
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    /// <summary>
+    /// Tracks whether the navigation drawer is open.
+    /// </summary>
+    private bool _drawerOpen = true;
+
+    /// <summary>
+    /// Toggles the navigation drawer open/closed state.
+    /// </summary>
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}

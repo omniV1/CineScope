@@ -1,0 +1,590 @@
+﻿@page "/movie/{MovieId}"
+@using System.Net.Http.Json
+@using CineScope.Client.Components.Reviews
+@using CineScope.Client.Services
+@using CineScope.Client.Services.Auth
+@using CineScope.Shared.DTOs
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Text.Json
+@inject ClientMovieCacheService MovieCacheService
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+@inject AuthService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IJSRuntime JSRuntime
+
+<PageTitle>@(movie?.Title ?? "Movie Details") - CineScope</PageTitle>
+
+<!-- Authentication Debug Panel -->
+<AuthorizeView>
+    <Authorized>
+        <MudAlert Severity="Severity.Info" Class="mb-4">
+            <MudText>Authentication Status: <strong>Logged in as @context.User.Identity.Name</strong></MudText>
+            <MudText>User ID: @currentUserId</MudText>
+            <MudText>Claims: @string.Join(", ", context.User.Claims.Select(c => $"{c.Type}={c.Value}"))</MudText>
+        </MudAlert>
+    </Authorized>
+    <NotAuthorized>
+        <MudAlert Severity="Severity.Warning" Class="mb-4">
+            <MudText>Authentication Status: <strong>Not logged in</strong></MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                       OnClick="@(() => NavigationManager.NavigateTo($"/login?returnUrl={Uri.EscapeDataString(NavigationManager.Uri)}"))">
+                Log In Now
+            </MudButton>
+        </MudAlert>
+    </NotAuthorized>
+</AuthorizeView>
+
+@if (isLoading)
+{
+    <div class="d-flex justify-center my-8">
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+    </div>
+}
+else if (movie == null)
+{
+    <MudAlert Severity="Severity.Error" Class="my-4">
+        <i class="fas fa-exclamation-circle"></i> Movie not found or an error occurred while loading the data.
+    </MudAlert>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/movies">
+        Back to Movies
+    </MudButton>
+}
+else
+{
+    <!-- Movie Details Section -->
+    <MudGrid>
+        <!-- Movie Poster -->
+        <MudItem xs="12" sm="4" md="3">
+            <MudCard Elevation="3" Class="movie-poster-card">
+                <MudCardMedia Image="@GetPosterUrl()" Height="450" />
+            </MudCard>
+
+            <!-- Refresh Button -->
+            <MudButton Variant="Variant.Text" Color="Color.Primary"
+                       FullWidth="true"
+                       OnClick="@(() => LoadMovie(true))"
+                       StartIcon="@Icons.Material.Filled.Refresh"
+                       Class="mt-2">
+                Refresh Movie Data
+            </MudButton>
+        </MudItem>
+
+        <!-- Movie Info -->
+        <MudItem xs="12" sm="8" md="9">
+            <div class="mb-4">
+                <div class="d-flex justify-space-between align-center flex-wrap gap-2">
+                    <div>
+                        <MudText Typo="Typo.h3">@movie.Title</MudText>
+                        <MudText Typo="Typo.subtitle1" Class="mt-1">
+                            @movie.ReleaseDate.Year • @string.Join(", ", movie.Genres ?? new List<string>())
+                        </MudText>
+                    </div>
+
+                    <div class="d-flex align-center">
+                        <MudRating ReadOnly="true" SelectedValue="@((int)Math.Round(movie.AverageRating))" Color="Color.Primary" />
+                        <MudText Typo="Typo.h5" Class="ml-2">@movie.AverageRating.ToString("0.0")</MudText>
+                    </div>
+                </div>
+
+                <MudDivider Class="my-3" />
+
+                <!-- Movie Description -->
+                <MudText Typo="Typo.body1" Class="mt-4">@movie.Description</MudText>
+
+                <!-- Additional Details -->
+                <MudGrid Class="mt-4">
+                    @if (!string.IsNullOrEmpty(movie.Director))
+                    {
+                        <MudItem xs="12" sm="6">
+                            <MudText Typo="Typo.subtitle2">Director</MudText>
+                            <MudText Typo="Typo.body1">@movie.Director</MudText>
+                        </MudItem>
+                    }
+
+                    @if (movie.Actors != null && movie.Actors.Any())
+                    {
+                        <MudItem xs="12" sm="6">
+                            <MudText Typo="Typo.subtitle2">Cast</MudText>
+                            <MudText Typo="Typo.body1">@string.Join(", ", movie.Actors)</MudText>
+                        </MudItem>
+                    }
+                </MudGrid>
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-3 mt-6">
+                    <AuthorizeView>
+                        <Authorized>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                                       OnClick="@(() => showReviewForm = !showReviewForm)"
+                                       StartIcon="@(showReviewForm ? Icons.Material.Filled.Close : Icons.Material.Filled.RateReview)">
+                                @(showReviewForm ? "Cancel Review" : "Write a Review")
+                            </MudButton>
+                        </Authorized>
+                        <NotAuthorized>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                                       OnClick="@(() => NavigationManager.NavigateTo($"/login?returnUrl=/movie/{MovieId}"))"
+                                       StartIcon="@Icons.Material.Filled.RateReview">
+                                Login to Review
+                            </MudButton>
+                        </NotAuthorized>
+                    </AuthorizeView>
+
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                               Href="/movies"
+                               StartIcon="@Icons.Material.Filled.ArrowBack">
+                        Back to Movies
+                    </MudButton>
+                </div>
+            </div>
+        </MudItem>
+    </MudGrid>
+
+    <!-- Review Form Section -->
+    <AuthorizeView>
+        <Authorized>
+            @if (showReviewForm)
+            {
+                <MudDivider Class="my-6" />
+                <CreateReview MovieId="@MovieId" OnReviewSubmitted="HandleReviewSubmitted" CurrentUserId="@currentUserId" />
+            }
+        </Authorized>
+    </AuthorizeView>
+
+    <!-- Reviews Section -->
+    <MudDivider Class="my-6" />
+
+    @if (isLoadingReviews)
+    {
+        <div class="d-flex justify-center my-4">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Medium" />
+        </div>
+    }
+    else
+    {
+        <div class="d-flex justify-space-between align-center mb-4">
+            <MudText Typo="Typo.h5">Reviews</MudText>
+            <MudButton Variant="Variant.Text" Color="Color.Primary"
+                       OnClick="@(() => LoadReviews(true))"
+                       StartIcon="@Icons.Material.Filled.Refresh">
+                Refresh Reviews
+            </MudButton>
+        </div>
+
+        <AuthorizeView>
+            <Authorized>
+                <ReviewList Reviews="@reviews" MovieId="@MovieId"
+                            ShowActions="true"
+                            CurrentUserId="@currentUserId"
+                            MovieTitles="@movieTitles"
+                            OnReviewUpdated="HandleReviewUpdated"
+                            OnReviewDeleted="HandleReviewDeleted" />
+            </Authorized>
+            <NotAuthorized>
+                <ReviewList Reviews="@reviews" MovieId="@MovieId"
+                            ShowActions="false"
+                            EmptyMessage="No reviews yet. Login to be the first to share your thoughts!" />
+            </NotAuthorized>
+        </AuthorizeView>
+    }
+}
+
+@code {
+    // Add AuthStateProvider so we can diagnose auth issues
+    [CascadingParameter] private Task<AuthenticationState> authStateTask { get; set; }
+
+    // The rest of your parameters and variables remain the same
+    [Parameter]
+    public string MovieId { get; set; } = string.Empty;
+
+    private MovieDto movie;
+    private List<ReviewDto> reviews = new();
+    private bool isLoading = true;
+    private bool isLoadingReviews = true;
+    private bool showReviewForm = false;
+    private string currentUserId = string.Empty;
+    private Dictionary<string, string> movieTitles = new();
+
+    // Keys for client-side caching of reviews
+    private const string REVIEWS_CACHE_KEY_PREFIX = "Reviews_";
+    private const int REVIEWS_CACHE_EXPIRATION_MINUTES = 5;
+
+    /// <summary>
+    /// Initialize component and load movie data
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Console.WriteLine("Checking authentication state...");
+
+            // Get authentication state for debugging
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            Console.WriteLine($"Is authenticated: {authState.User.Identity.IsAuthenticated}");
+            if (authState.User.Identity.IsAuthenticated)
+            {
+                Console.WriteLine($"Username: {authState.User.Identity.Name}");
+                Console.WriteLine($"Claims: {string.Join(", ", authState.User.Claims.Select(c => $"{c.Type}={c.Value}"))}");
+            }
+
+            // Get the current user ID
+            var user = await AuthService.GetCurrentUser();
+            currentUserId = user?.Id ?? string.Empty;
+            Console.WriteLine($"Current user ID from AuthService: {currentUserId}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Authentication debugging error: {ex.Message}");
+        }
+
+        await LoadMovie();
+        await LoadReviews();
+        LoadMovieTitles();
+
+        // Check if there's a query parameter to show the review form
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        if (uri.Query.Contains("action=review"))
+        {
+            // Only show the review form if user is authenticated
+            if (!string.IsNullOrEmpty(currentUserId))
+            {
+                showReviewForm = true;
+            }
+            else
+            {
+                // Redirect to login if not authenticated
+                NavigationManager.NavigateTo($"/login?returnUrl={Uri.EscapeDataString(NavigationManager.Uri)}");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Loads movie details from the cache or API
+    /// </summary>
+    private async Task LoadMovie(bool forceRefresh = false)
+    {
+        try
+        {
+            isLoading = true;
+
+            // Debug: Print the movie ID we're loading
+            Console.WriteLine($"Loading movie with ID: {MovieId} (forceRefresh: {forceRefresh})");
+
+            // Use the cache service to get the movie
+            movie = await MovieCacheService.GetMovieByIdAsync(MovieId, forceRefresh);
+
+            if (movie == null)
+            {
+                Console.WriteLine("Movie not found in cache or API");
+                Snackbar.Add("Failed to load movie details", Severity.Error);
+            }
+            else
+            {
+                Console.WriteLine($"Loaded movie: {movie.Title} with ID: {movie.Id}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading movie: {ex.Message}");
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Loads reviews for this movie from cache or API
+    /// </summary>
+    private async Task LoadReviews(bool forceRefresh = false)
+    {
+        try
+        {
+            isLoadingReviews = true;
+
+            // Debug message for the movie ID we're requesting reviews for
+            Console.WriteLine($"Requesting reviews for movie ID: {MovieId} (forceRefresh: {forceRefresh})");
+
+            // Try to get reviews from local storage cache first
+            if (!forceRefresh)
+            {
+                var cachedReviews = await GetReviewsFromCache();
+                if (cachedReviews != null)
+                {
+                    reviews = cachedReviews;
+                    Console.WriteLine($"Retrieved {reviews.Count} reviews from cache");
+                    return;
+                }
+            }
+
+            // Call the API to get reviews for this movie
+            var response = await Http.GetAsync($"/api/Review/movie/{MovieId}");
+
+            Console.WriteLine($"Review API response status: {response.StatusCode}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                reviews = await response.Content.ReadFromJsonAsync<List<ReviewDto>>() ?? new();
+                Console.WriteLine($"Loaded {reviews.Count} reviews from API");
+
+                // Cache the reviews for future requests
+                await SaveReviewsToCache(reviews);
+            }
+            else
+            {
+                // Try to get more detailed error information
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Failed to load reviews: {response.StatusCode}. Details: {errorContent}");
+
+                // For development purposes only - use sample data if API fails
+                if (IsDevelopmentEnvironment())
+                {
+                    reviews = GenerateSampleReviews();
+                    Console.WriteLine("Using sample reviews due to API error");
+                }
+                else
+                {
+                    reviews = new();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading reviews: {ex.Message}");
+
+            // For development purposes only - use sample data if exception occurs
+            if (IsDevelopmentEnvironment())
+            {
+                reviews = GenerateSampleReviews();
+                Console.WriteLine("Using sample reviews due to exception");
+            }
+            else
+            {
+                reviews = new();
+            }
+        }
+        finally
+        {
+            isLoadingReviews = false;
+        }
+    }
+
+    /// <summary>
+    /// Gets reviews from browser's localStorage cache
+    /// </summary>
+    private async Task<List<ReviewDto>> GetReviewsFromCache()
+    {
+        try
+        {
+            var cacheKey = $"{REVIEWS_CACHE_KEY_PREFIX}{MovieId}";
+            // Fixed: Correct parameter passing for JavaScript interop
+            var json = await JSRuntime.InvokeAsync<string>("localStorage.getItem", new object[] { cacheKey });
+
+            if (string.IsNullOrEmpty(json))
+                return null;
+
+            var cachedData = JsonSerializer.Deserialize<CachedData<List<ReviewDto>>>(json);
+
+            // Check if cache is expired
+            if (cachedData == null || DateTime.UtcNow.Subtract(cachedData.Timestamp).TotalMinutes > REVIEWS_CACHE_EXPIRATION_MINUTES)
+                return null;
+
+            return cachedData.Data;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error retrieving reviews from cache: {ex.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Saves reviews to browser's localStorage cache
+    /// </summary>
+    private async Task SaveReviewsToCache(List<ReviewDto> reviews)
+    {
+        try
+        {
+            var cacheKey = $"{REVIEWS_CACHE_KEY_PREFIX}{MovieId}";
+            var cachedData = new CachedData<List<ReviewDto>>
+                {
+                    Data = reviews,
+                    Timestamp = DateTime.UtcNow
+                };
+
+            var json = JsonSerializer.Serialize(cachedData);
+            // Fixed: Correct parameter passing for JavaScript interop
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", new object[] { cacheKey, json });
+            Console.WriteLine($"Saved {reviews.Count} reviews to cache");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving reviews to cache: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Invalidates the reviews cache for this movie
+    /// </summary>
+    private async Task InvalidateReviewsCache()
+    {
+        try
+        {
+            var cacheKey = $"{REVIEWS_CACHE_KEY_PREFIX}{MovieId}";
+            // Fixed: Correct parameter passing for JavaScript interop
+            await JSRuntime.InvokeVoidAsync("localStorage.removeItem", new object[] { cacheKey });
+            Console.WriteLine("Invalidated reviews cache");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error invalidating reviews cache: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Loads movie titles for the review edit dialog
+    /// </summary>
+    private void LoadMovieTitles()
+    {
+        if (movie != null)
+        {
+            movieTitles[movie.Id] = movie.Title;
+        }
+    }
+
+    /// <summary>
+    /// Checks if we're in a development environment
+    /// </summary>
+    private bool IsDevelopmentEnvironment()
+    {
+        // In a real application, you would use configuration to check this
+        // For this demo, we'll return true
+        return true;
+    }
+
+    /// <summary>
+    /// Generates sample review data for development and testing
+    /// </summary>
+    private List<ReviewDto> GenerateSampleReviews()
+    {
+        return new List<ReviewDto>
+        {
+            new()
+            {
+                Id = "sample1",
+                MovieId = MovieId,
+                UserId = currentUserId,  // Use the current user ID for the sample review
+                Username = "MovieFan42",
+                Rating = 5,
+                Text = "This is one of the best films I've seen this year. The direction is flawless and the performances are outstanding. Highly recommended!",
+                CreatedAt = DateTime.Now.AddDays(-5)
+            },
+            new()
+            {
+                Id = "sample2",
+                MovieId = MovieId,
+                UserId = "user2",
+                Username = "CinemaLover",
+                Rating = 4,
+                Text = "Great movie with amazing visuals and a compelling story. The only reason I didn't give it 5 stars is because the ending felt a bit rushed.",
+                CreatedAt = DateTime.Now.AddDays(-10)
+            },
+            new()
+            {
+                Id = "sample3",
+                MovieId = MovieId,
+                UserId = "user3",
+                Username = "FilmCritic101",
+                Rating = 3,
+                Text = "Decent film but nothing groundbreaking. The cinematography was beautiful but the plot had some major holes that were hard to ignore.",
+                CreatedAt = DateTime.Now.AddDays(-15)
+            }
+        };
+    }
+
+    /// <summary>
+    /// Gets a poster URL for the movie, with fallbacks for missing posters
+    /// </summary>
+    private string GetPosterUrl()
+    {
+        // Check if the URL from the database seems valid
+        if (!string.IsNullOrEmpty(movie.PosterUrl) &&
+            (movie.PosterUrl.StartsWith("http://") || movie.PosterUrl.StartsWith("https://")))
+        {
+            return movie.PosterUrl;
+        }
+
+        // Fallback for specific movie genres
+        if (movie.Genres != null && movie.Genres.Any())
+        {
+            if (movie.Genres.Contains("Action"))
+                return "https://cdn.pixabay.com/photo/2015/03/11/01/43/movie-667986_1280.jpg";
+            if (movie.Genres.Contains("Drama"))
+                return "https://cdn.pixabay.com/photo/2016/01/22/08/01/theater-1155201_1280.jpg";
+            if (movie.Genres.Contains("Sci-Fi"))
+                return "https://cdn.pixabay.com/photo/2017/07/15/19/42/manipulation-2507330_1280.jpg";
+        }
+
+        // Default fallback image
+        return "https://via.placeholder.com/300x450?text=" + Uri.EscapeDataString(movie?.Title ?? "No Title");
+    }
+
+    /// <summary>
+    /// Handles the event when a new review is submitted
+    /// </summary>
+    private async Task HandleReviewSubmitted(ReviewDto review)
+    {
+        // Hide the review form
+        showReviewForm = false;
+
+        // Invalidate the reviews cache since we added a new review
+        await InvalidateReviewsCache();
+
+        // Reload the reviews to include the new one
+        await LoadReviews(true);
+
+        // Also reload the movie to update the average rating
+        await LoadMovie(true);
+    }
+
+    /// <summary>
+    /// Handles the event when a review is deleted
+    /// </summary>
+    private async Task HandleReviewDeleted(string reviewId)
+    {
+        // Invalidate the reviews cache since we deleted a review
+        await InvalidateReviewsCache();
+
+        // Reload the movie to update the average rating
+        await LoadMovie(true);
+
+        // Reload reviews to reflect the deletion
+        await LoadReviews(true);
+    }
+
+    /// <summary>
+    /// Handles the event when a review is edited and updated
+    /// </summary>
+    private async Task HandleReviewUpdated(ReviewDto updatedReview)
+    {
+        // Invalidate the reviews cache since we updated a review
+        await InvalidateReviewsCache();
+
+        // Reload all reviews to ensure we have the latest data
+        await LoadReviews(true);
+
+        // Also reload the movie to update the average rating
+        await LoadMovie(true);
+    }
+
+    /// <summary>
+    /// Class to store cached data with timestamp
+    /// </summary>
+    private class CachedData<T>
+    {
+        public T Data { get; set; }
+        public DateTime Timestamp { get; set; }
+    }
+}

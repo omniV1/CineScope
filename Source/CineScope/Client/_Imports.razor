@@ -1,0 +1,36 @@
+﻿@* 
+    Imports file that includes common namespaces needed across Razor components.
+    This file reduces the need to add the same using directives in every component.
+*@
+
+@* HTTP client services for API communication *@
+@using System.Net.Http
+@using System.Net.Http.Json
+
+@* Core Blazor component functionality *@
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.AspNetCore.Components.WebAssembly.Http
+
+@* Authentication and authorization *@
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+
+@* JavaScript interop services *@
+@using Microsoft.JSInterop
+
+@* Local storage for JWT tokens *@
+@using Blazored.LocalStorage
+
+@* Application-specific namespaces *@
+@using CineScope.Client
+@using CineScope.Client.Shared
+@using CineScope.Client.Components.Reviews
+
+@* MudBlazor UI component library *@
+@using MudBlazor
+@using MudBlazor.Utilities
+@using MudBlazor.Services
+@using MudBlazor.Extensions

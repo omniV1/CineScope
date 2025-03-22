@@ -1,0 +1,154 @@
+﻿@page "/"
+@using MudBlazor
+@using CineScope.Shared.DTOs
+@using CineScope.Client.Components.Movies
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+<PageTitle>CineScope - Your Movie Resource</PageTitle>
+
+<!-- Custom div to absolutely zero out all possible spacing -->
+<div style="margin:0; padding:0">
+    <!-- Hero banner with zero spacing -->
+    <div class="hero-section" style="background-image: url('@heroBackgroundUrl'); background-size: cover; background-position: center; margin:0; padding:0; margin-bottom:1rem;">
+        <div class="hero-content">
+            <MudText Typo="Typo.h1" Class="hero-title">Welcome to CineScope</MudText>
+            <MudText Typo="Typo.subtitle1" Class="hero-description">
+                Discover, review, and discuss your favorite movies with fellow film enthusiasts.
+                CineScope provides a platform to share your thoughts and explore new cinematic experiences.
+            </MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Class="mt-2"
+                       Href="/movies">
+                Explore Movies
+            </MudButton>
+        </div>
+    </div>
+
+    <!-- Top Rated Movies section -->
+    <div id="top-rated-movies" style="margin:0; padding:0;">
+        <MudText Typo="Typo.h4" Style="margin:0; margin-bottom:0.5rem;">Top Rated Movies</MudText>
+
+        @if (isLoadingTopRated)
+        {
+            <div class="d-flex justify-center" style="margin:0.5rem 0;">
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+            </div>
+        }
+        else if (topRatedMovies.Count == 0)
+        {
+            <MudAlert Severity="Severity.Warning" Style="margin:0.5rem 0;">
+                <i class="fas fa-exclamation-circle"></i> No top rated movies found. Please check back later.
+            </MudAlert>
+        }
+        else
+        {
+            <MudGrid Style="margin:0; padding:0;">
+                @foreach (var movie in topRatedMovies)
+                {
+                    <MudItem xs="12" sm="6" md="4" Style="padding:6px;">
+                        <MovieCard Movie="@movie" />
+                    </MudItem>
+                }
+            </MudGrid>
+        }
+    </div>
+
+    <!-- Divider between sections -->
+    <MudDivider Style="margin:1rem 0;" />
+
+    <!-- Recently Added section -->
+    <div id="recently-added" style="margin:0; padding:0;">
+        <MudText Typo="Typo.h4" Style="margin:0; margin-bottom:0.5rem;">Recently Added</MudText>
+
+        @if (isLoadingRecent)
+        {
+            <div class="d-flex justify-center" style="margin:0.5rem 0;">
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+            </div>
+        }
+        else if (recentlyAddedMovies.Count == 0)
+        {
+            <MudAlert Severity="Severity.Warning" Style="margin:0.5rem 0;">
+                <i class="fas fa-exclamation-circle"></i> No recently added movies found. Stay tuned for updates!
+            </MudAlert>
+        }
+        else
+        {
+            <MudGrid Style="margin:0; padding:0;">
+                @foreach (var movie in recentlyAddedMovies)
+                {
+                    <MudItem xs="12" sm="6" md="4" Style="padding:6px;">
+                        <MovieCard Movie="@movie" />
+                    </MudItem>
+                }
+            </MudGrid>
+        }
+    </div>
+</div>
+
+@code {
+    private string heroBackgroundUrl = "https://m.media-amazon.com/images/M/MV5BNDkwY2I3ZWQtZGYxMC00N2QyLTg2MmQtZTU5ZTY0Y2M0YTY4XkEyXkFqcGdeQXVyMjMxOTE0ODA@._V1_.jpg";
+    private List<MovieDto> topRatedMovies = new List<MovieDto>();
+    private List<MovieDto> recentlyAddedMovies = new List<MovieDto>();
+    private bool isLoadingTopRated = true;
+    private bool isLoadingRecent = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTopRatedMovies();
+        await LoadRecentMovies();
+    }
+
+    private async Task LoadTopRatedMovies()
+    {
+        try
+        {
+            isLoadingTopRated = true;
+            var response = await Http.GetAsync("/api/Movie");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var allMovies = await response.Content.ReadFromJsonAsync<List<MovieDto>>() ?? new List<MovieDto>();
+                topRatedMovies = allMovies
+                    .OrderByDescending(m => m.AverageRating)
+                    .Take(3)
+                    .ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading top rated movies: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingTopRated = false;
+        }
+    }
+
+    private async Task LoadRecentMovies()
+    {
+        try
+        {
+            isLoadingRecent = true;
+            var response = await Http.GetAsync("/api/Movie");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var allMovies = await response.Content.ReadFromJsonAsync<List<MovieDto>>() ?? new List<MovieDto>();
+                recentlyAddedMovies = allMovies
+                    .OrderByDescending(m => m.ReleaseDate)
+                    .Take(3)
+                    .ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading recent movies: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingRecent = false;
+        }
+    }
+}

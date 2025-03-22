@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#00B300" />
+  
+  <!-- Alien design -->
+  <ellipse cx="100" cy="95" rx="35" ry="45" fill="#98FB98" />
+  
+  <!-- Large eyes -->
+  <ellipse cx="85" cy="85" rx="15" ry="18" fill="#000000" />
+  <ellipse cx="115" cy="85" rx="15" ry="18" fill="#000000" />
+  
+  <!-- Eye highlights -->
+  <ellipse cx="90" cy="80" rx="5" ry="6" fill="#FFFFFF" />
+  <ellipse cx="120" cy="80" rx="5" ry="6" fill="#FFFFFF" />
+  
+  <!-- Small mouth -->
+  <ellipse cx="100" cy="115" rx="5" ry="3" fill="#000000" />
+  
+  <!-- Antenna -->
+  <line x1="90" y1="50" x2="90" y2="30" stroke="#98FB98" stroke-width="3" />
+  <circle cx="90" cy="25" r="5" fill="#98FB98" />
+  
+  <line x1="110" y1="50" x2="110" y2="30" stroke="#98FB98" stroke-width="3" />
+  <circle cx="110" cy="25" r="5" fill="#98FB98" />
+  
+  <!-- Body suggestion -->
+  <path d="M70 140 L130 140 L125 170 L75 170 Z" fill="#98FB98" />
+</svg>

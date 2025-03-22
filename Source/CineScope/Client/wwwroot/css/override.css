@@ -1,0 +1,40 @@
+﻿/* This needs to override MudBlazor styles */
+.mud-button-filled.mud-button-filled-primary,
+.mud-button-filled-primary.mud-button-filled {
+    background-color: #E50914 !important;
+    color: white !important;
+}
+
+    .mud-button-filled.mud-button-filled-primary:hover,
+    .mud-button-filled-primary.mud-button-filled:hover {
+        background-color: #B8050F !important;
+    }
+
+.mud-button-text.mud-button-text-primary,
+.mud-button-text-primary.mud-button-text {
+    color: #E50914 !important;
+}
+
+.mud-button-outlined.mud-button-outlined-primary,
+.mud-button-outlined-primary.mud-button-outlined {
+    color: #E50914 !important;
+    border-color: #E50914 !important;
+}
+
+.mud-nav-link.active:not(.mud-nav-link-disabled) {
+    background-color: rgba(229, 9, 20, 0.1) !important;
+    color: #E50914 !important;
+    border-right: 3px solid #E50914 !important;
+}
+
+.mud-input-label-outlined.mud-input-label-inputted {
+    color: #E50914 !important;
+}
+
+.mud-text-primary {
+    color: #E50914 !important;
+}
+
+.mud-progress-circular.mud-progress-indeterminate.mud-primary .mud-progress-circular-circle {
+    stroke: #E50914 !important;
+}

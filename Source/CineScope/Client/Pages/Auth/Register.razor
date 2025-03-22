@@ -1,0 +1,182 @@
+﻿@page "/register"
+@using CineScope.Client.Services
+@using CineScope.Client.Services.Auth
+@using CineScope.Shared.Auth
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+<PageTitle>CineScope - Register</PageTitle>
+
+<MudGrid Justify="Justify.Center" Class="mt-8">
+    <MudItem xs="12" sm="8" md="6" lg="4">
+        <MudCard Elevation="3" Class="pa-4">
+            <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+                <MudCardContent>
+                    <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">Create Account</MudText>
+                    <MudText Typo="Typo.subtitle1" Align="Align.Center" Class="mb-4">Join the CineScope community</MudText>
+
+                    <MudTextField T="string" Label="Username" @bind-Value="registerRequest.Username"
+                                  Required="true" RequiredError="Username is required"
+                                  Validation="@(new Func<string, IEnumerable<string>>(ValidateUsername))"
+                                  Variant="Variant.Outlined" Class="my-3" />
+
+                    <MudTextField T="string" Label="Email" @bind-Value="registerRequest.Email"
+                                  Required="true" RequiredError="Email is required"
+                                  Validation="@(new Func<string, IEnumerable<string>>(ValidateEmail))"
+                                  Variant="Variant.Outlined" Class="my-3" />
+
+                    <MudTextField T="string" Label="Password" @bind-Value="registerRequest.Password"
+                                  Required="true" RequiredError="Password is required"
+                                  Validation="@(new Func<string, IEnumerable<string>>(ValidatePassword))"
+                                  Variant="Variant.Outlined" InputType="InputType.Password"
+                                  Class="my-3" />
+
+                    <MudTextField T="string" Label="Confirm Password" @bind-Value="registerRequest.ConfirmPassword"
+                                  Required="true" RequiredError="Please confirm your password"
+                                  Validation="@(new Func<string, IEnumerable<string>>(ValidateConfirmPassword))"
+                                  Variant="Variant.Outlined" InputType="InputType.Password"
+                                  Class="my-3" />
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <MudAlert Severity="Severity.Error" Class="mt-4" Dense="true">@errorMessage</MudAlert>
+                    }
+                </MudCardContent>
+
+                <MudCardActions Class="d-flex justify-center flex-column gap-4">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large"
+                               FullWidth="true" Disabled="@(!success || isLoading)"
+                               OnClick="HandleRegister">
+                        @if (isLoading)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                            <MudText Class="ms-2">Processing</MudText>
+                        }
+                        else
+                        {
+                            <MudText>Register</MudText>
+                        }
+                    </MudButton>
+
+                    <MudLink Href="/login">Already have an account? Login here</MudLink>
+                </MudCardActions>
+            </MudForm>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private MudForm form;
+    private bool success;
+    private string[] errors = { };
+    private string errorMessage = string.Empty;
+    private bool isLoading = false;
+
+    /// <summary>
+    /// Model for the registration form.
+    /// </summary>
+    private RegisterRequest registerRequest = new RegisterRequest();
+
+    /// <summary>
+    /// Validates the username field.
+    /// Ensures username meets length requirements.
+    /// </summary>
+    private IEnumerable<string> ValidateUsername(string username)
+    {
+        if (string.IsNullOrWhiteSpace(username))
+            yield return "Username is required";
+        else if (username.Length < 3)
+            yield return "Username must be at least 3 characters";
+        else if (username.Length > 50)
+            yield return "Username cannot exceed 50 characters";
+    }
+
+    /// <summary>
+    /// Validates the email field.
+    /// Ensures email format is valid.
+    /// </summary>
+    private IEnumerable<string> ValidateEmail(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+            yield return "Email is required";
+        else if (!System.Text.RegularExpressions.Regex.IsMatch(email,
+                @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            yield return "Invalid email format";
+    }
+
+    /// <summary>
+    /// Validates the password field.
+    /// Ensures password meets complexity requirements.
+    /// </summary>
+    private IEnumerable<string> ValidatePassword(string password)
+    {
+        if (string.IsNullOrWhiteSpace(password))
+            yield return "Password is required";
+        else if (password.Length < 6)
+            yield return "Password must be at least 6 characters";
+    }
+
+    /// <summary>
+    /// Validates the confirm password field.
+    /// Ensures it matches the password field.
+    /// </summary>
+    private IEnumerable<string> ValidateConfirmPassword(string confirmPassword)
+    {
+        if (string.IsNullOrWhiteSpace(confirmPassword))
+            yield return "Please confirm your password";
+        else if (confirmPassword != registerRequest.Password)
+            yield return "Passwords do not match";
+    }
+
+    /// <summary>
+    /// Handles the registration form submission.
+    /// Uses the AuthService for user registration.
+    /// </summary>
+    private async Task HandleRegister()
+    {
+        // Validate the form
+        await form.Validate();
+
+        if (!success)
+        {
+            return;
+        }
+
+        try
+        {
+            // Set loading state
+            isLoading = true;
+            errorMessage = string.Empty;
+
+            // Use the AuthService to register the user
+            var result = await AuthService.Register(registerRequest);
+
+            if (result.Success)
+            {
+                // Show success message
+                Snackbar.Add("Registration successful! Welcome to CineScope.", Severity.Success);
+
+                // Redirect to home page
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                // Handle error response
+                errorMessage = result.Message ?? "Registration failed. Please try again.";
+                Snackbar.Add(errorMessage, Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions
+            errorMessage = "An error occurred during registration. Please try again.";
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            // Reset loading state
+            isLoading = false;
+        }
+    }
+}

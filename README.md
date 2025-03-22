@@ -1,133 +1,143 @@
 # CineScope 🎬
 
-CineScope is a dynamic movie review platform built with C# MVC Razor Pages and MongoDB, offering users a comprehensive movie rating and review experience.
+CineScope is a modern, user-friendly movie review platform that enables movie enthusiasts to share opinions and discover new films. Built using Blazor C# ASP.NET Core (MVC) with MongoDB as the database system, the platform delivers a responsive web interface for browsing movies, writing reviews, and interacting with other users' content.
 
-## 🚀 Features
+## 🚀 Project Progress
 
-- Movie search and browsing functionality
-- Detailed movie information and metadata
-- User ratings and written reviews
-- Review moderation system
-- Responsive design for mobile and desktop platforms
+- ✅ **Milestone 1**: Initial project setup and repository configuration
+- ✅ **Milestone 2**: Functional Requirements Document completed
+- ✅ **Milestone 3**: Technical Design Document completed
+- ✅ **Milestone 4**: Test Procedures Document and Version Description Document completed
+- 🏗️ **Sprint 1 in progress** (Feb 24 - Mar 9, 2025): Implementing Featured Movies, User Authentication, and Review Management
+
+## ✨ Features
+
+- **Landing Page Implementation**: Featured movies, recently viewed, top-rated, and genre-based sections
+- **Authentication System**: Secure user registration and login with account lockout protection
+- **Review Management**: Create, read, update, and delete movie reviews with ratings and text feedback
+- **Content Filtering**: Automated screening of user-generated content to maintain community standards
+- **Movie Browsing**: Advanced filtering and sorting options for movie discovery
+- **Responsive Design**: Mobile and desktop friendly interface
 
 ## 🛠️ Technology Stack
 
-- **Frontend:** ASP.NET Core MVC with Razor Pages
-- **Backend:** C# (.NET Core)
-- **Database:** MongoDB
-- **Authentication:** ASP.NET Core Identity
-- **Version Control:** Git
-- **CI/CD:** [To be determined]
+- **Frontend**: Blazor Web App, MudBlazor UI components
+- **Backend**: C# ASP.NET Core MVC
+- **Database**: MongoDB
+- **Authentication**: JWT-based authentication with ASP.NET Core Identity
+- **Testing**: xUnit, Moq, bUnit for component testing
+- **Version Control**: Git with GitHub
 
-## 📋 Prerequisites
+## 📋 Project Architecture
 
-- .NET Core SDK 7.0 or later
+The application implements an N-layer architecture:
+- **Presentation Layer**: Handles user interface rendering and user input processing
+- **Business Logic Layer**: Implements core application functionality and business rules
+- **Data Access Layer**: Manages database interactions and data persistence
+- **Database Layer**: MongoDB database system for data storage
+
+## 👥 Team Members
+
+- **Carter Wright**: Scrum Master (Development)
+- **Rian Smart**: Product Owner (Management)
+- **Owen Lindsey**: Developer (Development)
+- **Andrew Mack**: Developer (Development)
+
+## 📂 Repository Structure
+
+```
+CineScope/
+├── Documents/                  # Project documentation
+│   ├── milestone2-Functional-Requirements-document.md
+│   ├── milestone3-Technical-Desgin.md
+│   ├── milestone4-test-procedures-gcu.md
+│   ├── milestone4-version-description.md
+│   └── Images/                 # Wireframes and diagrams
+├── Source/                     # Source code
+│   └── CineScope/
+│       ├── Client/             # Blazor WebAssembly client
+│       ├── Server/             # ASP.NET Core server
+│       ├── Shared/             # Shared models and DTOs
+│       ├── CineScope.Tests.Unit/
+│       └── CineScope.Tests.Integration/
+└── README.md
+```
+
+## 🧪 Testing
+
+Comprehensive test procedures have been developed for:
+- User Authentication
+- Movie Browsing and Filtering
+- Review Creation and Management
+- Content Filtering
+- User Profile Management
+
+## 🚀 Getting Started
+
+### Prerequisites
+- .NET Core SDK 8.0 or later
 - MongoDB 6.0 or later
 - Visual Studio 2022 or preferred IDE
 - Git
 
-## 🔧 Installation & Setup
-
+### Installation & Setup
 1. Clone the repository:
 ```bash
-git clone git clone https://github.com/omniV1/CineScope.git
-cd cinescope
+git clone https://github.com/omniV1/CineScope.git
+cd CineScope
 ```
 
-2. Configure MongoDB connection:
-   - Install MongoDB locally or use MongoDB Atlas
-   - Update the connection string in `appsettings.json`
+2. Configure MongoDB:
+   - Update the connection string in `Source/CineScope/Server/appsettings.json`
 
-3. Install dependencies:
+3. Install dependencies and run:
 ```bash
 dotnet restore
+dotnet run --project Source/CineScope/Server/CineScope.Server.csproj
 ```
-
-4. Run database migrations:
-```bash
-dotnet ef database update
-```
-
-5. Start the application:
-```bash
-dotnet run
-```
-
-The application will be available at `https://localhost:5001`
-
-## 🗄️ Project Structure
-
-```
-CineScope/
-├── source/
-│   ├── CineScope.Web/          # MVC Razor Pages project
-│   ├── CineScope.Core/         # Core business logic
-│   ├── CineScope.Data/         # Data access layer
-│   └── CineScope.Services/     # Service layer
-├── tests/
-│   ├── CineScope.UnitTests/
-│   └── CineScope.IntegrationTests/
-└── documentations/                       # Documentation
-```
-
-## 🤝 Team
-
-- Product Manager: [Name]
-- Scrum Master: [Name]
-- Developers: [Names]
-
-## 📈 Development Workflow
-
-1. Create a new branch for each feature/bug fix
-2. Write code and tests
-3. Submit pull request
-4. Code review by team members
-5. Merge after approval
-
-## 🔍 Code Review Guidelines
-
-- Follow C# coding conventions
-- Ensure proper error handling
-- Write unit tests for new features
-- Document public APIs
-- Review for security best practices
-
-## 📝 Documentation
-
-Additional documentation can be found in the `/Documents` directory:
-- API Documentation
-- Database Schema
-- Deployment Guide
-- User Guide
-
-## 🔐 Security
-
-- Implement proper authentication and authorization
-- Sanitize user inputs
-- Use HTTPS
-- Follow OWASP security guidelines
-- Regular security audits
-
-## 🚀 Deployment
-
-[To be added based on deployment strategy]
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+1. Clone the repository:
+```bash
+git clone https://github.com/omniV1/CineScope.git
+cd CineScope
+```
 
-## 📄 License
+2. Set up your git identity:
+```bash
+git config user.name "Your Name"
+git config user.email "your.email@example.com"
+```
 
-[Add your license here]
+3. Create your working branch:
+```bash
+git checkout -b Name-Dev
+Example:
+git checkout -b John-Dev
+```
 
-## 📞 Support
+4. Push your branch:
+```bash
+git add .
+git commit -m "your commit message"
+git push origin Name-Dev
+```
 
-For support, please contact [contact information]
+Create a Pull Request on GitHub when you're ready for review.
+
+## 🔍 Sprint Planning
+
+**Sprint 1 (February 24 - March 9, 2025):**
+- SCRUM-19: As a user, I want to see featured movies...
+- SCRUM-27: As a user, I want to be able to login an...
+- SCRUM-34: As a user, I want to manage movie reviews...
+
+**Sprint 2 (March 9 - March 16, 2025):**
+- SCRUM-45: "As a user, I want to be able to filter reviews..."
+
+**Final Project Delivery**: March 30, 2025
 
 ---
 
-*Last updated: [1/13/2025]*
+*Last updated: March 10, 2025*
