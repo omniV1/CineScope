@@ -11,9 +11,9 @@
 
             <div class="d-flex gap-2">
                 <MudTextField @bind-Value="searchQuery" Label="Search" Adornment="Adornment.Start"
-                              AdornmentIcon="@Icons.Material.Filled.Search"
-                              Immediate="true"
-                              OnKeyDown="@SearchUsers" />
+                AdornmentIcon="@Icons.Material.Filled.Search"
+                Immediate="true"
+                OnKeyDown="@SearchUsers" />
 
                 <MudSelect T="string" Label="Role" @bind-Value="selectedRole">
                     <MudSelectItem Value="@string.Empty">All Roles</MudSelectItem>
@@ -29,7 +29,7 @@
                 </MudSelect>
 
                 <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                           OnClick="@LoadUsers">
+                OnClick="@LoadUsers">
                     Apply Filters
                 </MudButton>
             </div>
@@ -48,26 +48,23 @@
         else
         {
             <MudTable Items="@users" Hover="true" Breakpoint="Breakpoint.Sm"
-                      Loading="@isLoading" LoadingProgressColor="Color.Primary">
+            Loading="@isLoading" LoadingProgressColor="Color.Primary">
                 <HeaderContent>
                     <MudTh>Username</MudTh>
-                    <MudTh>Email</MudTh>
-                    <MudTh>Role</MudTh>
-                    <MudTh>Join Date</MudTh>
+                    <MudTh>Role(s)</MudTh>
                     <MudTh>Status</MudTh>
-                    <MudTh>Actions</MudTh>
+                    <MudTh>View</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Username">
                         <div class="d-flex align-center">
                             <MudAvatar Class="mr-2" Style="height: 30px; width: 30px;">
                                 <img src="@(string.IsNullOrEmpty(context.ProfilePictureUrl) ? "/profile-pictures/default.svg" : context.ProfilePictureUrl)"
-                                     alt="@context.Username" />
+                                alt="No profile picture chosen" />
                             </MudAvatar>
                             @context.Username
                         </div>
                     </MudTd>
-                    <MudTd DataLabel="Email">@context.Email</MudTd>
                     <MudTd DataLabel="Role">
                         @foreach (var role in context.Roles)
                         {
@@ -76,31 +73,16 @@
                             </MudChip>
                         }
                     </MudTd>
-                    <MudTd DataLabel="Join Date">@context.JoinDate.ToString("MMM dd, yyyy")</MudTd>
                     <MudTd DataLabel="Status">
                         <MudChip Size="Size.Small" Color="@GetStatusColor(context.Status)">
                             @context.Status
                         </MudChip>
                     </MudTd>
-                    <MudTd DataLabel="Actions">
-                        <MudMenu Icon="@Icons.Material.Filled.MoreVert">
-                            <MudMenuItem OnClick="@(() => ViewUserDetails(context))">View Details</MudMenuItem>
-                            @if (context.Status == "Active")
-                            {
-                                <MudMenuItem OnClick="@(() => UpdateUserStatus(context, "Suspended"))">
-                                    Suspend User
-                                </MudMenuItem>
-                            }
-                            else if (context.Status == "Suspended")
-                            {
-                                <MudMenuItem OnClick="@(() => UpdateUserStatus(context, "Active"))">
-                                    Reactivate User
-                                </MudMenuItem>
-                            }
-                            <MudMenuItem OnClick="@(() => ToggleAdminRole(context))">
-                                @(context.Roles.Contains("Admin") ? "Remove Admin Role" : "Add Admin Role")
-                            </MudMenuItem>
-                        </MudMenu>
+                    <MudTd DataLabel="Edit">
+                        <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                            OnClick="@(async () => await OpenUserActionsDialog(context))">
+                            View @context.Username
+                        </MudButton>
                     </MudTd>
                 </RowTemplate>
                 <PagerContent>
@@ -212,5 +194,17 @@
         // This would call an API endpoint to toggle the admin role
         // For now it's just a placeholder
         Snackbar.Add($"Toggling admin role for {user.Username} is not implemented yet", Severity.Info);
+    }
+
+    private async Task OpenUserActionsDialog(UserAdminDto user)
+    {
+        var parameters = new DialogParameters
+            {
+                ["User"] = user
+            };
+
+        var dialog = await DialogService.ShowAsync<UserActionsDialog>("User Information and Actions", parameters,
+            new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
+        //Snackbar.Add("User edit opened", Severity.Success);
     }
 }
