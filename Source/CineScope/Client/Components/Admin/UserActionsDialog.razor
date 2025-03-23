@@ -132,7 +132,16 @@
 
             if (response.IsSuccessStatusCode)
             {
+                // Update local state
+                user.Status = newStatus;
+
+                // Force UI refresh
+                StateHasChanged();
+
                 Snackbar.Add($"User {user.Username} {(newStatus == "Active" ? "reactivated" : "suspended")} successfully", Severity.Success);
+
+                // Close and return the updated user to parent component
+                MudDialog.Close(DialogResult.Ok(user));
             }
             else
             {
@@ -153,11 +162,27 @@
 
             if (response.IsSuccessStatusCode)
             {
-                Snackbar.Add($"User {user.Username} {(user.Roles.Contains("Admin") ? "is no longer an admin" : "is now an admin")}", Severity.Success);
+                // Update local state - toggle the Admin role
+                if (user.Roles.Contains("Admin"))
+                {
+                    user.Roles.Remove("Admin");
+                }
+                else
+                {
+                    user.Roles.Add("Admin");
+                }
+
+                // Force UI refresh
+                StateHasChanged();
+
+                Snackbar.Add($"User {user.Username} {(user.Roles.Contains("Admin") ? "is now an admin" : "is no longer an admin")}", Severity.Success);
+
+                // Close and return the updated user to parent component
+                MudDialog.Close(DialogResult.Ok(user));
             }
             else
             {
-                Snackbar.Add("Failed to update user status", Severity.Error);
+                Snackbar.Add("Failed to update user privileges", Severity.Error);
             }
         }
         catch (Exception ex)

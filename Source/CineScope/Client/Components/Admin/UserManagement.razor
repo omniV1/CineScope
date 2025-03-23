@@ -170,5 +170,22 @@
 
         var dialog = await DialogService.ShowAsync<UserActionsDialog>("User Information and Actions", parameters,
             new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
+
+        var result = await dialog.Result;
+
+        // If dialog was closed with a result (not canceled) and returned updated user
+        if (!result.Canceled && result.Data is UserAdminDto updatedUser)
+        {
+            // Update the user in the list
+            var index = users.FindIndex(u => u.Id == updatedUser.Id);
+            if (index >= 0)
+            {
+                users[index] = updatedUser;
+                StateHasChanged();
+            }
+
+            // For more thorough updates, you could reload the entire list
+            // await LoadUsers();
+        }
     }
 }
