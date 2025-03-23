@@ -79,6 +79,22 @@ namespace CineScope.Server.Controllers
             }
         }
 
+        [HttpPost("users/{userId}/toggle-admin")]
+        public async Task<IActionResult> ToggleUserAdminPrivileges(string userId)
+        {
+            try
+            {
+                await _adminService.ToggleUserAdminPrivilegesAsync(userId);
+                return Ok(new { Message = "ToggleUserAdminPrivilegesAsync privileges toggled" });
+                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error updating status for user {userId}");
+                return StatusCode(500, new { Message = "Error updating user status", Error = ex.Message });
+            }
+        }
+
         [HttpGet("banned-words")]
         public async Task<ActionResult<List<BannedWordDto>>> GetBannedWords([FromQuery] string? category = null, [FromQuery] int? severity = null)
         {

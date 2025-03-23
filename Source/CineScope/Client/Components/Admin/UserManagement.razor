@@ -161,41 +161,6 @@
         _ => Color.Default
     };
 
-    private async Task ViewUserDetails(UserAdminDto user)
-    {
-        // Implement user details dialog
-        Snackbar.Add($"Viewing details for user: {user.Username}", Severity.Info);
-    }
-
-    private async Task UpdateUserStatus(UserAdminDto user, string newStatus)
-    {
-        try
-        {
-            var response = await Http.PutAsJsonAsync($"api/admin/users/{user.Id}/status", newStatus);
-
-            if (response.IsSuccessStatusCode)
-            {
-                Snackbar.Add($"User {user.Username} {(newStatus == "Active" ? "reactivated" : "suspended")} successfully", Severity.Success);
-                await LoadUsers();
-            }
-            else
-            {
-                Snackbar.Add("Failed to update user status", Severity.Error);
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
-        }
-    }
-
-    private async Task ToggleAdminRole(UserAdminDto user)
-    {
-        // This would call an API endpoint to toggle the admin role
-        // For now it's just a placeholder
-        Snackbar.Add($"Toggling admin role for {user.Username} is not implemented yet", Severity.Info);
-    }
-
     private async Task OpenUserActionsDialog(UserAdminDto user)
     {
         var parameters = new DialogParameters

@@ -1,5 +1,6 @@
 ﻿@using CineScope.Shared.DTOs
 @inject ISnackbar Snackbar
+@inject HttpClient Http
 
 <MudDialog>
     <DialogContent>
@@ -125,12 +126,44 @@
 
     private async Task UpdateUserStatus(UserAdminDto user, string newStatus)
     {
-        Snackbar.Add("Failed to update user status (Reason: Unimplemented)", Severity.Error);
+        try
+        {
+            var response = await Http.PutAsJsonAsync($"api/admin/users/{user.Id}/status", newStatus);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add($"User {user.Username} {(newStatus == "Active" ? "reactivated" : "suspended")} successfully", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Failed to update user status", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
     }
 
     private async Task ToggleAdminPrivileges(UserAdminDto user)
     {
-        Snackbar.Add("Failed to update admin privileges (Reason: Unimplemented)", Severity.Error);
+        try
+        {
+            var response = await Http.PostAsJsonAsync($"api/admin/users/{user.Id}/toggle-admin", new { });
+
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add($"User {user.Username} {(user.Roles.Contains("Admin") ? "is no longer an admin" : "is now an admin")}", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Failed to update user status", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
     }
 
     private Color GetStatusColor(string status) => status switch
