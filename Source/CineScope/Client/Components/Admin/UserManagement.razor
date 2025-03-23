@@ -16,13 +16,13 @@
                 OnKeyDown="@SearchUsers" />
 
                 <MudSelect T="string" Label="Role" @bind-Value="selectedRole">
-                    <MudSelectItem Value="@string.Empty">All Roles</MudSelectItem>
+                    <MudSelectItem Value="@string.Empty"></MudSelectItem>
                     <MudSelectItem Value="@("User")">User</MudSelectItem>
                     <MudSelectItem Value="@("Admin")">Admin</MudSelectItem>
                 </MudSelect>
 
                 <MudSelect T="string" Label="Status" @bind-Value="selectedStatus">
-                    <MudSelectItem Value="@string.Empty">All Statuses</MudSelectItem>
+                    <MudSelectItem Value="@string.Empty"></MudSelectItem>
                     <MudSelectItem Value="@("Active")">Active</MudSelectItem>
                     <MudSelectItem Value="@("Flagged")">Flagged</MudSelectItem>
                     <MudSelectItem Value="@("Suspended")">Suspended</MudSelectItem>
@@ -53,7 +53,7 @@
                     <MudTh>Username</MudTh>
                     <MudTh>Role(s)</MudTh>
                     <MudTh>Status</MudTh>
-                    <MudTh>View</MudTh>
+                    <MudTh>Edit</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Username">
@@ -81,7 +81,7 @@
                     <MudTd DataLabel="Edit">
                         <MudButton Variant="Variant.Outlined" Color="Color.Primary"
                             OnClick="@(async () => await OpenUserActionsDialog(context))">
-                            View @context.Username
+                            Edit @context.Username
                         </MudButton>
                     </MudTd>
                 </RowTemplate>
@@ -205,6 +205,5 @@
 
         var dialog = await DialogService.ShowAsync<UserActionsDialog>("User Information and Actions", parameters,
             new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
-        //Snackbar.Add("User edit opened", Severity.Success);
     }
 }
