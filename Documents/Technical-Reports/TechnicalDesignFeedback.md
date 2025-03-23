@@ -1,7 +1,7 @@
 # CineScope Technical Design Document Issue Tracker
 
 
-## Architecture Issues - Andrew
+## Architecture Issues 
 
 | Issue ID | Section/Page | Issue Type | Issue Description | Fix Description |
 |----------|--------------|------------|-------------------|----------------|
@@ -21,7 +21,7 @@
 
 
 
-## Database Issues - Andrew
+## Database Issues 
 
 | Issue ID | Section/Page | Issue Type | Issue Description | Fix Description |
 |----------|--------------|------------|-------------------|----------------|
