@@ -30,7 +30,6 @@ The Sprint Burndown Chart shows we're tracking close to the ideal burndown line 
 The Cumulative Flow Diagram shows a healthy distribution between "Done," "In Progress," and "To Do" tasks. We're seeing a steady increase in the green "Done" area over time, which indicates consistent productivity. The purple "In Progress" band has remained relatively stable, suggesting the team is not overcommitting or experiencing bottlenecks.
 
 ### User Satisfaction Ratings
-/
 ```
 User Satisfaction (Scale: 1-10)
 ┌────────────────┬───────┐
