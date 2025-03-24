@@ -4,7 +4,6 @@
 
 | Name | Role | Department |
 |------|------|------------|
-| Carter Wright | Scrum Master | Development |
 | Rian Smart | Product Owner | Management |
 | Owen | Developer | Development |
 | Andrew Mack | Developer | Development |
