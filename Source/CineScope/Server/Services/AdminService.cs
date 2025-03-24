@@ -347,6 +347,47 @@ namespace CineScope.Server.Services
         }
 
         /// <summary>
+        /// Updates a user's admin privileges
+        /// </summary>
+        public async Task ToggleUserAdminPrivilegesAsync(string userId)
+        {
+            try
+            {
+                var usersCollection = _mongoDbService.GetCollection<User>(_settings.UsersCollectionName);
+
+                var user = await usersCollection.Find(u => u.Id == userId).FirstOrDefaultAsync();
+                if (user == null)
+                {
+                    throw new KeyNotFoundException($"User with ID {userId} not found");
+                }
+
+                var update = Builders<User>.Update;
+                var updates = new List<UpdateDefinition<User>>();
+
+                // Toggle admin role
+                if (user.Roles.Contains("Admin"))
+                {
+                    updates.Add(update.Pull(u => u.Roles, "Admin"));
+                }
+                else
+                {
+                    updates.Add(update.AddToSet(u => u.Roles, "Admin"));
+                }
+
+                if (updates.Count > 0)
+                {
+                    var combinedUpdate = update.Combine(updates);
+                    await usersCollection.UpdateOneAsync(u => u.Id == userId, combinedUpdate);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error updating user privileges for user ID: {userId}");
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Handles content moderation actions.
         /// </summary>
         public async Task ModerateContentAsync(string reviewId, ModerationActionDto action)

@@ -16,13 +16,13 @@
                 OnKeyDown="@SearchUsers" />
 
                 <MudSelect T="string" Label="Role" @bind-Value="selectedRole">
-                    <MudSelectItem Value="@string.Empty">All Roles</MudSelectItem>
+                    <MudSelectItem Value="@string.Empty"></MudSelectItem>
                     <MudSelectItem Value="@("User")">User</MudSelectItem>
                     <MudSelectItem Value="@("Admin")">Admin</MudSelectItem>
                 </MudSelect>
 
                 <MudSelect T="string" Label="Status" @bind-Value="selectedStatus">
-                    <MudSelectItem Value="@string.Empty">All Statuses</MudSelectItem>
+                    <MudSelectItem Value="@string.Empty"></MudSelectItem>
                     <MudSelectItem Value="@("Active")">Active</MudSelectItem>
                     <MudSelectItem Value="@("Flagged")">Flagged</MudSelectItem>
                     <MudSelectItem Value="@("Suspended")">Suspended</MudSelectItem>
@@ -53,7 +53,7 @@
                     <MudTh>Username</MudTh>
                     <MudTh>Role(s)</MudTh>
                     <MudTh>Status</MudTh>
-                    <MudTh>View</MudTh>
+                    <MudTh>Edit</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Username">
@@ -81,7 +81,7 @@
                     <MudTd DataLabel="Edit">
                         <MudButton Variant="Variant.Outlined" Color="Color.Primary"
                             OnClick="@(async () => await OpenUserActionsDialog(context))">
-                            View @context.Username
+                            Edit @context.Username
                         </MudButton>
                     </MudTd>
                 </RowTemplate>
@@ -161,41 +161,6 @@
         _ => Color.Default
     };
 
-    private async Task ViewUserDetails(UserAdminDto user)
-    {
-        // Implement user details dialog
-        Snackbar.Add($"Viewing details for user: {user.Username}", Severity.Info);
-    }
-
-    private async Task UpdateUserStatus(UserAdminDto user, string newStatus)
-    {
-        try
-        {
-            var response = await Http.PutAsJsonAsync($"api/admin/users/{user.Id}/status", newStatus);
-
-            if (response.IsSuccessStatusCode)
-            {
-                Snackbar.Add($"User {user.Username} {(newStatus == "Active" ? "reactivated" : "suspended")} successfully", Severity.Success);
-                await LoadUsers();
-            }
-            else
-            {
-                Snackbar.Add("Failed to update user status", Severity.Error);
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
-        }
-    }
-
-    private async Task ToggleAdminRole(UserAdminDto user)
-    {
-        // This would call an API endpoint to toggle the admin role
-        // For now it's just a placeholder
-        Snackbar.Add($"Toggling admin role for {user.Username} is not implemented yet", Severity.Info);
-    }
-
     private async Task OpenUserActionsDialog(UserAdminDto user)
     {
         var parameters = new DialogParameters
@@ -205,6 +170,22 @@
 
         var dialog = await DialogService.ShowAsync<UserActionsDialog>("User Information and Actions", parameters,
             new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
-        //Snackbar.Add("User edit opened", Severity.Success);
+
+        var result = await dialog.Result;
+
+        // If dialog was closed with a result (not canceled) and returned updated user
+        if (!result.Canceled && result.Data is UserAdminDto updatedUser)
+        {
+            // Update the user in the list
+            var index = users.FindIndex(u => u.Id == updatedUser.Id);
+            if (index >= 0)
+            {
+                users[index] = updatedUser;
+                StateHasChanged();
+            }
+
+            // For more thorough updates, you could reload the entire list
+            // await LoadUsers();
+        }
     }
 }

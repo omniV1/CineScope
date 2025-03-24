@@ -1,5 +1,6 @@
 ﻿@using CineScope.Shared.DTOs
 @inject ISnackbar Snackbar
+@inject HttpClient Http
 
 <MudDialog>
     <DialogContent>
@@ -125,12 +126,69 @@
 
     private async Task UpdateUserStatus(UserAdminDto user, string newStatus)
     {
-        Snackbar.Add("Failed to update user status (Reason: Unimplemented)", Severity.Error);
+        try
+        {
+            var response = await Http.PutAsJsonAsync($"api/admin/users/{user.Id}/status", newStatus);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Update local state
+                user.Status = newStatus;
+
+                // Force UI refresh
+                StateHasChanged();
+
+                Snackbar.Add($"User {user.Username} {(newStatus == "Active" ? "reactivated" : "suspended")} successfully", Severity.Success);
+
+                // Close and return the updated user to parent component
+                MudDialog.Close(DialogResult.Ok(user));
+            }
+            else
+            {
+                Snackbar.Add("Failed to update user status", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
     }
 
     private async Task ToggleAdminPrivileges(UserAdminDto user)
     {
-        Snackbar.Add("Failed to update admin privileges (Reason: Unimplemented)", Severity.Error);
+        try
+        {
+            var response = await Http.PostAsJsonAsync($"api/admin/users/{user.Id}/toggle-admin", new { });
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Update local state - toggle the Admin role
+                if (user.Roles.Contains("Admin"))
+                {
+                    user.Roles.Remove("Admin");
+                }
+                else
+                {
+                    user.Roles.Add("Admin");
+                }
+
+                // Force UI refresh
+                StateHasChanged();
+
+                Snackbar.Add($"User {user.Username} {(user.Roles.Contains("Admin") ? "is now an admin" : "is no longer an admin")}", Severity.Success);
+
+                // Close and return the updated user to parent component
+                MudDialog.Close(DialogResult.Ok(user));
+            }
+            else
+            {
+                Snackbar.Add("Failed to update user privileges", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
     }
 
     private Color GetStatusColor(string status) => status switch
