@@ -15,6 +15,6 @@
 
 | Criteria | Goal for 100% | Substantial Qualitative Feedback |
 |----------|---------------|--------------------------------|
-| **Thesis Development and Purpose** | Thesis and/or main claim are comprehensive; contained within the thesis is the essence of the paper. Thesis statement makes the purpose of the paper clear. | IF THEN STATEMENT|
+| **Thesis Development and Purpose** | Thesis and/or main claim are comprehensive; contained within the thesis is the essence of the paper. Thesis statement makes the purpose of the paper clear. |If correctly integrated with MongoDB, CineScope's component-based Blazor architecture will provide a responsive user experience through client-side caching while ensuring content moderation through effective server-side filtering.|
 | **Paragraph Development and Transitions** | There is a sophisticated construction of paragraphs and transitions. Ideas progress and relate to each other. Paragraph and transition construction guide the reader. Paragraph structure is seamless. | Mention various documentation |
 | **Mechanics of Writing** (includes spelling, punctuation, grammar, language use) | Writer is clearly in command of standard, written, academic English. | Explain markdown and our documentation process. |
