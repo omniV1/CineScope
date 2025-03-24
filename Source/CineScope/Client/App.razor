@@ -3,74 +3,193 @@
 @using System.Threading.Tasks
 @using CineScope.Client.Shared.Auth
 
-<!-- MudBlazor theme provider with custom CineScope theme -->
 <MudThemeProvider Theme="cineScopeTheme" IsDarkMode="true" />
-
-<!-- MudBlazor dialog provider for displaying dialogs -->
 <MudDialogProvider FullWidth="true" MaxWidth="MaxWidth.ExtraLarge" />
-
-<!-- MudBlazor snackbar provider for toast notifications -->
 <MudSnackbarProvider />
 
 @if (!_loaded)
 {
-        <!-- Loading screen displayed while the application initializes -->
-        <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #0f0f0f; color: white;">
-            <div style="text-align: center;">
-                <h1 style="color: #E50914; margin-bottom: 20px;">CineScope</h1>
-                <!-- MudBlazor circular progress indicator -->
-                <div class="mud-progress-circular mud-default-text" role="progressbar" style="height: 40px; width: 40px; margin: 20px auto;">
-                    <svg class="mud-progress-circular-svg" viewBox="22 22 44 44">
-                        <circle class="mud-progress-circular-circle-indeterminate" cx="44" cy="44" r="20" fill="none" stroke-width="3" stroke="#E50914"></circle>
-                    </svg>
+    <div class="loading-container">
+        <div class="stage">
+            <div class="curtain curtain-left"></div>
+            <div class="curtain curtain-right"></div>
+            <div class="loading-content">
+                <h1 class="title">CineScope</h1>
+                <div class="loading-spinner">
+                    <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
                 </div>
-                <p>Loading your cinematic experience...</p>
+                <p class="subtitle">Setting the stage for your cinematic experience...</p>
             </div>
         </div>
+    </div>
+
+    <style>
+        .loading-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #0f0f0f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .stage {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #1a1a1a;
+        }
+
+        .curtain {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 50%;
+            background: #E50914;
+            transition: transform 2s cubic-bezier(0.86, 0, 0.07, 1);
+            z-index: 100;
+        }
+
+        .curtain-left {
+            left: 0;
+            transform-origin: left;
+            animation: curtainLeft 2s forwards;
+        }
+
+        .curtain-right {
+            right: 0;
+            transform-origin: right;
+            animation: curtainRight 2s forwards;
+        }
+
+        .loading-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 1s 1.5s forwards;
+        }
+
+        .title {
+            color: #E50914;
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            color: white;
+            margin-top: 1rem;
+            font-size: 1.2rem;
+        }
+
+        @@keyframes curtainLeft {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        @@keyframes curtainRight {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(100%); }
+        }
+
+        @@keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .curtain::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                45deg,
+                rgba(0, 0, 0, 0.1) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(0, 0, 0, 0.1) 50%,
+                rgba(0, 0, 0, 0.1) 75%,
+                transparent 75%,
+                transparent
+            );
+            background-size: 50px 50px;
+        }
+
+        .curtain-left::after,
+        .curtain-right::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 20px;
+            height: 100%;
+            background: linear-gradient(
+                to right,
+                rgba(0, 0, 0, 0.2),
+                transparent
+            );
+        }
+
+        .curtain-left::after {
+            right: 0;
+        }
+
+        .curtain-right::after {
+            left: 0;
+            transform: rotate(180deg);
+        }
+    </style>
 }
 else
 {
-        <CascadingAuthenticationState>
-            <!-- Router component for client-side navigation -->
-            <Router AppAssembly="@typeof(App).Assembly">
-                <Found Context="routeData">
-                    <!-- Render the matched route with the authentication layout -->
-                    <RouteView RouteData="@routeData" DefaultLayout="@typeof(AuthenticationLayout)" />
-                    <!-- Set focus on the h1 element when navigating -->
-                    <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-                </Found>
-                <NotFound>
-                    <!-- Custom 404 page for routes that don't match any component -->
-                    <PageTitle>Not found</PageTitle>
-                    <LayoutView Layout="@typeof(AuthenticationLayout)">
-                        <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-10 px-8">
-                            <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">404 - Page Not Found</MudText>
-                            <MudText Typo="Typo.body1" Align="Align.Center">The page you're looking for doesn't exist or has been moved.</MudText>
-                            <MudButton Class="mt-5" Variant="Variant.Filled" Color="Color.Primary" Href="/" Size="Size.Large">Return Home</MudButton>
-                        </MudContainer>
-                    </LayoutView>
-                </NotFound>
-            </Router>
-        </CascadingAuthenticationState>
+    <CascadingAuthenticationState>
+        <Router AppAssembly="@typeof(App).Assembly">
+            <Found Context="routeData">
+                <RouteView RouteData="@routeData" DefaultLayout="@typeof(AuthenticationLayout)" />
+                <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+            </Found>
+            <NotFound>
+                <PageTitle>Not found</PageTitle>
+                <LayoutView Layout="@typeof(AuthenticationLayout)">
+                    <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-10 px-8">
+                        <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">
+                            404 - Page Not Found
+                        </MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center">
+                            The page you're looking for doesn't exist or has been moved.
+                        </MudText>
+                        <MudButton Class="mt-5" Variant="Variant.Filled" Color="Color.Primary"
+                                   Href="/" Size="Size.Large">
+                            Return Home
+                        </MudButton>
+                    </MudContainer>
+                </LayoutView>
+            </NotFound>
+        </Router>
+    </CascadingAuthenticationState>
 }
 
 @code {
-    /// <summary>
-    /// Tracks whether the application has completed initial loading.
-    /// </summary>
     private bool _loaded = false;
 
-    /// <summary>
-    /// Custom theme definition for CineScope with HBO Max inspired colors.
-    /// </summary>
     private MudTheme cineScopeTheme = new MudTheme()
         {
             PaletteDark = new PaletteDark()
             {
                 Black = "#0f0f0f",
                 White = "#ffffff",
-                Primary = "#E50914", // Updated to logo red
-                Secondary = "#f5f5f1", // Off-white for contrast
+                Primary = "#E50914",
+                Secondary = "#f5f5f1",
                 Success = "#3bef9e",
                 Error = "#ff3f5b",
                 Warning = "#ffb527",
@@ -97,21 +216,21 @@ else
                 Default = new Default()
                 {
                     FontFamily = new[] { "Roboto", "Helvetica", "Arial", "sans-serif" },
-                    FontSize = "1rem",
+                    FontSize = ".875rem",
                     FontWeight = 400,
-                    LineHeight = 1.5,
-                    LetterSpacing = ".00938em"
+                    LineHeight = 1.43,
+                    LetterSpacing = ".01071em"
                 },
                 H1 = new H1()
                 {
-                    FontSize = "2.5rem",
+                    FontSize = "2rem",
                     FontWeight = 700,
                     LineHeight = 1.167,
                     LetterSpacing = "-.01562em"
                 },
                 H2 = new H2()
                 {
-                    FontSize = "2rem",
+                    FontSize = "1.75rem",
                     FontWeight = 700,
                     LineHeight = 1.2,
                     LetterSpacing = "-.00833em"
@@ -119,15 +238,11 @@ else
             }
         };
 
-    /// <summary>
-    /// Initialization method called when the component is first rendered.
-    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            // Simulate a short delay to ensure all resources are loaded
-            await Task.Delay(500);
+            await Task.Delay(2500);
         }
         catch (Exception ex)
         {
@@ -135,7 +250,6 @@ else
         }
         finally
         {
-            // Always set loaded to true to prevent infinite loading
             _loaded = true;
             StateHasChanged();
         }
