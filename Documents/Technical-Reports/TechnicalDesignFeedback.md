@@ -1,4 +1,4 @@
-# CineScope Technical Design Document Issue Tracker
+# CineScope Technical Design Document Feedback Tracker
 
 ## AUTHORS
 
