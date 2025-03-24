@@ -1,13 +1,5 @@
 # Agile Development Progress Report
 
-### AUTHORS
-
-| Name | Role | Department |
-|------|------|------------|
-| Rian Smart | Product Owner | Management |
-| Owen Lindsey | Developer | Development |
-| Andrew Mack | Developer | Development |
-
 ### Date: 03/24/2025
 
 # Agile Development Progress Report
