@@ -9,7 +9,7 @@
 | Criteria | Goal for 100% | Substantial Qualitative Feedback |
 |----------|---------------|--------------------------------|
 | **How to Create and Apply Testing Methods** | Discussion of agile development is comprehensive, detailed, and complete. Discussion is appropriately at an enterprise level. | Explain the 5 Phases of the development life cycle in Agile. |
-| **How to Evaluate the Quality of a Project** | Discussion of quality evaluation is comprehensive, detailed, and complete. Discussion is connected to implications for the project moving forward. | Show stats |
+| **How to Evaluate the Quality of a Project** | Discussion of quality evaluation is comprehensive, detailed, and complete. Discussion is connected to implications for the project moving forward. | Show stats from our [Charts](https://github.com/omniV1/CineScope/blob/main/Documents/Sprint1-Charts.md) |
 
 ### Organization and Effectiveness
 
