@@ -21,7 +21,7 @@ Based on the metrics provided in the dashboard and user feedback, our team has d
 
 ### Sprint Burndown Chart
 
-![Sprint Burndown Chart]()
+![Sprint Burndown Chart](https://github.com/omniV1/CineScope/blob/main/Documents/Images/CumulativeFlow.png)
 
 The Sprint Burndown Chart shows we're tracking close to the ideal burndown line (represented by the dotted gray line), with some periods where we exceeded expectations (particularly between March 5-11). The actual remaining work (orange line) initially followed the ideal path closely, then showed faster progress mid-sprint, and successfully reached zero by the end of the sprint on March 17. This indicates we completed all planned work by the end, which is excellent.
 
