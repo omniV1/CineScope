@@ -1,5 +1,18 @@
 # CineScope Technical Design Document Issue Tracker
 
+## AUTHORS
+
+| Name | Role | Department |
+|------|------|------------|
+| Carter Wright | Scrum Master | Development |
+| Rian Smart | Product Owner | Management |
+| Owen Lindsey | Developer | Development |
+| Andrew Mack | Developer | Development |
+
+Date: 3/23/2025
+
+CST-326 
+
 
 ## Architecture Issues 
 
