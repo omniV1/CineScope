@@ -14,6 +14,7 @@
 # Agile Development Progress Report
 
 ## Overall Assessment: 7.5/10
+[Charts](https://github.com/omniV1/CineScope/blob/main/Documents/Images/ChartsSprint1.png)
 
 Based on the metrics provided in the dashboard and user feedback, our team has demonstrated solid progress with some notable achievements and areas for improvement.
 
@@ -21,13 +22,10 @@ Based on the metrics provided in the dashboard and user feedback, our team has d
 
 ### Sprint Burndown Chart
 
-![Sprint Burndown Chart](https://github.com/omniV1/CineScope/blob/main/Documents/Images/CumulativeFlow.png)
-
 The Sprint Burndown Chart shows we're tracking close to the ideal burndown line (represented by the dotted gray line), with some periods where we exceeded expectations (particularly between March 5-11). The actual remaining work (orange line) initially followed the ideal path closely, then showed faster progress mid-sprint, and successfully reached zero by the end of the sprint on March 17. This indicates we completed all planned work by the end, which is excellent.
 
 ### Cumulative Flow
 
-![Cumulative Flow]()
 
 The Cumulative Flow Diagram shows a healthy distribution between "Done," "In Progress," and "To Do" tasks. We're seeing a steady increase in the green "Done" area over time, which indicates consistent productivity. The purple "In Progress" band has remained relatively stable, suggesting the team is not overcommitting or experiencing bottlenecks.
 
@@ -50,7 +48,6 @@ User feedback shows strong satisfaction with our Authentication system (8.5/10),
 
 ### Velocity by Feature Area
 
-![Velocity by Feature Area]()
 
 Velocity data reveals interesting patterns across different feature areas:
 - Core Features had exceptional productivity in Week 2, with nearly 7 story points completed
@@ -62,7 +59,6 @@ This suggests the team effectively shifted focus to different areas as the sprin
 
 ### Task Complexity and Completion Time
 
-![Task Complexity and Completion Time]()
 The Task Complexity vs. Completion Time scatter plot shows most tasks were accurately estimated, with completion times generally corresponding to their story point values. However, there are a few outliers where 3-point stories took either more or less time than expected, indicating some estimation inconsistencies.
 
 ### Task Completion Duration
