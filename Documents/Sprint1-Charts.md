@@ -2,8 +2,6 @@
 
 ### Date: 03/24/2025
 
-# Agile Development Progress Report
-
 ## Overall Assessment: 7.5/10
 [Charts](https://github.com/omniV1/CineScope/blob/main/Documents/Images/ChartsSprint1.png)
 
