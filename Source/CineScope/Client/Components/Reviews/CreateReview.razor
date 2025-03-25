@@ -7,39 +7,47 @@
 @inject AuthService AuthService
 
 <MudCard Elevation="3" Class="create-review-form mb-4">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h5">Write a Review</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+
     <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors" ValidationDelay="0">
         <MudCardContent>
-            <MudText Typo="Typo.h5" GutterBottom="true">Write a Review</MudText>
-
-            <!-- Manual star rating implementation to fix binding issues -->
-            <div class="d-flex flex-column gap-2 mb-4">
-                <MudText Typo="Typo.subtitle1">Your Rating</MudText>
-
-                <!-- Custom star rating with direct click handlers -->
-                <div class="d-flex">
-                    @for (int i = 1; i <= 5; i++)
-                    {
-                        var starValue = i; // Capture the value for the lambda
-                        <div @onclick="() => SetRating(starValue)" style="cursor: pointer; padding: 2px;">
-                            @if (ratingValue >= starValue)
-                            {
-                                <MudIcon Icon="@Icons.Material.Filled.Star" Color="Color.Warning" Size="Size.Large" />
-                            }
-                            else
-                            {
-                                <MudIcon Icon="@Icons.Material.Filled.StarOutline" Color="Color.Warning" Size="Size.Large" />
-                            }
-                        </div>
-                    }
-                </div>
-            </div>
-
-            <!-- Review text -->
+            <!-- Review text first - this is the primary action -->
             <MudTextField T="string" Label="Your Review" @bind-Value="review.Text"
                           Required="true" RequiredError="Review text is required"
                           Variant="Variant.Outlined" Lines="5"
                           Counter="1000" MaxLength="1000"
-                          HelperText="Write your thoughts about the movie" />
+                          HelperText="Share your thoughts about this movie"
+                          Class="mb-4" />
+
+            <!-- Rating section with better visual grouping -->
+            <MudPaper Elevation="0" Class="py-3 px-4 mb-3" Style="background-color: rgba(255,255,255,0.05); border-radius: 8px;">
+                <div class="d-flex flex-column gap-2">
+                    <MudText Typo="Typo.subtitle1">Rate this movie</MudText>
+                    <div class="d-flex align-center">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            var starValue = i;
+                            <div @onclick="() => SetRating(starValue)" style="cursor: pointer; padding: 4px;">
+                                @if (ratingValue >= starValue)
+                                {
+                                    <MudIcon Icon="@Icons.Material.Filled.Star" Color="Color.Warning" Size="Size.Large" />
+                                }
+                                else
+                                {
+                                    <MudIcon Icon="@Icons.Material.Filled.StarOutline" Color="Color.Warning" Size="Size.Large" />
+                                }
+                            </div>
+                        }
+                        <MudText Typo="Typo.body2" Color="Color.Secondary" Class="ml-2">
+                            @(ratingValue > 0 ? $"{ratingValue} star{(ratingValue > 1 ? "s" : "")}" : "Select a rating")
+                        </MudText>
+                    </div>
+                </div>
+            </MudPaper>
 
             @if (!string.IsNullOrEmpty(errorMessage))
             {
@@ -56,17 +64,9 @@
                     </MudText>
                 </MudAlert>
             }
-
-            <!-- Debug info panel -->
-            <MudAlert Severity="Severity.Info" Class="mt-4">
-                <MudText>Debug Info:</MudText>
-                <MudText Typo="Typo.body2">
-                    Form Valid: @success | Rating: @ratingValue | Text Length: @(review.Text?.Length ?? 0)
-                </MudText>
-            </MudAlert>
         </MudCardContent>
 
-        <MudCardActions>
+        <MudCardActions Class="pb-4 px-4">
             <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="@Reset">Reset</MudButton>
             <MudSpacer />
             <MudButton Variant="Variant.Filled" Color="Color.Primary"
@@ -221,9 +221,6 @@
     {
         // Ensure auth token is attached to the request
         await AuthService.EnsureAuthHeaderAsync();
-
-        // Rest of your existing code...
-        Console.WriteLine($"SubmitReview called - Before validation - success={success}, ratingValue={ratingValue}, textLength={review.Text?.Length ?? 0}");
 
         // Validate the form
         await form.Validate();
