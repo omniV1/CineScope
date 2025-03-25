@@ -4,57 +4,16 @@
 @inject MoviePosterCacheService PosterCache
 @inject IJSRuntime JSRuntime
 
-<MudCard Elevation="2" Class="movie-card" Style="height: 100%; background-color: #1a1a1a;">
-    <!-- Poster container -->
+<MudCard Elevation="2" Class="movie-card my-2" Style="height: 100%; max-width: 250px;" @onclick="@(() => GoToMovieDetails())">
+    <!-- Poster container with fixed aspect ratio -->
     <div class="poster-container" style="position: relative; width: 100%; padding-top: 150%; overflow: hidden;">
         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
-            
-@if
- 
-(
-isLoadingPoster
-)
-
-            
-{
-
-                
-<
-div
- 
-class
-=
-"
-poster-skeleton
-"
->
-
-                    
-<
-MudProgressCircular
- 
-Size
-=
-"
-Size.Small
-"
- 
-Indeterminate
-=
-"
-true
-"
- 
-/>
-
-                
-</
-div
->
-
-            
-}
-
+            @if (isLoadingPoster)
+            {
+                <div class="poster-skeleton">
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                </div>
+            }
 
             <img src="@posterUrl"
                  style="width: 100%; height: 100%; object-fit: cover; visibility: @(isLoadingPoster ? "hidden" : "visible");"
@@ -66,51 +25,47 @@ div
     </div>
 
     <MudCardContent Class="pa-2">
-        <MudText Typo="Typo.subtitle1" Style="font-size: 0.9rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-            @Movie.Title
-        </MudText>
-        <MudText Typo="Typo.caption" Color="Color.Default" Style="font-size: 0.8rem;">
-            @Movie.ReleaseDate.Year
-        </MudText>
-        <div class="d-flex align-center gap-1">
-            <MudRating ReadOnly="true"
-                      Value="@((int)Math.Round(Movie.AverageRating))"
-                      Size="Size.Small"
-                      Color="Color.Error" />
+        <div class="d-flex flex-column gap-1">
+            <MudText Typo="Typo.subtitle1" Style="font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                @Movie.Title
+            </MudText>
+            <div class="d-flex justify-space-between align-center">
+                <MudText Typo="Typo.caption">@Movie.ReleaseDate.Year</MudText>
+                <MudRating ReadOnly="true" SelectedValue="@((int)Math.Round(Movie.AverageRating))" Color="Color.Primary" />
+            </div>
+            <MudText Typo="Typo.caption" Style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                @string.Join(", ", Movie.Genres ?? new List<string>())
+            </MudText>
         </div>
-        <MudText Typo="Typo.caption" Style="font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-            @string.Join(", ", Movie.Genres ?? new List<string>())
-        </MudText>
     </MudCardContent>
 
-    <MudCardActions Class="pa-2 pt-0 d-flex" Style="gap: 4px;">
+    <MudCardActions Class="pa-2 pt-0">
         <MudButton Variant="Variant.Text"
-                   Color="Color.Error"
+                   Color="Color.Primary"
                    Size="Size.Small"
                    OnClick="@GoToMovieDetails"
-                   Style="font-size: 0.75rem;">
-            DETAILS
+                   Class="mr-2">
+            Details
         </MudButton>
         <MudButton Variant="Variant.Text"
-                   Color="Color.Error"
+                   Color="Color.Primary"
                    Size="Size.Small"
-                   OnClick="@GoToWriteReview"
-                   Style="font-size: 0.75rem;">
-            REVIEW
+                   OnClick="@GoToWriteReview">
+            Review
         </MudButton>
     </MudCardActions>
 </MudCard>
 
 <style>
     .movie-card {
-        transition: transform 0.2s ease-in-out;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         cursor: pointer;
-        width: 100%;
     }
 
-    .movie-card:hover {
-        transform: translateY(-4px);
-    }
+        .movie-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--mud-elevation-4);
+        }
 
     .poster-skeleton {
         display: flex;
@@ -118,8 +73,9 @@ div
         align-items: center;
         width: 100%;
         height: 100%;
-        background-color: #242424;
+        background-color: var(--mud-palette-background-grey);
     }
+</style>
 
 @code {
     [Parameter]

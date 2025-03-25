@@ -1,129 +1,6 @@
 /* Existing imports and base styles */
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
-/* Add these style overrides to your existing app.css */
-
-/* Reset main container spacing */
-.mud-main-content {
-    padding: 0 !important;
-}
-
-/* Hero section adjustments */
-.hero-section {
-    min-height: 60vh; /* Reduced from 70vh */
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-/* Content section spacing */
-.content-section {
-    padding: 2rem 0;
-}
-
-/* Card grid adjustments */
-.card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Reduced from 250px */
-    gap: 1rem;
-    padding: 0;
-}
-
-/* Ensure content sections have proper spacing */
-.mud-container {
-    padding: 1rem !important;
-}
-
-    /* Adjust top-level container */
-    .mud-container.mud-container-maxwidth-xl {
-        padding: 0 !important;
-    }
-
-/* Movie card container width */
-.movie-card {
-    max-width: none !important;
-}
-
-/* Fix padding on the main layout */
-.pa-4 {
-    padding: 0 !important;
-}
-
-/* Adjust section spacing */
-.mt-16 {
-    margin-top: 2rem !important;
-}
-
-.mb-16 {
-    margin-bottom: 2rem !important;
-}
-
-/* Movie section headers */
-.section-header {
-    margin-bottom: 1rem;
-    padding: 0 1rem;
-}
-/* Add these style overrides to your existing app.css */
-
-/* Reset main container spacing */
-.mud-main-content {
-    padding: 0 !important;
-}
-
-/* Hero section adjustments */
-.hero-section {
-    min-height: 60vh; /* Reduced from 70vh */
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-/* Content section spacing */
-.content-section {
-    padding: 2rem 0;
-}
-
-/* Card grid adjustments */
-.card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Reduced from 250px */
-    gap: 1rem;
-    padding: 0;
-}
-
-/* Ensure content sections have proper spacing */
-.mud-container {
-    padding: 1rem !important;
-}
-
-    /* Adjust top-level container */
-    .mud-container.mud-container-maxwidth-xl {
-        padding: 0 !important;
-    }
-
-/* Movie card container width */
-.movie-card {
-    max-width: none !important;
-}
-
-/* Fix padding on the main layout */
-.pa-4 {
-    padding: 0 !important;
-}
-
-/* Adjust section spacing */
-.mt-16 {
-    margin-top: 2rem !important;
-}
-
-.mb-16 {
-    margin-bottom: 2rem !important;
-}
-
-/* Movie section headers */
-.section-header {
-    margin-bottom: 1rem;
-    padding: 0 1rem;
-}
-
 /* Base styles */
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -274,11 +151,10 @@ article.mud-container {
 /* Hero section enhancements */
 .hero-section {
     position: relative;
-    min-height: 70vh;
-    display: flex;
-    align-items: center;
+    height: 400px; /* Fixed height */
+    margin: 0; /* Remove all margins */
+    padding: 0; /* Remove all padding */
     overflow: hidden;
-    margin-top: 0 !important;
 }
 
 .hero-overlay {
@@ -287,8 +163,11 @@ article.mud-container {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient( to right, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 50%, rgba(0, 0, 0, 0.4) 100% );
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 50%, rgba(0, 0, 0, 0.4) 100%);
     z-index: 1;
+    height: 100%; /* Ensure it only takes the height of its parent */
+    margin: 0; /* Remove any margin */
+    padding: 0; /* Remove any padding */
 }
 
 .hero-content {

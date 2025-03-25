@@ -51,39 +51,37 @@
 </div>
 
 <!-- Features Section -->
-<MudContainer MaxWidth="MaxWidth.Large" Class="mt-16">
-    <MudText Typo="Typo.h3" Align="Align.Center" Class="mb-8">Why Choose CineScope?</MudText>
-    <MudGrid>
-        <MudItem xs="12" sm="4">
-            <MudCard Elevation="0" Class="pa-4 d-flex flex-column align-center">
-                <MudIcon Icon="@Icons.Material.Filled.RateReview" Color="Color.Primary" Size="Size.Large" Class="mb-4" />
-                <MudText Typo="Typo.h6" Align="Align.Center" Class="mb-2">Share Your Voice</MudText>
-                <MudText Align="Align.Center">
-                    Write detailed reviews, rate movies, and help others discover great films through your unique perspective.
-                </MudText>
-            </MudCard>
-        </MudItem>
-        <MudItem xs="12" sm="4">
-            <MudCard Elevation="0" Class="pa-4 d-flex flex-column align-center">
-                <MudIcon Icon="@Icons.Material.Filled.Explore" Color="Color.Primary" Size="Size.Large" Class="mb-4" />
-                <MudText Typo="Typo.h6" Align="Align.Center" Class="mb-2">Discover Movies</MudText>
-                <MudText Align="Align.Center">
-                    Find your next favorite film through personalized recommendations and curated lists.
-                </MudText>
-            </MudCard>
-        </MudItem>
-        <MudItem xs="12" sm="4">
-            <MudCard Elevation="0" Class="pa-4 d-flex flex-column align-center">
-                <MudIcon Icon="@Icons.Material.Filled.Groups" Color="Color.Primary" Size="Size.Large" Class="mb-4" />
-                <MudText Typo="Typo.h6" Align="Align.Center" Class="mb-2">Join the Community</MudText>
-                <MudText Align="Align.Center">
-                    Connect with fellow movie lovers and be part of a vibrant cinematic community.
-                </MudText>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
-
+<MudGrid>
+  <MudItem xs="12" sm="4">
+    <div class="feature-box">
+      <MudIcon Icon="@Icons.Material.Filled.RateReview" Color="Color.Primary" Size="Size.Large" Class="feature-icon" />
+      <MudText Typo="Typo.h6" Class="feature-title">Share Your Voice</MudText>
+      <MudText Class="feature-text">
+        Write detailed reviews, rate movies, and help others discover great films through your unique perspective.
+      </MudText>
+    </div>
+  </MudItem>
+  
+  <MudItem xs="12" sm="4">
+    <div class="feature-box">
+      <MudIcon Icon="@Icons.Material.Filled.Explore" Color="Color.Primary" Size="Size.Large" Class="feature-icon" />
+      <MudText Typo="Typo.h6" Class="feature-title">Discover Movies</MudText>
+      <MudText Class="feature-text">
+        Find your next favorite film through personalized recommendations and curated lists.
+      </MudText>
+    </div>
+  </MudItem>
+  
+  <MudItem xs="12" sm="4">
+    <div class="feature-box">
+      <MudIcon Icon="@Icons.Material.Filled.Groups" Color="Color.Primary" Size="Size.Large" Class="feature-icon" />
+      <MudText Typo="Typo.h6" Class="feature-title">Join the Community</MudText>
+      <MudText Class="feature-text">
+        Connect with fellow movie lovers and be part of a vibrant cinematic community.
+      </MudText>
+    </div>
+  </MudItem>
+</MudGrid>
 <!-- Top Rated Movies Section -->
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-16">
     <div class="d-flex justify-space-between align-center mb-4">

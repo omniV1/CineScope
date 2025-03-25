@@ -18,137 +18,10 @@
                 <div class="loading-spinner">
                     <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
                 </div>
-                <p class="subtitle">Setting the stage for your cinematic experience...</p>
+                <p class="subtitle">Setting the stage for you...</p>
             </div>
         </div>
     </div>
-
-    <style>
-        .loading-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: #0f0f0f;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-
-        .stage {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: #1a1a1a;
-        }
-
-        .curtain {
-            position: absolute;
-            top: 0;
-            height: 100%;
-            width: 50%;
-            background: #E50914;
-            transition: transform 2s cubic-bezier(0.86, 0, 0.07, 1);
-            z-index: 100;
-        }
-
-        .curtain-left {
-            left: 0;
-            transform-origin: left;
-            animation: curtainLeft 2s forwards;
-        }
-
-        .curtain-right {
-            right: 0;
-            transform-origin: right;
-            animation: curtainRight 2s forwards;
-        }
-
-        .loading-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            opacity: 0;
-            animation: fadeIn 1s 1.5s forwards;
-        }
-
-        .title {
-            color: #E50914;
-            font-size: 3rem;
-            font-weight: bold;
-            margin-bottom: 1.5rem;
-            text-transform: uppercase;
-        }
-
-        .subtitle {
-            color: white;
-            margin-top: 1rem;
-            font-size: 1.2rem;
-        }
-
-        @@keyframes curtainLeft {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-100%); }
-        }
-
-        @@keyframes curtainRight {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(100%); }
-        }
-
-        @@keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        .curtain::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(
-                45deg,
-                rgba(0, 0, 0, 0.1) 25%,
-                transparent 25%,
-                transparent 50%,
-                rgba(0, 0, 0, 0.1) 50%,
-                rgba(0, 0, 0, 0.1) 75%,
-                transparent 75%,
-                transparent
-            );
-            background-size: 50px 50px;
-        }
-
-        .curtain-left::after,
-        .curtain-right::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            width: 20px;
-            height: 100%;
-            background: linear-gradient(
-                to right,
-                rgba(0, 0, 0, 0.2),
-                transparent
-            );
-        }
-
-        .curtain-left::after {
-            right: 0;
-        }
-
-        .curtain-right::after {
-            left: 0;
-            transform: rotate(180deg);
-        }
-    </style>
 }
 else
 {
@@ -188,7 +61,9 @@ else
             {
                 Black = "#0f0f0f",
                 White = "#ffffff",
-                Primary = "#E50914",
+                Primary = "#E50914",       // CineScope red
+                PrimaryDarken = "#B8050F", // Darker red for hover
+                PrimaryLighten = "#FF1F30", // Lighter red for highlighting
                 Secondary = "#f5f5f1",
                 Success = "#3bef9e",
                 Error = "#ff3f5b",
@@ -209,7 +84,8 @@ else
                 LinesDefault = "#2c2c2c",
                 LinesInputs = "#4a4a4a",
                 TableLines = "#2c2c2c",
-                TableStriped = "#2c2c2c"
+                TableStriped = "#2c2c2c",
+                HoverOpacity = 0.1     // Adjusts hover effect intensity
             },
             Typography = new Typography()
             {
@@ -223,18 +99,41 @@ else
                 },
                 H1 = new H1()
                 {
-                    FontSize = "2rem",
+                    FontSize = "2.5rem",
                     FontWeight = 700,
                     LineHeight = 1.167,
                     LetterSpacing = "-.01562em"
                 },
                 H2 = new H2()
                 {
-                    FontSize = "1.75rem",
+                    FontSize = "2rem",
                     FontWeight = 700,
                     LineHeight = 1.2,
                     LetterSpacing = "-.00833em"
+                },
+                H3 = new H3()
+                {
+                    FontSize = "1.75rem",
+                    FontWeight = 500,
+                    LineHeight = 1.2,
+                    LetterSpacing = "-.00833em"
+                },
+                H4 = new H4()
+                {
+                    FontSize = "1.5rem",
+                    FontWeight = 500,
+                    LineHeight = 1.2,
+                    LetterSpacing = "-.00833em"
                 }
+            },
+        // Shadow values, if needed
+            Shadows = new Shadow(),
+        // Layout properties
+            LayoutProperties = new LayoutProperties()
+            {
+            // Custom layout properties as needed
+                DrawerWidthLeft = "250px",
+                AppbarHeight = "64px"
             }
         };
 
