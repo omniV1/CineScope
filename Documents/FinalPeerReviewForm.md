@@ -2,7 +2,7 @@
 
 ### This for intends to provide feedback for the ENTIRE project from start to now. 
 
-**Name:** Andrew **Report to Review:** All project information up to this point
+**Name:** Carter **Report to Review:** All project information up to this point
 
 ## Criteria
 
@@ -18,5 +18,5 @@
 | Criteria | Goal for 100% | Substantial Qualitative Feedback |
 |----------|---------------|--------------------------------|
 | **Thesis Development and Purpose** | Thesis and/or main claim are comprehensive; contained within the thesis is the essence of the paper. Thesis statement makes the purpose of the paper clear. |With MongoDB successfully integrated and the website deployed, CineScope's component-based Blazor architecture provides a responsive user experience through client-side caching while ensuring content moderation through effective server-side filtering. Performance optimizations and security measures have been implemented to support scalability and maintain a smooth user experience.|
-| **Paragraph Development and Transitions** | There is a sophisticated construction of paragraphs and transitions. Ideas progress and relate to each other. Paragraph and transition construction guide the reader. Paragraph structure is seamless. |  |
+| **Paragraph Development and Transitions** | There is a sophisticated construction of paragraphs and transitions. Ideas progress and relate to each other. Paragraph and transition construction guide the reader. Paragraph structure is seamless. | [Functional Requirements Document](https://github.com/omniV1/CineScope/edit/main/Documents/FinalPeerReviewForm.md) – Outlines the system’s expected functionality and performance, detailing user needs, use cases, and architectural plans for the CineScope platform.<br>[Technical Design Document](https://github.com/omniV1/CineScope/edit/main/Documents/FinalPeerReviewForm.md) – Describes the system’s architecture, components, data flow, and UI design to guide the development of CineScope.<br>[Test Procedures Document](https://github.com/omniV1/CineScope/edit/main/Documents/FinalPeerReviewForm.md) – Defines the testing strategy, test cases, and validation criteria to ensure CineScope meets its functional and non-functional requirements.<br>[Version Description Document](https://github.com/omniV1/CineScope/edit/main/Documents/FinalPeerReviewForm.md) – Summarizes the current project status, deliverables, sprint planning, and risks for the CineScope development lifecycle. |
 | **Mechanics of Writing** (includes spelling, punctuation, grammar, language use) | Writer is clearly in command of standard, written, academic English. | Markdown has been used to format documentation, ensuring readability and consistency. Our documentation process includes README files for setup instructions, API reference documentation, sprint reports, and deployment guides. Code comments follow industry best practices, making maintenance and future development more efficient. Tools from Atlassian such as Confluence and Jira have also been key in maintaining organization and up-to-date documentation |
