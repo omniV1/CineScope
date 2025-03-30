@@ -1,8 +1,17 @@
 # CST-326 Peer Review Form
 
-### This for intends to provide feedback for the ENTIRE project from start to now. 
+## AUTHORS
 
-**Name:** Carter **Report to Review:** All project information up to this point
+| Name | Role | Department |
+|------|------|------------|
+| Carter Wright | Scrum Master | Development |
+| Rian Smart | Product Owner | Management |
+| Owen | Developer | Development |
+| Andrew Mack | Developer | Development |
+
+
+## Date: 3/30/2025
+## Team CineScope
 
 ## Criteria
 
