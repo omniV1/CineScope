@@ -1,6 +1,6 @@
 # CST-326 Peer Review Form
 
-## AUTHORS
+### AUTHORS
 
 | Name | Role | Department |
 |------|------|------------|
@@ -10,10 +10,10 @@
 | Andrew Mack | Developer | Development |
 
 
-## Date: 3/30/2025
-## Team CineScope
+### Date: 3/30/2025
+### Team CineScope
 
-## Criteria
+### Criteria
 
 ### Content
 
