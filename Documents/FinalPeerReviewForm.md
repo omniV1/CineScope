@@ -8,15 +8,10 @@
 | Rian Smart | Product Owner | Management |
 | Owen | Developer | Development |
 | Andrew Mack | Developer | Development |
-
-
 ### Date: 3/30/2025
 ### Team CineScope
 
-### Criteria
-
-### Content
-
+---
 | Criteria | Goal for 100% | Substantial Qualitative Feedback |
 |----------|---------------|--------------------------------|
 | **How to Create and Apply Testing Methods** | Discussion of agile development is comprehensive, detailed, and complete. Discussion is appropriately at an enterprise level. | The five phases of the Agile development life cycle—Concept, Inception, Iteration/Increment, Release, and Maintenance—have been well implemented in CineScope. Conceptual planning established project goals and scope, while Inception involved setting up the Blazor component structure and database schema. Iteration has focused on refining UI/UX through continuous feedback, including the feedback that we recieved from other groups during class. Release and Maintenance will ensure quality control, incorporating automated testing strategies. Our website has been successfully deployed and we'll focus on both updating it and keeping it online|
