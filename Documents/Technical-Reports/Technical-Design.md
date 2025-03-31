@@ -36,7 +36,7 @@ CineScope is a comprehensive web application that allows users to browse movie i
 
 The CineScope platform implements an N-layer architecture that promotes separation of concerns and maintainability. The architecture is composed of the following layers:
 
-<img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/N-layer.png" width="500"> 
+<img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/Updated_N-Layer.png" width="500"> 
 
 Figure 1: CineScope N-Layer Architecture
 
