@@ -1,59 +1,83 @@
-# Complete Integration Guide for reCAPTCHA in CineScope
+# Implementing reCAPTCHA with Azure Key Vault for Production
 
-This step-by-step guide will help you implement Google's reCAPTCHA v2 in your CineScope application to protect both your registration and review submission forms from spam and abuse.
+This guide will show you how to implement Google reCAPTCHA in your CineScope application with proper Azure Key Vault integration for production secrets management.
 
-## Step 1: Configure Application Settings
+## Step 1: Set Up Azure Key Vault
 
-First, add reCAPTCHA configuration to your application settings:
+1. If you haven't already created a Key Vault in Azure:
+   
+```bash
+# Create a Key Vault (run in Azure CLI)
+az keyvault create --name CineScopeKeyVault --resource-group YourResourceGroup --location YourRegion
+```
 
-1. Open `Server/appsettings.json`
-2. Add the following configuration:
+2. Add your reCAPTCHA secrets to the Key Vault:
+
+```bash
+# Add the reCAPTCHA site key
+az keyvault secret set --vault-name CineScopeKeyVault --name "Recaptcha--SiteKey" --value "6LczsgUrAAAAPC7YT5QIINbueIGE6GVjommFIBn"
+
+# Add the reCAPTCHA secret key
+az keyvault secret set --vault-name CineScopeKeyVault --name "Recaptcha--SecretKey" --value "6LczsgUrAAAADzw4g_EXfChkMOopFqjZDC_JhV4"
+```
+
+## Step 2: Update Server Configuration for Azure Key Vault
+
+1. Add the required NuGet packages to your Server project:
+
+```bash
+dotnet add Server/Server.csproj package Azure.Identity
+dotnet add Server/Server.csproj package Azure.Security.KeyVault.Secrets
+dotnet add Server/Server.csproj package Microsoft.Extensions.Configuration.AzureKeyVault
+```
+
+2. Update `Program.cs` in your Server project to use Azure Key Vault:
+
+```csharp
+// In Server/Program.cs, modify the configuration setup
+
+// Configure MongoDB serialization settings for better compatibility
+ConfigureMongoDb();
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add Azure Key Vault Configuration when in production
+if (builder.Environment.IsProduction())
+{
+    var keyVaultName = builder.Configuration["KeyVaultName"];
+    var keyVaultUri = $"https://{keyVaultName}.vault.azure.net/";
+    
+    builder.Configuration.AddAzureKeyVault(
+        new Uri(keyVaultUri),
+        new DefaultAzureCredential());
+        
+    builder.Logging.LogInformation("Azure Key Vault configured for production");
+}
+// Use local development secrets in Development
+else if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddUserSecrets<Program>();
+}
+
+// Rest of your Program.cs remains the same
+```
+
+3. Update your `appsettings.json` to include placeholder for Key Vault name:
 
 ```json
-"Recaptcha": {
-  "SiteKey": "6LczsgUrAAAAPC7YT5QIINbueIGE6GVjommFIBn",
-  "SecretKey": "6LczsgUrAAAADzw4g_EXfChkMOopFqjZDC_JhV4"
+{
+  "KeyVaultName": "CineScopeKeyVault",
+  "Recaptcha": {
+    "SiteKey": "", 
+    "SecretKey": ""
+  },
+  // Other settings...
 }
 ```
 
-## Step 2: Add reCAPTCHA Script to Index.html
+## Step 3: Create Server-Side RecaptchaService
 
-1. Open `Client/wwwroot/index.html`
-2. Add the reCAPTCHA script in the `<head>` section:
-
-```html
-<!-- Google reCAPTCHA -->
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
-```
-
-## Step 3: Create Helper JavaScript Functions
-
-1. Create a new JavaScript file at `Client/wwwroot/js/recaptcha.js`
-2. Add the following functions:
-
-```javascript
-window.recaptchaFunctions = {
-    getResponse: function() {
-        return grecaptcha ? grecaptcha.getResponse() : '';
-    },
-    
-    reset: function() {
-        if (typeof grecaptcha !== 'undefined') {
-            grecaptcha.reset();
-        }
-    }
-};
-```
-
-3. Reference this script in `index.html` just before the closing `</body>` tag:
-
-```html
-<script src="js/recaptcha.js"></script>
-```
-
-## Step 4: Create RecaptchaService on the Server
-
-1. Create a new file at `Server/Services/RecaptchaService.cs`:
+Create a new file at `Server/Services/RecaptchaService.cs`:
 
 ```csharp
 using System;
@@ -69,34 +93,45 @@ namespace CineScope.Server.Services
     public class RecaptchaService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _secretKey;
+        private readonly IConfiguration _configuration;
         private readonly ILogger<RecaptchaService> _logger;
         private readonly bool _isEnabled;
 
-        public RecaptchaService(HttpClient httpClient, IConfiguration configuration, ILogger<RecaptchaService> logger)
+        public RecaptchaService(
+            HttpClient httpClient, 
+            IConfiguration configuration, 
+            ILogger<RecaptchaService> logger)
         {
             _httpClient = httpClient;
-            _secretKey = configuration["Recaptcha:SecretKey"];
+            _configuration = configuration;
             _logger = logger;
-            _isEnabled = !string.IsNullOrEmpty(_secretKey);
+            
+            // Check if recaptcha is properly configured
+            var secretKey = _configuration["Recaptcha:SecretKey"];
+            _isEnabled = !string.IsNullOrEmpty(secretKey);
             
             if (!_isEnabled)
             {
                 _logger.LogWarning("reCAPTCHA is not configured. Verification will be bypassed.");
             }
+            else
+            {
+                _logger.LogInformation("reCAPTCHA service initialized");
+            }
         }
 
         public async Task<bool> VerifyAsync(string recaptchaResponse)
         {
+            // Skip verification if not configured (but log warning)
             if (!_isEnabled)
             {
-                _logger.LogWarning("reCAPTCHA verification bypassed due to missing configuration.");
-                return true; // Skip verification if not configured
+                _logger.LogWarning("reCAPTCHA verification bypassed because it's not configured");
+                return true;
             }
             
             if (string.IsNullOrEmpty(recaptchaResponse))
             {
-                _logger.LogWarning("Empty reCAPTCHA response received.");
+                _logger.LogWarning("Empty reCAPTCHA response received");
                 return false;
             }
 
@@ -104,7 +139,7 @@ namespace CineScope.Server.Services
             {
                 var content = new FormUrlEncodedContent(new[]
                 {
-                    new KeyValuePair<string, string>("secret", _secretKey),
+                    new KeyValuePair<string, string>("secret", _configuration["Recaptcha:SecretKey"]),
                     new KeyValuePair<string, string>("response", recaptchaResponse)
                 });
 
@@ -148,20 +183,19 @@ namespace CineScope.Server.Services
 }
 ```
 
-## Step 5: Register RecaptchaService in Program.cs
+## Step 4: Register RecaptchaService in Program.cs
 
-1. Open `Server/Program.cs`
-2. Add the RecaptchaService to the services collection:
+In `Server/Program.cs`, add the RecaptchaService to the dependency injection container:
 
 ```csharp
-// Add this with your other service registrations
+// Register RecaptchaService
 builder.Services.AddHttpClient<RecaptchaService>();
 builder.Services.AddScoped<RecaptchaService>();
 ```
 
-## Step 6: Create Request Models for reCAPTCHA
+## Step 5: Create Request Models for reCAPTCHA
 
-1. Create a new file at `Shared/Models/RecaptchaRequests.cs`:
+Create a new file at `Shared/Models/RecaptchaRequests.cs`:
 
 ```csharp
 using CineScope.Shared.Auth;
@@ -186,635 +220,670 @@ namespace CineScope.Shared.Models
 }
 ```
 
-## Step 7: Update AuthController
+## Step 6: Create Client-Side RecaptchaConfig Service
 
-1. Open `Server/Controllers/AuthController.cs`
-2. Add the RecaptchaService to the constructor:
-
-```csharp
-private readonly RecaptchaService _recaptchaService;
-
-public AuthController(
-    IAuthService authService,
-    IMongoDbService mongoDbService,
-    IOptions<MongoDbSettings> options,
-    IConfiguration configuration,
-    RecaptchaService recaptchaService)
-{
-    _authService = authService;
-    _mongoDbService = mongoDbService;
-    _settings = options.Value;
-    _configuration = configuration;
-    _recaptchaService = recaptchaService;
-}
-```
-
-3. Add a new endpoint for registration with reCAPTCHA:
-
-```csharp
-/// <summary>
-/// POST: api/Auth/register-with-captcha
-/// Handles user registration requests with reCAPTCHA verification.
-/// </summary>
-/// <param name="request">Registration information with captcha response</param>
-/// <returns>Registration result with token if successful</returns>
-[HttpPost("register-with-captcha")]
-public async Task<ActionResult<AuthResponse>> RegisterWithCaptcha([FromBody] RegisterWithCaptchaRequest request)
-{
-    // Validate the model state
-    if (!ModelState.IsValid)
-    {
-        return BadRequest(ModelState);
-    }
-
-    // Verify reCAPTCHA
-    var isValidCaptcha = await _recaptchaService.VerifyAsync(request.RecaptchaResponse);
-    if (!isValidCaptcha)
-    {
-        return BadRequest(new AuthResponse { 
-            Success = false, 
-            Message = "reCAPTCHA verification failed. Please try again." 
-        });
-    }
-
-    // Validate that passwords match
-    if (request.RegisterRequest.Password != request.RegisterRequest.ConfirmPassword)
-    {
-        ModelState.AddModelError("ConfirmPassword", "Passwords do not match");
-        return BadRequest(ModelState);
-    }
-
-    // Attempt to register the user
-    var result = await _authService.RegisterAsync(request.RegisterRequest);
-
-    // Return appropriate response based on result
-    if (result.Success)
-    {
-        return Ok(result);
-    }
-    else
-    {
-        // Return 400 Bad Request for registration failures
-        return BadRequest(result);
-    }
-}
-```
-
-## Step 8: Update ReviewController
-
-1. Open `Server/Controllers/ReviewController.cs`
-2. Add the RecaptchaService to the constructor:
-
-```csharp
-private readonly RecaptchaService _recaptchaService;
-
-public ReviewController(
-    ReviewService reviewService, 
-    ContentFilterService contentFilterService, 
-    UserService userService,
-    RecaptchaService recaptchaService)
-{
-    _reviewService = reviewService;
-    _contentFilterService = contentFilterService;
-    _userService = userService;
-    _recaptchaService = recaptchaService;
-}
-```
-
-3. Add a new endpoint for creating reviews with reCAPTCHA:
-
-```csharp
-/// <summary>
-/// POST: api/Review/with-captcha
-/// Creates a new review after content validation and reCAPTCHA verification.
-/// </summary>
-/// <param name="request">The review data with captcha response</param>
-/// <returns>The created review with assigned ID</returns>
-[HttpPost("with-captcha")]
-[Authorize] // Require authentication
-public async Task<ActionResult<ReviewDto>> CreateReviewWithCaptcha([FromBody] ReviewWithCaptchaRequest request)
-{
-    try
-    {
-        // Verify reCAPTCHA
-        var isValidCaptcha = await _recaptchaService.VerifyAsync(request.RecaptchaResponse);
-        if (!isValidCaptcha)
-        {
-            return BadRequest(new { 
-                Message = "reCAPTCHA verification failed. Please try again." 
-            });
-        }
-
-        // Get user identity from claims
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ??
-                         User.FindFirst("sub");
-
-        if (userIdClaim == null)
-        {
-            return Unauthorized(new { Message = "User identity could not be determined" });
-        }
-
-        // Force the userId to match the authenticated user
-        request.Review.UserId = userIdClaim.Value;
-
-        // Validate content against banned words
-        var contentValidation = await _contentFilterService.ValidateContentAsync(request.Review.Text);
-
-        // If content is not approved, return bad request
-        if (!contentValidation.IsApproved)
-        {
-            return BadRequest(new
-            {
-                Message = "Review contains inappropriate content",
-                ViolationWords = contentValidation.ViolationWords
-            });
-        }
-
-        // Ensure movie ID is valid
-        if (!ObjectId.TryParse(request.Review.MovieId, out _))
-        {
-            return BadRequest("Invalid movie ID format");
-        }
-
-        // Ensure user ID is valid
-        if (!ObjectId.TryParse(request.Review.UserId, out _))
-        {
-            return BadRequest("Invalid user ID format");
-        }
-
-        // Map DTO to model
-        var review = new Review
-        {
-            MovieId = request.Review.MovieId,
-            UserId = userIdClaim.Value, // Use the authenticated user's ID
-            Rating = request.Review.Rating,
-            Text = request.Review.Text,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow,
-            IsApproved = true,
-            FlaggedWords = Array.Empty<string>()
-        };
-
-        // Create the review in the database
-        var createdReview = await _reviewService.CreateReviewAsync(review);
-
-        // Update the movie's average rating
-        await _reviewService.UpdateMovieAverageRatingAsync(review.MovieId);
-
-        // Map back to DTO and return
-        var createdDto = MapToDto(createdReview);
-        createdDto.Username = request.Review.Username; // Preserve username from request
-
-        return CreatedAtAction(nameof(GetReviewById), new { id = createdReview.Id }, createdDto);
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Exception in CreateReviewWithCaptcha: {ex.Message}");
-        Console.WriteLine($"Stack trace: {ex.StackTrace}");
-        return StatusCode(500, new { Error = $"Failed to create review: {ex.Message}" });
-    }
-}
-```
-
-## Step 9: Update Client AuthService
-
-1. Open `Client/Services/Auth/AuthService.cs`
-2. Add a method to handle registration with reCAPTCHA:
-
-```csharp
-/// <summary>
-/// Registers a new user with reCAPTCHA verification.
-/// </summary>
-/// <param name="registerRequest">The registration information</param>
-/// <param name="recaptchaResponse">The reCAPTCHA response token</param>
-/// <returns>Registration result</returns>
-public async Task<AuthResponse> RegisterWithCaptchaAsync(RegisterRequest registerRequest, string recaptchaResponse)
-{
-    try
-    {
-        Console.WriteLine($"Attempting registration with reCAPTCHA for user: {registerRequest.Username}");
-
-        var request = new RegisterWithCaptchaRequest
-        {
-            RegisterRequest = registerRequest,
-            RecaptchaResponse = recaptchaResponse
-        };
-
-        // Send registration request to the API
-        var response = await _httpClient.PostAsJsonAsync("api/Auth/register-with-captcha", request);
-
-        Console.WriteLine($"Registration with captcha response status: {response.StatusCode}");
-
-        // Parse the response
-        var result = await response.Content.ReadFromJsonAsync<AuthResponse>();
-
-        // If registration was successful, store the token and notify the auth state provider
-        if (result.Success)
-        {
-            Console.WriteLine("Registration successful, updating authentication state");
-            await _authStateProvider.NotifyUserAuthentication(result.Token, result.User);
-        }
-        else
-        {
-            Console.WriteLine($"Registration failed: {result.Message}");
-        }
-
-        return result;
-    }
-    catch (Exception ex)
-    {
-        // Return error response
-        Console.WriteLine($"Exception in RegisterWithCaptcha: {ex.Message}");
-        return new AuthResponse
-        {
-            Success = false,
-            Message = $"An error occurred during registration: {ex.Message}"
-        };
-    }
-}
-```
-
-## Step 10: Update Register Component
-
-1. Open `Client/Pages/Auth/Register.razor`
-2. Add the necessary using statements and injected services:
-
-```csharp
-@using CineScope.Shared.Models
-@inject IJSRuntime JSRuntime
-```
-
-3. Add the reCAPTCHA HTML element in the form, right before the registration button:
-
-```html
-<div class="my-4">
-    <div class="g-recaptcha" data-sitekey="6LczsgUrAAAAPC7YT5QIINbueIGE6GVjommFIBn"></div>
-</div>
-```
-
-4. Update the `HandleRegister` method to include reCAPTCHA verification:
-
-```csharp
-private async Task HandleRegister()
-{
-    // Validate the form
-    await form.Validate();
-
-    if (!success)
-    {
-        return;
-    }
-
-    try
-    {
-        // Set loading state
-        isLoading = true;
-        errorMessage = string.Empty;
-
-        // Get reCAPTCHA response
-        var recaptchaResponse = await JSRuntime.InvokeAsync<string>(
-            "recaptchaFunctions.getResponse");
-
-        if (string.IsNullOrEmpty(recaptchaResponse))
-        {
-            errorMessage = "Please complete the reCAPTCHA verification.";
-            Snackbar.Add(errorMessage, Severity.Warning);
-            return;
-        }
-
-        // Use the AuthService to register the user with captcha
-        var result = await AuthService.RegisterWithCaptchaAsync(registerRequest, recaptchaResponse);
-
-        if (result.Success)
-        {
-            // Show success message
-            Snackbar.Add("Registration successful! Welcome to CineScope.", Severity.Success);
-
-            // Redirect to home page
-            NavigationManager.NavigateTo("/");
-        }
-        else
-        {
-            // Handle error response
-            errorMessage = result.Message ?? "Registration failed. Please try again.";
-            Snackbar.Add(errorMessage, Severity.Error);
-            
-            // Reset the captcha
-            await JSRuntime.InvokeVoidAsync("recaptchaFunctions.reset");
-        }
-    }
-    catch (Exception ex)
-    {
-        // Handle exceptions
-        errorMessage = "An error occurred during registration. Please try again.";
-        Snackbar.Add($"Error: {ex.Message}", Severity.Error);
-        
-        // Reset the captcha
-        await JSRuntime.InvokeVoidAsync("recaptchaFunctions.reset");
-    }
-    finally
-    {
-        // Reset loading state
-        isLoading = false;
-    }
-}
-```
-
-## Step 11: Create a Review Service on the Client
-
-1. Create a new service file at `Client/Services/ReviewService.cs`:
+Create a new file at `Client/Services/RecaptchaConfigService.cs`:
 
 ```csharp
 using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using CineScope.Client.Services.Auth;
+using Microsoft.JSInterop;
+
+namespace CineScope.Client.Services
+{
+    public class RecaptchaConfigService
+    {
+        private readonly HttpClient _httpClient;
+        private readonly IJSRuntime _jsRuntime;
+        private string _siteKey;
+        private bool _isInitialized = false;
+
+        public RecaptchaConfigService(HttpClient httpClient, IJSRuntime jsRuntime)
+        {
+            _httpClient = httpClient;
+            _jsRuntime = jsRuntime;
+        }
+        
+        public async Task<string> GetSiteKeyAsync()
+        {
+            if (!_isInitialized)
+            {
+                await InitializeAsync();
+            }
+            
+            return _siteKey;
+        }
+        
+        public async Task InitializeAsync()
+        {
+            try
+            {
+                // Get site key from API
+                var response = await _httpClient.GetAsync("api/config/recaptcha-site-key");
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    _siteKey = await response.Content.ReadAsStringAsync();
+                }
+                else
+                {
+                    // Fallback to a default for development only
+                    _siteKey = "6LczsgUrAAAAPC7YT5QIINbueIGE6GVjommFIBn";
+                    Console.WriteLine("Could not retrieve reCAPTCHA site key from API, using development fallback");
+                }
+                
+                _isInitialized = true;
+                
+                // Initialize reCAPTCHA in the page
+                await _jsRuntime.InvokeVoidAsync("eval", @"
+                    if (typeof grecaptcha === 'undefined') {
+                        var script = document.createElement('script');
+                        script.src = 'https://www.google.com/recaptcha/api.js';
+                        script.async = true;
+                        script.defer = true;
+                        document.head.appendChild(script);
+                    }
+                ");
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error initializing reCAPTCHA: {ex.Message}");
+                _siteKey = "6LczsgUrAAAAPC7YT5QIINbueIGE6GVjommFIBn"; // Fallback
+                _isInitialized = true;
+            }
+        }
+        
+        public async Task<string> GetResponseTokenAsync()
+        {
+            try
+            {
+                return await _jsRuntime.InvokeAsync<string>("eval", "grecaptcha.getResponse()");
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error getting reCAPTCHA response: {ex.Message}");
+                return string.Empty;
+            }
+        }
+        
+        public async Task ResetAsync()
+        {
+            try
+            {
+                await _jsRuntime.InvokeVoidAsync("eval", "grecaptcha.reset()");
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error resetting reCAPTCHA: {ex.Message}");
+            }
+        }
+    }
+}
+```
+
+Register this service in `Client/Program.cs`:
+
+```csharp
+builder.Services.AddScoped<RecaptchaConfigService>();
+```
+
+## Step 7: Create ConfigController on the Server
+
+Create a new file at `Server/Controllers/ConfigController.cs`:
+
+```csharp
+using System;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+
+namespace CineScope.Server.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ConfigController : ControllerBase
+    {
+        private readonly IConfiguration _configuration;
+        private readonly ILogger<ConfigController> _logger;
+
+        public ConfigController(IConfiguration configuration, ILogger<ConfigController> logger)
+        {
+            _configuration = configuration;
+            _logger = logger;
+        }
+
+        [HttpGet("recaptcha-site-key")]
+        public IActionResult GetRecaptchaSiteKey()
+        {
+            try
+            {
+                var siteKey = _configuration["Recaptcha:SiteKey"];
+                
+                if (string.IsNullOrEmpty(siteKey))
+                {
+                    _logger.LogWarning("reCAPTCHA site key not found in configuration");
+                    return NotFound("reCAPTCHA site key not configured");
+                }
+                
+                return Ok(siteKey);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving reCAPTCHA site key");
+                return StatusCode(500, "Error retrieving configuration");
+            }
+        }
+    }
+}
+```
+
+## Step 8: Create RecaptchaComponent
+
+Create a new file at `Client/Components/Shared/Recaptcha.razor`:
+
+```csharp
+@using CineScope.Client.Services
+@inject RecaptchaConfigService RecaptchaConfigService
+@inject IJSRuntime JSRuntime
+
+<div class="recaptcha-container my-3">
+    <div class="g-recaptcha @Class" data-sitekey="@SiteKey"></div>
+</div>
+
+@code {
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public EventCallback<string> OnVerified { get; set; }
+    
+    private string SiteKey { get; set; } = "";
+    
+    protected override async Task OnInitializedAsync()
+    {
+        SiteKey = await RecaptchaConfigService.GetSiteKeyAsync();
+    }
+    
+    public async Task<string> GetResponseAsync()
+    {
+        return await RecaptchaConfigService.GetResponseTokenAsync();
+    }
+    
+    public async Task ResetAsync()
+    {
+        await RecaptchaConfigService.ResetAsync();
+    }
+}
+```
+
+## Step 9: Update AuthService and ReviewService for Client
+
+Update both `AuthService.cs` and create a new `ReviewService.cs` to handle the reCAPTCHA validation:
+
+For `ReviewService.cs`:
+
+```csharp
+using System;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
 using CineScope.Shared.DTOs;
 using CineScope.Shared.Models;
-using Microsoft.AspNetCore.Components;
 
 namespace CineScope.Client.Services
 {
     public class ReviewService
     {
         private readonly HttpClient _httpClient;
-        private readonly AuthService _authService;
-        private readonly NavigationManager _navigationManager;
-
-        public ReviewService(HttpClient httpClient, AuthService authService, NavigationManager navigationManager)
+        
+        public ReviewService(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _authService = authService;
-            _navigationManager = navigationManager;
         }
-
+        
         public async Task<ReviewDto> SubmitReviewWithCaptchaAsync(ReviewDto review, string recaptchaResponse)
         {
+            if (string.IsNullOrEmpty(recaptchaResponse))
+            {
+                throw new ArgumentException("reCAPTCHA response is required");
+            }
+            
+            var request = new ReviewWithCaptchaRequest
+            {
+                Review = review,
+                RecaptchaResponse = recaptchaResponse
+            };
+            
+            var response = await _httpClient.PostAsJsonAsync("api/Review/with-captcha", request);
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Failed to submit review: {response.StatusCode} - {error}");
+            }
+            
+            return await response.Content.ReadFromJsonAsync<ReviewDto>();
+        }
+    }
+}
+```
+
+## Step 10: Update the Register Component
+
+Modify `Client/Pages/Auth/Register.razor`:
+
+```razor
+@page "/register"
+@using CineScope.Client.Services
+@using CineScope.Client.Components.Shared
+@using CineScope.Shared.Auth
+@using CineScope.Shared.Models
+@inject AuthService AuthService
+@inject RecaptchaConfigService RecaptchaConfigService
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+<PageTitle>CineScope - Register</PageTitle>
+
+<MudGrid Justify="Justify.Center" Class="mt-8">
+    <MudItem xs="12" sm="8" md="6" lg="4">
+        <MudCard Elevation="3" Class="pa-4">
+            <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+                <MudCardContent>
+                    <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">Create Account</MudText>
+                    <MudText Typo="Typo.subtitle1" Align="Align.Center" Class="mb-4">Join the CineScope community</MudText>
+
+                    <!-- Form Fields -->
+                    <!-- ... existing fields ... -->
+
+                    <!-- reCAPTCHA component -->
+                    <Recaptcha @ref="recaptchaComponent" />
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <MudAlert Severity="Severity.Error" Class="mt-4" Dense="true">@errorMessage</MudAlert>
+                    }
+                </MudCardContent>
+
+                <MudCardActions Class="d-flex justify-center flex-column gap-4">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large"
+                               FullWidth="true" Disabled="@(!success || isLoading)"
+                               OnClick="HandleRegister">
+                        @if (isLoading)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                            <MudText Class="ms-2">Processing</MudText>
+                        }
+                        else
+                        {
+                            <MudText>Register</MudText>
+                        }
+                    </MudButton>
+
+                    <MudLink Href="/login">Already have an account? Login here</MudLink>
+                </MudCardActions>
+            </MudForm>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private MudForm form;
+    private bool success;
+    private string[] errors = { };
+    private string errorMessage = string.Empty;
+    private bool isLoading = false;
+    private Recaptcha recaptchaComponent;
+
+    private RegisterRequest registerRequest = new RegisterRequest();
+
+    // Validation methods remain the same...
+
+    private async Task HandleRegister()
+    {
+        // Validate the form
+        await form.Validate();
+
+        if (!success)
+        {
+            return;
+        }
+
+        try
+        {
+            // Set loading state
+            isLoading = true;
+            errorMessage = string.Empty;
+
+            // Get reCAPTCHA response
+            var recaptchaResponse = await recaptchaComponent.GetResponseAsync();
+            
+            if (string.IsNullOrEmpty(recaptchaResponse))
+            {
+                errorMessage = "Please complete the reCAPTCHA verification";
+                Snackbar.Add(errorMessage, Severity.Warning);
+                return;
+            }
+
+            // Create request with captcha
+            var request = new RegisterWithCaptchaRequest
+            {
+                RegisterRequest = registerRequest,
+                RecaptchaResponse = recaptchaResponse
+            };
+
+            // Use the AuthService to register the user
+            var response = await Http.PostAsJsonAsync("api/Auth/register-with-captcha", request);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<AuthResponse>();
+                
+                if (result.Success)
+                {
+                    // Show success message
+                    Snackbar.Add("Registration successful! Welcome to CineScope.", Severity.Success);
+
+                    // Redirect to home page
+                    NavigationManager.NavigateTo("/");
+                }
+                else
+                {
+                    // Handle error response
+                    errorMessage = result.Message ?? "Registration failed. Please try again.";
+                    Snackbar.Add(errorMessage, Severity.Error);
+                    
+                    // Reset captcha
+                    await recaptchaComponent.ResetAsync();
+                }
+            }
+            else
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                errorMessage = $"Registration failed: {error}";
+                Snackbar.Add(errorMessage, Severity.Error);
+                
+                // Reset captcha
+                await recaptchaComponent.ResetAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions
+            errorMessage = "An error occurred during registration. Please try again.";
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+            
+            // Reset captcha
+            if (recaptchaComponent != null)
+            {
+                await recaptchaComponent.ResetAsync();
+            }
+        }
+        finally
+        {
+            // Reset loading state
+            isLoading = false;
+        }
+    }
+}
+```
+
+## Step 11: Update the CreateReview Component
+
+Modify `Client/Components/Reviews/CreateReview.razor`:
+
+```razor
+@using System.Net.Http.Json
+@using CineScope.Client.Services
+@using CineScope.Client.Components.Shared
+@using CineScope.Client.Services.Auth
+@using CineScope.Shared.DTOs
+@using CineScope.Shared.Models
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject AuthService AuthService
+@inject ReviewService ReviewService
+
+<MudCard Elevation="3" Class="create-review-form mb-4">
+    <!-- Card header and content remain the same -->
+
+    <!-- Add reCAPTCHA before the action buttons -->
+    <MudCardContent>
+        <!-- Existing content -->
+        
+        <!-- Add reCAPTCHA -->
+        <Recaptcha @ref="recaptchaComponent" Class="my-4" />
+
+        <!-- Existing warnings and alerts -->
+    </MudCardContent>
+
+    <MudCardActions Class="pb-4 px-4">
+        <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="@Reset">Reset</MudButton>
+        <MudSpacer />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                   Disabled="@(isLoading || ratingValue == 0)" OnClick="@SubmitReview">
+            @if (isLoading)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                <MudText Class="ms-2">Submitting</MudText>
+            }
+            else
+            {
+                <MudText>Submit Review</MudText>
+            }
+        </MudButton>
+    </MudCardActions>
+</MudCard>
+
+@code {
+    // Existing parameters and fields
+    
+    private Recaptcha recaptchaComponent;
+
+    // SubmitReview method updated to use reCAPTCHA
+    private async Task SubmitReview()
+    {
+        // Validate the form
+        await form.Validate();
+
+        if (!success)
+        {
+            return;
+        }
+
+        // Check if user has selected a rating
+        if (ratingValue == 0)
+        {
+            errorMessage = "Please select a rating";
+            return;
+        }
+
+        try
+        {
+            // Set loading state
+            isLoading = true;
+            errorMessage = string.Empty;
+
+            // Get reCAPTCHA response
+            var recaptchaResponse = await recaptchaComponent.GetResponseAsync();
+            
+            if (string.IsNullOrEmpty(recaptchaResponse))
+            {
+                errorMessage = "Please complete the reCAPTCHA verification";
+                Snackbar.Add(errorMessage, Severity.Warning);
+                return;
+            }
+
+            // Validate content
+            if (!await ValidateContent())
+            {
+                errorMessage = "Review contains inappropriate content. Please revise.";
+                Snackbar.Add(errorMessage, Severity.Warning);
+                return;
+            }
+
+            // Ensure we have a user ID
+            if (string.IsNullOrEmpty(review.UserId))
+            {
+                var user = await AuthService.GetCurrentUser();
+                if (user == null)
+                {
+                    errorMessage = "You must be logged in to submit a review.";
+                    Snackbar.Add(errorMessage, Severity.Error);
+                    return;
+                }
+                review.UserId = user.Id;
+                review.Username = user.Username;
+            }
+
+            // Set the rating and date
+            review.Rating = (double)ratingValue;
+            review.CreatedAt = DateTime.Now;
+
             try
             {
-                // Ensure the user is authenticated
-                await _authService.EnsureAuthHeaderAsync();
-
-                // Create request model
+                // Submit review with captcha
                 var request = new ReviewWithCaptchaRequest
                 {
                     Review = review,
                     RecaptchaResponse = recaptchaResponse
                 };
-
-                // Submit the review
-                var response = await _httpClient.PostAsJsonAsync("api/Review/with-captcha", request);
-
+                
+                var response = await Http.PostAsJsonAsync("api/Review/with-captcha", request);
+                
                 if (response.IsSuccessStatusCode)
                 {
-                    return await response.Content.ReadFromJsonAsync<ReviewDto>();
+                    var createdReview = await response.Content.ReadFromJsonAsync<ReviewDto>();
+                    
+                    // Show success message
+                    Snackbar.Add("Review submitted successfully!", Severity.Success);
+                    
+                    // Notify parent component
+                    if (createdReview != null)
+                    {
+                        await OnReviewSubmitted.InvokeAsync(createdReview);
+                    }
+                    
+                    // Reset the form
+                    Reset();
                 }
                 else
                 {
-                    var errorContent = await response.Content.ReadAsStringAsync();
-                    throw new Exception($"Failed to submit review: {response.StatusCode} - {errorContent}");
+                    var error = await response.Content.ReadAsStringAsync();
+                    errorMessage = $"Failed to submit review: {error}";
+                    Snackbar.Add(errorMessage, Severity.Error);
+                    
+                    // Reset captcha
+                    await recaptchaComponent.ResetAsync();
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error submitting review: {ex.Message}");
-                throw;
-            }
-        }
-    }
-}
-```
-
-2. Register this service in `Program.cs` in the client project:
-
-```csharp
-// In Client/Program.cs, add with your other service registrations
-builder.Services.AddScoped<ReviewService>();
-```
-
-## Step 12: Update the CreateReview Component
-
-1. Open `Client/Components/Reviews/CreateReview.razor`
-2. Add the necessary using statements and injected services:
-
-```csharp
-@using CineScope.Client.Services
-@using CineScope.Shared.Models
-@inject ReviewService ReviewService
-@inject IJSRuntime JSRuntime
-```
-
-3. Add the reCAPTCHA HTML element in the form, before the form actions:
-
-```html
-<div class="my-4">
-    <div class="g-recaptcha" data-sitekey="6LczsgUrAAAAPC7YT5QIINbueIGE6GVjommFIBn"></div>
-</div>
-```
-
-4. Update the `SubmitReview` method to include reCAPTCHA verification:
-
-```csharp
-private async Task SubmitReview()
-{
-    // Validate the form
-    await form.Validate();
-
-    Console.WriteLine($"After validation - success={success}, errors={string.Join(", ", errors)}");
-
-    if (!success)
-    {
-        Console.WriteLine("Form validation failed - review not submitted");
-        return;
-    }
-
-    // Check if user has selected a rating
-    if (ratingValue == 0)
-    {
-        errorMessage = "Please select a rating";
-        Console.WriteLine("Rating validation failed - no stars selected");
-        return;
-    }
-
-    try
-    {
-        // Set loading state
-        isLoading = true;
-        errorMessage = string.Empty;
-        Console.WriteLine("Starting review submission process");
-
-        // Get reCAPTCHA response
-        var recaptchaResponse = await JSRuntime.InvokeAsync<string>(
-            "recaptchaFunctions.getResponse");
-
-        if (string.IsNullOrEmpty(recaptchaResponse))
-        {
-            errorMessage = "Please complete the reCAPTCHA verification.";
-            Snackbar.Add(errorMessage, Severity.Warning);
-            return;
-        }
-
-        // First, validate content against banned word list
-        if (!await ValidateContent())
-        {
-            errorMessage = "Review contains inappropriate content. Please revise.";
-            Snackbar.Add(errorMessage, Severity.Warning);
-            return;
-        }
-
-        // Ensure we have a user ID
-        if (string.IsNullOrEmpty(review.UserId))
-        {
-            var user = await AuthService.GetCurrentUser();
-            if (user == null)
-            {
-                errorMessage = "You must be logged in to submit a review.";
+                errorMessage = $"Error submitting review: {ex.Message}";
                 Snackbar.Add(errorMessage, Severity.Error);
-                return;
+                
+                // Reset captcha
+                await recaptchaComponent.ResetAsync();
             }
-            review.UserId = user.Id;
-            review.Username = user.Username;
         }
-
-        // Set the rating from the stars component
-        review.Rating = (double)ratingValue;
-
-        // Set current date/time
-        review.CreatedAt = DateTime.Now;
-
-        Console.WriteLine($"Submitting review: MovieId={review.MovieId}, UserId={review.UserId}, Rating={review.Rating}");
-
-        // Submit the review with captcha
-        var createdReview = await ReviewService.SubmitReviewWithCaptchaAsync(review, recaptchaResponse);
-
-        // Show success message
-        Snackbar.Add("Review submitted successfully!", Severity.Success);
-
-        // Notify parent component
-        if (createdReview != null)
+        catch (Exception ex)
         {
-            await OnReviewSubmitted.InvokeAsync(createdReview);
+            // Handle exceptions
+            errorMessage = "An error occurred. Please try again.";
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
         }
-
-        // Reset the form
-        Reset();
+        finally
+        {
+            // Reset loading state
+            isLoading = false;
+        }
     }
-    catch (Exception ex)
+
+    // Reset method updated to reset reCAPTCHA
+    private async Task Reset()
     {
-        // Handle exceptions
-        errorMessage = "An error occurred. Please try again.";
-        Console.WriteLine($"Review submission exception: {ex.Message}");
-        Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        review.Rating = 0;
+        ratingValue = 0;
+        review.Text = string.Empty;
+        errorMessage = string.Empty;
+        contentWarning = null;
         
-        // Reset the captcha
-        await JSRuntime.InvokeVoidAsync("recaptchaFunctions.reset");
-    }
-    finally
-    {
-        // Reset loading state
-        isLoading = false;
-    }
-}
-```
-
-5. Update the `Reset` method to also reset the reCAPTCHA:
-
-```csharp
-private async Task Reset()
-{
-    review.Rating = 0;
-    ratingValue = 0;
-    review.Text = string.Empty;
-    errorMessage = string.Empty;
-    contentWarning = null;
-    
-    // Reset the captcha
-    await JSRuntime.InvokeVoidAsync("recaptchaFunctions.reset");
-    
-    StateHasChanged();
-}
-```
-
-## Step 13: Add CSS Styling for reCAPTCHA
-
-1. Create a new CSS file at `Client/wwwroot/css/recaptcha.css`:
-
-```css
-/* Responsive reCAPTCHA */
-.g-recaptcha {
-    transform-origin: left top;
-    margin-bottom: 1rem;
-}
-
-@media screen and (max-width: 480px) {
-    .g-recaptcha {
-        transform: scale(0.85);
-        margin-bottom: 0.5rem;
-    }
-}
-
-/* Dark theme adjustments for reCAPTCHA */
-.grecaptcha-badge {
-    filter: invert(15%);
-}
-
-/* Center recaptcha for better alignment */
-.recaptcha-container {
-    display: flex;
-    justify-content: center;
-}
-
-@media (max-width: 320px) {
-    .g-recaptcha {
-        transform: scale(0.77);
+        // Reset captcha
+        if (recaptchaComponent != null)
+        {
+            await recaptchaComponent.ResetAsync();
+        }
+        
+        StateHasChanged();
     }
 }
 ```
 
-2. Add this CSS to your `index.html`:
+## Step 12: Configure Azure App Service for Key Vault Access
 
-```html
-<link href="css/recaptcha.css" rel="stylesheet" />
+If you're hosting in Azure App Service, ensure it has access to your Key Vault:
+
+1. In Azure Portal, go to your App Service
+2. Navigate to Settings > Identity
+3. Set System assigned to On and save
+4. Note the Object ID that appears
+5. Go to your Key Vault
+6. Navigate to Access Policies
+7. Add Access Policy:
+   - Select "Get, List" under Secret permissions
+   - Select the principal (your App Service's managed identity)
+   - Save the policy
+
+## Step 13: Update App Service Configuration
+
+1. In Azure Portal, go to your App Service
+2. Navigate to Settings > Configuration
+3. Add these application settings:
+
+   - `ASPNETCORE_ENVIRONMENT`: `Production`
+   - `KeyVaultName`: `CineScopeKeyVault` (your Key Vault name)
+
+## Step 14: Update Azure Pipeline
+
+If you're using Azure DevOps for deployment, update your pipeline YAML:
+
+```yaml
+# Add to your build or release pipeline
+steps:
+- task: AzureAppServiceSettings@1
+  displayName: 'Configure App Service Settings'
+  inputs:
+    azureSubscription: '$(AzureSubscription)'
+    appName: '$(WebAppName)'
+    resourceGroupName: '$(ResourceGroupName)'
+    appSettings: |
+      [
+        {
+          "name": "ASPNETCORE_ENVIRONMENT",
+          "value": "Production",
+          "slotSetting": false
+        },
+        {
+          "name": "KeyVaultName",
+          "value": "CineScopeKeyVault",
+          "slotSetting": false
+        }
+      ]
 ```
 
-## Step 14: Test Your Implementation
+## Step 15: Test Your Implementation
 
-1. Run your application
-2. Try to register a new user without completing the reCAPTCHA - you should see an error
-3. Register a user with completing the reCAPTCHA - it should work
-4. Try to submit a review without completing the reCAPTCHA - you should see an error
-5. Submit a review with completing the reCAPTCHA - it should work
+1. Deploy your changes to Azure
+2. Test registration with reCAPTCHA
+3. Test review submission with reCAPTCHA
+4. Verify in logs that your app is using the Key Vault secrets
 
-## Step 15: Add Error Handling and Logging (Optional Enhancement)
+## Final Check: Security Best Practices
 
-To make your implementation more robust, add additional error handling and logging:
+1. **Ensure your Azure resources have appropriate access controls**
+2. **Avoid committing secrets to source control**
+3. **Use a managed identity for your App Service whenever possible**
+4. **Keep your Key Vault access restricted to only necessary services**
+5. **Use conditional access policies in reCAPTCHA for better security**
+6. **Add appropriate logging for security events**
 
-1. Add error logging to the client-side components:
-
-```csharp
-// In both components, add this to catch blocks
-Console.Error.WriteLine($"reCAPTCHA error: {ex.Message}");
-```
-
-2. Add additional verification in the server-side code:
-
-```csharp
-// In the server controllers, add additional checks
-if (!ModelState.IsValid || request?.RecaptchaResponse == null)
-{
-    _logger.LogWarning("Invalid request model or missing reCAPTCHA response");
-    return BadRequest(ModelState);
-}
-```
-
-## Final Step: Production Configuration
-
-Before going to production:
-
-1. Register your domain with Google reCAPTCHA console
-2. Get production keys
-3. Update your configuration in `appsettings.Production.json`
-4. Consider implementing reCAPTCHA v3 for a more seamless user experience
-
-Congratulations! You now have a fully implemented reCAPTCHA system protecting your CineScope application from spam and abuse.
+This implementation provides a secure way to deploy reCAPTCHA with Azure Key Vault in your CineScope application. The server-side validation verifies the reCAPTCHA response with Google's servers, while the client-side component retrieves the site key securely from the server.
