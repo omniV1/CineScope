@@ -159,29 +159,43 @@ CineScope's data protection framework operates on multiple levels:
 
 Training is structured into progressive modules that build upon each other to ensure comprehensive understanding of the system.
 
-### Administrator Training Path
+# CineScope Training Timeline
 
-The training program follows a structured progression:
+## Week 1: Core Training (3 Days)
 
-1. **Foundation (Week 1)**
-   - Azure portal navigation
-   - Resource management basics
-   - Monitoring fundamentals
+### Day 1: System Basics
+Morning: Azure portal navigation, resource locations, monitoring dashboards
+Afternoon: Hands-on practice with basic operations and monitoring
 
-2. **Advanced Operations (Week 2)**
-   - Pipeline management
-   - Security administration
-   - Performance optimization
+### Day 2: Application Management 
+Morning: CineScope application architecture and components
+Afternoon: Common maintenance tasks and troubleshooting
 
-3. **Emergency Response (Week 3)**
-   - Incident management
-   - Disaster recovery procedures
-   - Crisis communication
+### Day 3: Security & Operations
+Morning: Security protocols, user management, content moderation
+Afternoon: Backup procedures and disaster recovery scenarios
 
-4. **Optimization (Week 4)**
-   - Cost management
-   - Performance tuning
-   - Capacity planning
+[Training Module](https://github.com/omniV1/CineScope/blob/main/Documents/TrainingModule.md) 
+## Ongoing Support
+
+### Documentation Access
+Comprehensive documentation remains available through our internal wiki
+Quick reference guides for common tasks
+Troubleshooting flowcharts for known issues
+
+### Support Channels
+Direct access to development team for critical issues
+Regular check-ins during first month of operation
+Monthly update meetings for new features and improvements
+
+This streamlined approach focuses on essential knowledge transfer while maintaining comprehensive coverage of key system components. After the initial three days, administrators should be fully capable of managing day-to-day operations, with ongoing support available as needed.
+
+The original four-week timeline could be better utilized for:
+- Advanced feature rollouts
+- System optimizations
+- Custom functionality development
+- Integration with additional services
+- Performance improvements
 
 Each module includes hands-on exercises and real-world scenarios, culminating in a practical assessment.
 
