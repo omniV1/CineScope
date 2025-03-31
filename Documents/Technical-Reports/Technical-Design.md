@@ -43,6 +43,10 @@ The CineScope platform implements a client-server architecture with a clear sepa
 4. **Data Access Layer**: MongoDB data repositories
 5. **Database Layer**: MongoDB database for data storage
 
+
+![N-layer](https://github.com/omniV1/CineScope/blob/main/Documents/Images/Updated_N-Layer.png)
+
+
 ### Communication Flow
 
 The application follows a standard client-server communication model:
