@@ -1,5 +1,17 @@
 # CineScope Azure Maintenance and Training Plan
 
+### AUTHORS
+
+| Name | Role | Department |
+|------|------|------------|
+| Carter Wright | Scrum Master | Development |
+| Rian Smart | Product Owner | Management |
+| Owen | Developer | Development |
+| Andrew Mack | Developer | Development |
+### Date: 3/30/2025
+### Team CineScope
+
+
 ## 1. Azure Infrastructure Overview
 
 CineScope leverages Azure's cloud infrastructure to provide a scalable, reliable movie review platform. Our architecture implements a multi-tier deployment strategy optimized for performance and cost efficiency.
