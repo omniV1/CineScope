@@ -17,10 +17,11 @@ March 02, 2025
 | Date | Version | Document Revision Description | Document Author |
 |------|---------|------------------------------|-----------------|
 | 02/24/25 | 1.0 | Initial creation of Technical Design Document | Team CineScope |
+| 03/31/25 | 1.1 | Updated with implementation details and corrected architecture | Team CineScope |
 
 ## Introduction
 
-CineScope is a modern, user-friendly movie review platform that enables movie enthusiasts to share opinions and discover new films. Built using Blazor C# ASP.NET Web App (MVC) with MongoDB as the database system, the platform delivers a responsive web interface for browsing movies, writing reviews, and interacting with other users' content.
+CineScope is a modern, user-friendly movie review platform that enables movie enthusiasts to share opinions and discover new films. Built using Blazor WebAssembly with a C# ASP.NET Core backend and MongoDB as the database system, the platform delivers a responsive web interface for browsing movies, writing reviews, and interacting with other users' content.
 
 ## Scope
 
@@ -34,26 +35,21 @@ CineScope is a comprehensive web application that allows users to browse movie i
 
 ### System Architecture
 
-The CineScope platform implements an N-layer architecture that promotes separation of concerns and maintainability. The architecture is composed of the following layers:
+The CineScope platform implements a client-server architecture with a clear separation between frontend and backend components:
 
-<img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/N-layer.png" width="500"> 
-
-Figure 1: CineScope N-Layer Architecture
-
-The architecture consists of:
-
-1. **Presentation Layer**: Handles user interface rendering and user input processing
-2. **Business Logic Layer**: Implements core application functionality and business rules
-3. **Data Access Layer**: Manages database interactions and data persistence
-4. **Database Layer**: MongoDB database system for data storage
+1. **Client Layer**: Blazor WebAssembly application running in the browser
+2. **Server Layer**: ASP.NET Core Web API with controller endpoints
+3. **Service Layer**: Business logic implementation with services
+4. **Data Access Layer**: MongoDB data repositories
+5. **Database Layer**: MongoDB database for data storage
 
 ### Communication Flow
 
-The CineScope platform implements a comprehensive communication structure to support effective team collaboration and development workflows.
-
-<img src="https://github.com/omniV1/CineScope/blob/main/Documents/Images/Communication.png" width="500">
-
-Figure 2: Team Communication Pathways
+The application follows a standard client-server communication model:
+- Client-side Blazor WebAssembly application makes HTTP requests to the server
+- Server processes requests through controller endpoints
+- Services implement business logic and interact with the database
+- Data flows back to the client as JSON responses
 
 ## User Interface Design
 
@@ -238,64 +234,25 @@ Users can maintain collections of favorite or saved content for future reference
 Quick access to user-specific functions and settings remains consistently available.
 
 All interfaces maintain visual consistency through the platform's signature red and gray color scheme, ensuring a cohesive user experience across all functional areas. Typography and spacing follow established patterns that prioritize readability and clear information hierarchy.
-Figure 4: Authentication System Wireframes
 
 ## Technical Implementation Details
 
-### Landing Page Implementation
-
-#### Technical Architecture
-
-The landing page will be implemented as an ASP.NET Core MVC view with the following components:
-
-1. **Controller**: `HomeController.cs`
-   - Responsible for handling requests to the landing page
-   - Retrieves movie data from movie service
-   - Renders appropriate view based on user authentication status
-
-2. **View**: `Index.cshtml`
-   - Implements responsive layout using Bootstrap grid system
-   - Renders movie carousels for different categories
-   - Implements lazy loading for improved performance
-
-3. **Services**:
-   - `MovieService.cs`: Retrieves movie data from MongoDB
-   - `CategoryService.cs`: Manages movie category information
-
-#### Data Flow
-
-1. User navigates to CineScope URL
-2. `HomeController` receives request
-3. Controller calls `MovieService` to retrieve featured, recent, and category-based movies
-4. Controller builds `HomeViewModel` with movie data
-5. Controller renders `Index.cshtml` view with model data
-6. View displays movie carousels and navigation options
-
-#### Performance Considerations
-
-- Implement caching for frequently accessed movie data
-- Use lazy loading for movie images to improve initial page load time
-- Implement pagination for movie sections to limit initial data transfer
-- Use MongoDB indexes to optimize movie retrieval queries
-
 ### Authentication System
 
-#### Technical Architecture
-
-The authentication system will be implemented using ASP.NET Core Identity framework with MongoDB integration:
+The authentication system uses JWT (JSON Web Token) for secure user authentication:
 
 1. **Controllers**:
-   - `AccountController.cs`: Handles user registration, login, and password recovery
-   - `ProfileController.cs`: Manages user profile information
+   - `AuthController.cs`: Handles login, registration, and token refresh
+   - `UserController.cs`: Manages user profile information
 
 2. **Models**:
-   - `ApplicationUser.cs`: Extends IdentityUser with CineScope-specific properties
-   - `LoginViewModel.cs`: Contains login form data
-   - `RegisterViewModel.cs`: Contains registration form data
+   - `User.cs`: MongoDB document model for user data
+   - `LoginRequest.cs` & `RegisterRequest.cs`: Request DTOs
+   - `AuthResponse.cs`: Response DTO with authentication results
 
 3. **Services**:
-   - `AccountService.cs`: Implements business logic for user management
-   - `AuthenticationService.cs`: Handles authentication workflows
+   - `AuthService.cs`: Implements authentication business logic
+   - `UserService.cs`: Manages user profile operations
 
 #### User Authentication Flow
 
@@ -303,138 +260,114 @@ The authentication system will be implemented using ASP.NET Core Identity framew
 sequenceDiagram
     participant User
     participant LoginPage
-    participant AccountController
+    participant AuthController
     participant AuthService
     participant Database
 
     User->>LoginPage: Enter credentials
-    LoginPage->>AccountController: Submit login form
-    AccountController->>AuthService: ValidateCredentials(username, password)
+    LoginPage->>AuthController: Submit login form
+    AuthController->>AuthService: Login(loginRequest)
     AuthService->>Database: Query user record
     Database-->>AuthService: Return user data
-    AuthService-->>AccountController: Authentication result
+    AuthService-->>AuthController: Authentication result with JWT token
     alt Authentication Success
-        AccountController-->>LoginPage: Create authentication cookie
-        LoginPage-->>User: Redirect to landing page
+        AuthController-->>LoginPage: Return token and user info
+        LoginPage-->>User: Store token, redirect to landing page
     else Authentication Failure
-        AccountController-->>LoginPage: Return error message
+        AuthController-->>LoginPage: Return error message
         LoginPage-->>User: Display error
     end
 ```
 
 Figure 15: Authentication Sequence Diagram
 
-
 #### Security Considerations
 
-- Implement password hashing using PBKDF2 with 10,000 iterations
-- Enforce password complexity requirements (8+ chars, mixed case, numbers, symbols)
-- Implement account lockout after 3 failed login attempts
-- Use HTTPS for all authentication-related communications
-- Implement CSRF protection for all form submissions
-- Store authentication tokens securely with appropriate expiration
+- Implement password hashing using BCrypt
+- Enforce password complexity requirements
+- Implement account lockout after multiple failed login attempts
+- Use JWT tokens with appropriate expiration
+- Implement token refresh mechanism
+- Store authentication tokens securely in browser storage
 
 ### Review Management System
 
-#### Technical Architecture
-
-The review management system will be implemented with the following components:
+The review management system includes the following components:
 
 1. **Controllers**:
    - `ReviewController.cs`: Handles CRUD operations for reviews
-   - `FilterController.cs`: Manages review filtering and sorting
 
 2. **Models**:
    - `Review.cs`: Contains review data including text, rating, and user information
-   - `ReviewViewModel.cs`: View model for displaying reviews
-   - `FilterViewModel.cs`: Contains filter and sort parameters
+   - `ReviewDto.cs`: Data transfer object for client-server communication
 
 3. **Services**:
    - `ReviewService.cs`: Implements business logic for review operations
-   - `FilterService.cs`: Handles filtering and sorting logic
    - `ContentFilterService.cs`: Implements content moderation
-
-#### Database Schema
-
-```
-Review {
-  _id: ObjectId,
-  userId: ObjectId,
-  movieId: ObjectId,
-  rating: Number,
-  text: String,
-  createdAt: DateTime,
-  updatedAt: DateTime,
-  isApproved: Boolean,
-  flaggedWords: Array<String>
-}
-```
 
 #### Review Creation Flow
 
 ```mermaid
 sequenceDiagram
     participant User
-    participant ReviewForm
+    participant CreateReview
     participant ReviewController
     participant ContentFilter
     participant ReviewService
     participant Database
 
-    User->>ReviewForm: Enter review
-    ReviewForm->>ReviewController: Submit review
+    User->>CreateReview: Enter review
+    CreateReview->>ReviewController: Submit review
     ReviewController->>ContentFilter: ValidateContent(reviewText)
     alt Content Approved
         ContentFilter-->>ReviewController: Content OK
-        ReviewController->>ReviewService: CreateReview(reviewData)
+        ReviewController->>ReviewService: CreateReviewAsync(review)
         ReviewService->>Database: Insert review
         Database-->>ReviewService: Confirmation
         ReviewService-->>ReviewController: Success
-        ReviewController-->>ReviewForm: Display success message
+        ReviewController-->>CreateReview: Display success message
     else Content Rejected
         ContentFilter-->>ReviewController: Content violated rules
-        ReviewController-->>ReviewForm: Display rejection reason
+        ReviewController-->>CreateReview: Display rejection reason
     end
 ```
 
 Figure 16: Review Creation Sequence Diagram
 
-
 ### Content Filtering System
 
-#### Technical Architecture
-
-The content filtering system will be implemented with the following components:
+The content filtering system screens user-generated content for inappropriate material:
 
 1. **Services**:
-   - `ContentFilterService.cs`: Implements the content filtering logic
-   - `BannedWordService.cs`: Manages the banned word dictionary
+   - `ContentFilterService.cs`: Implements content filtering logic
+   - `BannedWord.cs`: Represents prohibited terms with severity levels
+
+2. **Key Features**:
+   - Text normalization to catch evasion tactics
+   - Multi-level severity rating system
+   - Word boundary detection to reduce false positives
+   - Admin management interface for banned word dictionary
+
+### Movie Catalog System
+
+The movie system provides browsing and searching functionality:
+
+1. **Controllers**:
+   - `MovieController.cs`: Handles movie retrieval operations
 
 2. **Models**:
-   - `ContentFilterResult.cs`: Contains filtering result and violations
-   - `BannedWord.cs`: Represents a banned word or phrase with severity level
+   - `Movie.cs`: MongoDB document model for movie data
+   - `MovieDto.cs`: Data transfer object for client communication
 
-#### Content Filtering Algorithm
-
-1. Convert text to lowercase for case-insensitive matching
-2. Tokenize input text into words and phrases
-3. Compare against banned word dictionary using efficient matching algorithm
-4. Score content based on matched words and their severity
-5. Determine approval status based on configured thresholds
-6. Return detailed result with specific violations
-
-#### Performance Considerations
-
-- Use in-memory dictionary for banned words with periodic refreshes
-- Implement caching for frequently used patterns
-- Use parallel processing for long text reviews
-- Optimize text matching algorithms for performance
+3. **Services**:
+   - `MovieService.cs`: Business logic for movie operations
+   - `MovieCacheService.cs`: Caching layer for improved performance
 
 ## Databases
 
 ### MongoDB Schema Design
 
-CineScope uses MongoDB as its primary data store. The following collections will be implemented:
+CineScope uses MongoDB as its primary data store with the following collections:
 
 1. **Users Collection**
    ```
@@ -447,7 +380,8 @@ CineScope uses MongoDB as its primary data store. The following collections will
      createdAt: DateTime,
      lastLogin: DateTime,
      isLocked: Boolean,
-     failedLoginAttempts: Number
+     failedLoginAttempts: Number,
+     profilePictureUrl: String
    }
    ```
 
@@ -489,9 +423,7 @@ CineScope uses MongoDB as its primary data store. The following collections will
      word: String,
      severity: Number,
      category: String,
-     isActive: Boolean,
-     addedAt: DateTime,
-     updatedAt: DateTime
+     isActive: Boolean
    }
    ```
 
@@ -518,59 +450,78 @@ The following indexes will be created to optimize query performance:
 
 ### Data Access Patterns
 
-The Data Access Layer will implement the Repository pattern with the following components:
+The application uses the Repository pattern implemented through services:
 
 1. **Interfaces**:
-   - `IUserRepository`
-   - `IMovieRepository`
-   - `IReviewRepository`
-   - `IBannedWordRepository`
+   - `IMongoDbService`: Provides access to MongoDB collections
+   - `IMovieService`: Defines operations for movie data
+   - `IAuthService`: Defines authentication operations
 
 2. **Implementations**:
-   - `MongoUserRepository`
-   - `MongoMovieRepository`
-   - `MongoReviewRepository`
-   - `MongoBannedWordRepository`
+   - `MongoDbService`: Manages MongoDB connections and collection access
+   - `MovieService`: Implements movie operations
+   - `ReviewService`: Implements review operations
+   - `AuthService`: Implements authentication operations
+
+## Client-Side Implementation
+
+### Client Structure
+
+The client is built with Blazor WebAssembly and organized into:
+
+1. **Pages**: Main application views (MovieDetails, Movies, Login, etc.)
+2. **Components**: Reusable UI elements (MovieCard, ReviewList, etc.)
+3. **Services**: Client-side services for API communication and state management
+4. **DTOs**: Data transfer objects used for client-server communication
+
+### Key Client Features
+
+1. **Client-Side Caching**:
+   - `ClientMovieCacheService`: Caches movie data in browser localStorage
+   - `MoviePosterCacheService`: Optimizes poster image loading and fallbacks
+
+2. **Authentication**:
+   - `AuthService`: Manages client-side authentication state
+   - `AuthStateProvider`: Implements AuthenticationStateProvider for Blazor
+
+3. **UI Components**:
+   - MudBlazor component library for consistent design
+   - Custom movie cards with lazy-loading posters
+   - Responsive layout for various screen sizes
 
 ## Security Implementation
 
 ### Authentication Security
 
-- Use secure cookie storage for web sessions
-- Implement proper CORS configuration for API security
-- Use HTTPS for all communications
-- Implement proper password hashing and salting
-- Use proper parameterization to prevent injection attacks
+- JWT token-based authentication with proper expiration
+- Secure password hashing with BCrypt
+- Account lockout protection after multiple failed login attempts
+- Role-based authorization for administrative functions
 
 ### Content Security
 
-- Sanitize all user input to prevent XSS attacks
-- Implement Content Security Policy headers
-- Use HTTP-only cookies for session management
-- Implement proper CSRF protection
+- Content filtering system for user-generated content
+- Input sanitization to prevent injection attacks
+- Review moderation system for flagged content
 
-## Testing Strategy
+## Admin Functionality
 
-### Unit Testing
+The platform includes administrative tools for content and user management:
 
-- Implement unit tests for all service classes using xUnit
-- Achieve minimum 80% code coverage for service layer
-- Mock external dependencies using Moq framework
-- Implement test data generation using AutoFixture
+1. **Content Moderation**:
+   - Review flagged content for approval or rejection
+   - Modify inappropriate reviews while preserving original meaning
+   - Track moderation actions in the system
 
-### Integration Testing
+2. **User Management**:
+   - View and edit user profiles
+   - Manage user roles and permissions
+   - Suspend accounts for policy violations
 
-- Implement integration tests for database access
-- Test controller endpoints with TestServer
-- Verify authentication flows with integration tests
-- Test content filtering with known good/bad inputs
-
-### Performance Testing
-
-- Implement load tests for key user flows
-- Verify performance under expected concurrent user load
-- Test database performance with representative data volumes
-- Monitor memory usage under sustained load
+3. **Banned Word Management**:
+   - Add, edit, and remove banned words
+   - Set severity levels and categories for banned terms
+   - Toggle active status for banned words
 
 ## Deployment Architecture
 
@@ -594,21 +545,19 @@ Figure 17: Production Deployment Architecture
 
 ### Technology Stack
 
-- **Frontend**: ASP.NET Blazor Web App, Bootstrap, jQuery
-- **Backend**: C# ASP.NET Core
+- **Frontend**: Blazor WebAssembly, MudBlazor, JavaScript interop
+- **Backend**: C# ASP.NET Core, .NET 8.0
 - **Database**: MongoDB
-- **Testing**: xUnit, Moq, AutoFixture
-- **CI/CD**: GitHub Actions
-- **Hosting**: Vercel 
+- **Authentication**: JWT-based authentication with refresh tokens
+- **Caching**: Server-side memory cache and client-side localStorage
+- **Styling**: CSS with responsive design principles
 
 ### Third-Party Libraries
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| MongoDB.Driver | 2.19.0 | MongoDB access |
-| AspNetCore.Identity | 6.0.0 | User authentication |
-| Newtonsoft.Json | 13.0.2 | JSON serialization |
-| NLog | 5.1.2 | Logging framework |
-| Bootstrap | 5.2.3 | UI framework |
-| xUnit | 2.4.2 | Testing framework |
-| Moq | 4.18.4 | Mocking library |
+| MongoDB.Driver | 3.2.1 | MongoDB access |
+| BCrypt.Net-Next | 4.0.3 | Password hashing |
+| System.IdentityModel.Tokens.Jwt | 8.6.1 | JWT handling |
+| MudBlazor | latest | UI component library |
+| Blazored.LocalStorage | 4.5.0 | Browser storage access |
