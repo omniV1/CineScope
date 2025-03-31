@@ -155,13 +155,13 @@ CineScope's data protection framework operates on multiple levels:
 - Recovery Point Objective (RPO): 5 minutes
 - Service Level Agreement (SLA): 99.95%
 
-### 5. Training and Knowledge Transfer
+## 5. Training and Knowledge Transfer
 
 Training is structured into progressive modules that build upon each other to ensure comprehensive understanding of the system.
 
 ### CineScope Training Timeline
 
-## Week 1: Core Training (3 Days)
+### Week 1: Core Training (3 Days)
 
 ### Day 1: System Basics
 Morning: Azure portal navigation, resource locations, monitoring dashboards
