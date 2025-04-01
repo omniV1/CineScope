@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>b9664d9e-86c8-465f-b24f-7e44e0a9d08a</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\Client\Shared\MudConfirmationDialog.razor" Link="MudConfirmationDialog.razor" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Azure.Identity" Version="1.13.2" />
+		<PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.7.0" />
+		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.3" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.3" />
+		<PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.14" />
+		<PackageReference Include="MongoDB.Driver" Version="3.2.1" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.6.1" />
+	</ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Client\CineScope.Client.csproj" />
+    <ProjectReference Include="..\Shared\CineScope.Shared.csproj" />
+  </ItemGroup>
+
+
+</Project>

@@ -1,0 +1,89 @@
+﻿@using CineScope.Client.Shared.Profile
+@inject ISnackbar Snackbar
+
+<link href="css/profile-pictures.css" rel="stylesheet" />
+
+<MudPaper Class="pa-4 mb-4" Elevation="0">
+    <div class="d-flex flex-column">
+        <!-- Currently selected profile picture -->
+        <div class="d-flex justify-center mb-4">
+            <MudAvatar Size="Size.Large" Style="width: 100px; height: 100px; border: 2px solid var(--mud-palette-primary);">
+                @if (!string.IsNullOrEmpty(SelectedProfilePicture))
+                {
+                    <img src="@SelectedProfilePicture" alt="Selected Profile Picture" />
+                }
+                else
+                {
+                    <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Large" />
+                }
+            </MudAvatar>
+        </div>
+
+        <!-- Selection header -->
+        <MudText Typo="Typo.subtitle1" Class="mb-3">Choose your profile picture:</MudText>
+
+        <!-- Grid of available profile pictures -->
+        <div class="d-flex flex-wrap gap-2 justify-center">
+            @foreach (var picture in ProfilePictureOptions.Options)
+            {
+                <div @onclick="() => SelectProfilePicture(picture)"
+                     class="avatar-option @(picture == SelectedProfilePicture ? "selected" : "")"
+                     title="Select this profile picture">
+                    <img src="@picture" alt="Profile Picture Option" class="circular-img" />
+                </div>
+
+            }
+        </div>
+    </div>
+</MudPaper>
+
+<style>
+    .avatar-option {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        overflow: hidden;
+        transition: all 0.2s ease;
+        padding: 2px;
+    }
+
+        .avatar-option:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 8px rgba(var(--mud-palette-primary-rgb), 0.5);
+        }
+
+        .avatar-option.selected {
+            border: 2px solid var(--mud-palette-primary);
+        }
+</style>
+
+@code {
+    [Parameter]
+    public string SelectedProfilePicture { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnProfilePictureSelected { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // Ensure a default picture if none is selected
+        if (string.IsNullOrEmpty(SelectedProfilePicture))
+        {
+            SelectedProfilePicture = ProfilePictureOptions.DefaultProfilePicture;
+        }
+
+        Console.WriteLine($"ProfilePictureSelector initialized with URL: {SelectedProfilePicture}");
+    }
+
+    private async Task SelectProfilePicture(string pictureUrl)
+    {
+        // Only trigger event if selection has changed
+        if (pictureUrl != SelectedProfilePicture)
+        {
+            SelectedProfilePicture = pictureUrl;
+            Console.WriteLine($"Selected profile picture: {pictureUrl}");
+            await OnProfilePictureSelected.InvokeAsync(pictureUrl);
+            Snackbar.Add("Profile picture selected", Severity.Success);
+        }
+    }
+}
