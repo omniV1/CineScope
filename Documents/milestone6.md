@@ -2,7 +2,7 @@
 for CineScope Movie Review Platform
 
 **Team Members:** Carter Wright, Rian Smart, Owen Lindsey, Andrew Mack
-**(Adjust as needed for the maintenance team)**
+
 
 **Grand Canyon University: CST-326**
 
