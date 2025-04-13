@@ -5,92 +5,177 @@
 @using System.Net.Http.Json
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
 
-<PageTitle>CineScope - Your Movie Resource</PageTitle>
+<PageTitle>CineScope - Discover Your Next Movie</PageTitle>
 
-<!-- Custom div to absolutely zero out all possible spacing -->
-<div style="margin:0; padding:0">
-    <!-- Hero banner with zero spacing -->
-    <div class="hero-section" style="background-image: url('@heroBackgroundUrl'); background-size: cover; background-position: center; margin:0; padding:0; margin-bottom:1rem;">
-        <div class="hero-content">
-            <MudText Typo="Typo.h1" Class="hero-title">Welcome to CineScope</MudText>
-            <MudText Typo="Typo.subtitle1" Class="hero-description">
-                Discover, review, and discuss your favorite movies with fellow film enthusiasts.
-                CineScope provides a platform to share your thoughts and explore new cinematic experiences.
-            </MudText>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Class="mt-2"
-                       Href="/movies">
-                Explore Movies
-            </MudButton>
-        </div>
+<!-- Hero Section -->
+<div class="hero-section">
+    <div style="position: absolute; inset: 0; background-image: url('@heroBackgroundUrl'); background-size: cover; background-position: center;">
+        <div class="hero-overlay"></div>
     </div>
 
-    <!-- Top Rated Movies section -->
-    <div id="top-rated-movies" style="margin:0; padding:0;">
-        <MudText Typo="Typo.h4" Style="margin:0; margin-bottom:0.5rem;">Top Rated Movies</MudText>
-
-        @if (isLoadingTopRated)
-        {
-            <div class="d-flex justify-center" style="margin:0.5rem 0;">
-                <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
-            </div>
-        }
-        else if (topRatedMovies.Count == 0)
-        {
-            <MudAlert Severity="Severity.Warning" Style="margin:0.5rem 0;">
-                <i class="fas fa-exclamation-circle"></i> No top rated movies found. Please check back later.
-            </MudAlert>
-        }
-        else
-        {
-            <MudGrid Style="margin:0; padding:0;">
-                @foreach (var movie in topRatedMovies)
-                {
-                    <MudItem xs="12" sm="6" md="4" Style="padding:6px;">
-                        <MovieCard Movie="@movie" />
-                    </MudItem>
-                }
-            </MudGrid>
-        }
-    </div>
-
-    <!-- Divider between sections -->
-    <MudDivider Style="margin:1rem 0;" />
-
-    <!-- Recently Added section -->
-    <div id="recently-added" style="margin:0; padding:0;">
-        <MudText Typo="Typo.h4" Style="margin:0; margin-bottom:0.5rem;">Recently Added</MudText>
-
-        @if (isLoadingRecent)
-        {
-            <div class="d-flex justify-center" style="margin:0.5rem 0;">
-                <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
-            </div>
-        }
-        else if (recentlyAddedMovies.Count == 0)
-        {
-            <MudAlert Severity="Severity.Warning" Style="margin:0.5rem 0;">
-                <i class="fas fa-exclamation-circle"></i> No recently added movies found. Stay tuned for updates!
-            </MudAlert>
-        }
-        else
-        {
-            <MudGrid Style="margin:0; padding:0;">
-                @foreach (var movie in recentlyAddedMovies)
-                {
-                    <MudItem xs="12" sm="6" md="4" Style="padding:6px;">
-                        <MovieCard Movie="@movie" />
-                    </MudItem>
-                }
-            </MudGrid>
-        }
-    </div>
+    <MudContainer MaxWidth="MaxWidth.Large" Class="hero-content">
+        <MudGrid>
+            <MudItem xs="12" md="8">
+                <MudText Typo="Typo.h2" Color="Color.Surface" Class="mb-4">
+                    Your Movie Journey Starts Here
+                </MudText>
+                <MudText Typo="Typo.h5" Color="Color.Surface" Class="mb-6">
+                    Join thousands of movie enthusiasts sharing their thoughts, discovering new films,
+                    and connecting through the magic of cinema.
+                </MudText>
+                <div class="d-flex gap-4 flex-wrap">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large"
+                               Href="/movies">
+                        Explore Movies
+                    </MudButton>
+                    <AuthorizeView>
+                        <Authorized>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Surface" Size="Size.Large"
+                                       Href="/my-reviews">
+                                My Reviews
+                            </MudButton>
+                        </Authorized>
+                        <NotAuthorized>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Surface" Size="Size.Large"
+                                       Href="/register">
+                                Join Community
+                            </MudButton>
+                        </NotAuthorized>
+                    </AuthorizeView>
+                </div>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
 </div>
+
+<!-- Features Section -->
+<MudGrid>
+  <MudItem xs="12" sm="4">
+    <div class="feature-box">
+      <MudIcon Icon="@Icons.Material.Filled.RateReview" Color="Color.Primary" Size="Size.Large" Class="feature-icon" />
+      <MudText Typo="Typo.h6" Class="feature-title">Share Your Voice</MudText>
+      <MudText Class="feature-text">
+        Write detailed reviews, rate movies, and help others discover great films through your unique perspective.
+      </MudText>
+    </div>
+  </MudItem>
+  
+  <MudItem xs="12" sm="4">
+    <div class="feature-box">
+      <MudIcon Icon="@Icons.Material.Filled.Explore" Color="Color.Primary" Size="Size.Large" Class="feature-icon" />
+      <MudText Typo="Typo.h6" Class="feature-title">Discover Movies</MudText>
+      <MudText Class="feature-text">
+        Find your next favorite film through personalized recommendations and curated lists.
+      </MudText>
+    </div>
+  </MudItem>
+  
+  <MudItem xs="12" sm="4">
+    <div class="feature-box">
+      <MudIcon Icon="@Icons.Material.Filled.Groups" Color="Color.Primary" Size="Size.Large" Class="feature-icon" />
+      <MudText Typo="Typo.h6" Class="feature-title">Join the Community</MudText>
+      <MudText Class="feature-text">
+        Connect with fellow movie lovers and be part of a vibrant cinematic community.
+      </MudText>
+    </div>
+  </MudItem>
+</MudGrid>
+<!-- Top Rated Movies Section -->
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-16">
+    <div class="d-flex justify-space-between align-center mb-4">
+        <MudText Typo="Typo.h4">Top Rated Movies</MudText>
+        <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/movies">View All</MudButton>
+    </div>
+
+    @if (isLoadingTopRated)
+    {
+        <div class="d-flex justify-center my-4">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+        </div>
+    }
+    else if (topRatedMovies.Count == 0)
+    {
+        <MudAlert Severity="Severity.Warning">
+            No top rated movies found. Please check back later.
+        </MudAlert>
+    }
+    else
+    {
+        <div class="card-grid">
+            @foreach (var movie in topRatedMovies)
+            {
+                <MovieCard Movie="@movie" />
+            }
+        </div>
+    }
+</MudContainer>
+
+<!-- Recently Added Section -->
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-16">
+    <div class="d-flex justify-space-between align-center mb-4">
+        <MudText Typo="Typo.h4">Recently Added</MudText>
+        <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/movies">View All</MudButton>
+    </div>
+
+    @if (isLoadingRecent)
+    {
+        <div class="d-flex justify-center my-4">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+        </div>
+    }
+    else if (recentlyAddedMovies.Count == 0)
+    {
+        <MudAlert Severity="Severity.Warning">
+            No recently added movies found. Stay tuned for updates!
+        </MudAlert>
+    }
+    else
+    {
+        <div class="card-grid">
+            @foreach (var movie in recentlyAddedMovies)
+            {
+                <MovieCard Movie="@movie" />
+            }
+        </div>
+    }
+</MudContainer>
+
+<!-- Call to Action Section -->
+<MudContainer MaxWidth="MaxWidth.False" Class="mt-16 mb-16">
+    <MudPaper Class="py-16" Style="background: linear-gradient(to right, var(--mud-palette-primary), var(--mud-palette-primary-darken))">
+        <MudContainer MaxWidth="MaxWidth.Medium">
+            <div class="text-center">
+                <MudText Typo="Typo.h3" Color="Color.Surface" Class="mb-4">
+                    Ready to Start Your Movie Journey?
+                </MudText>
+                <MudText Typo="Typo.body1" Color="Color.Surface" Class="mb-8">
+                    Join CineScope today and become part of a community that celebrates the art of cinema.
+                </MudText>
+                <AuthorizeView>
+                    <Authorized>
+                        <MudButton Variant="Variant.Filled" Color="Color.Surface" Size="Size.Large"
+                                   Href="/movies">
+                            Explore Movies
+                        </MudButton>
+                    </Authorized>
+                    <NotAuthorized>
+                        <MudButton Variant="Variant.Filled" Color="Color.Surface" Size="Size.Large"
+                                   Href="/register">
+                            Sign Up Now
+                        </MudButton>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>
+        </MudContainer>
+    </MudPaper>
+</MudContainer>
 
 @code {
     private string heroBackgroundUrl = "https://m.media-amazon.com/images/M/MV5BNDkwY2I3ZWQtZGYxMC00N2QyLTg2MmQtZTU5ZTY0Y2M0YTY4XkEyXkFqcGdeQXVyMjMxOTE0ODA@._V1_.jpg";
-    private List<MovieDto> topRatedMovies = new List<MovieDto>();
-    private List<MovieDto> recentlyAddedMovies = new List<MovieDto>();
+    private List<MovieDto> topRatedMovies = new();
+    private List<MovieDto> recentlyAddedMovies = new();
     private bool isLoadingTopRated = true;
     private bool isLoadingRecent = true;
 
@@ -112,7 +197,7 @@
                 var allMovies = await response.Content.ReadFromJsonAsync<List<MovieDto>>() ?? new List<MovieDto>();
                 topRatedMovies = allMovies
                     .OrderByDescending(m => m.AverageRating)
-                    .Take(3)
+                    .Take(4)
                     .ToList();
             }
         }
@@ -138,7 +223,7 @@
                 var allMovies = await response.Content.ReadFromJsonAsync<List<MovieDto>>() ?? new List<MovieDto>();
                 recentlyAddedMovies = allMovies
                     .OrderByDescending(m => m.ReleaseDate)
-                    .Take(3)
+                    .Take(4)
                     .ToList();
             }
         }

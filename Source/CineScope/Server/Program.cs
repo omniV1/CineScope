@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-// Show the ASCII art intro at application startup (COMMENT OUT LINE BELOW TO SKIP ANIMATION FOR DEV PURPOSES)  
-// ConsoleIntro.ShowIntro();
+// Show the ASCII art intro at application startup (COMMENT OUT LINE BELOW TO SKIP ANIMATION FOR DEV PURPOSES)
+ConsoleIntro.ShowIntro();
 
 // Configure MongoDB serialization settings for better compatibility
 ConfigureMongoDb();
@@ -91,7 +91,7 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
         ValidAudience = builder.Configuration["JwtSettings:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Secret"]))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Secret"] ?? throw new InvalidOperationException("JWT Secret not found in configuration.")))
     };
 
     // For development purposes only - don't require HTTPS

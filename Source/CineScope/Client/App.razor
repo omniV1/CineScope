@@ -3,74 +3,68 @@
 @using System.Threading.Tasks
 @using CineScope.Client.Shared.Auth
 
-<!-- MudBlazor theme provider with custom CineScope theme -->
 <MudThemeProvider Theme="cineScopeTheme" IsDarkMode="true" />
-
-<!-- MudBlazor dialog provider for displaying dialogs -->
 <MudDialogProvider FullWidth="true" MaxWidth="MaxWidth.ExtraLarge" />
-
-<!-- MudBlazor snackbar provider for toast notifications -->
 <MudSnackbarProvider />
 
 @if (!_loaded)
 {
-        <!-- Loading screen displayed while the application initializes -->
-        <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #0f0f0f; color: white;">
-            <div style="text-align: center;">
-                <h1 style="color: #E50914; margin-bottom: 20px;">CineScope</h1>
-                <!-- MudBlazor circular progress indicator -->
-                <div class="mud-progress-circular mud-default-text" role="progressbar" style="height: 40px; width: 40px; margin: 20px auto;">
-                    <svg class="mud-progress-circular-svg" viewBox="22 22 44 44">
-                        <circle class="mud-progress-circular-circle-indeterminate" cx="44" cy="44" r="20" fill="none" stroke-width="3" stroke="#E50914"></circle>
-                    </svg>
+    <div class="loading-container">
+        <div class="stage">
+            <div class="curtain curtain-left"></div>
+            <div class="curtain curtain-right"></div>
+            <div class="loading-content">
+                <h1 class="title">CineScope</h1>
+                <div class="loading-spinner">
+                    <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
                 </div>
-                <p>Loading your cinematic experience...</p>
+                <p class="subtitle">Setting the stage for you...</p>
             </div>
         </div>
+    </div>
 }
 else
 {
-        <CascadingAuthenticationState>
-            <!-- Router component for client-side navigation -->
-            <Router AppAssembly="@typeof(App).Assembly">
-                <Found Context="routeData">
-                    <!-- Render the matched route with the authentication layout -->
-                    <RouteView RouteData="@routeData" DefaultLayout="@typeof(AuthenticationLayout)" />
-                    <!-- Set focus on the h1 element when navigating -->
-                    <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-                </Found>
-                <NotFound>
-                    <!-- Custom 404 page for routes that don't match any component -->
-                    <PageTitle>Not found</PageTitle>
-                    <LayoutView Layout="@typeof(AuthenticationLayout)">
-                        <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-10 px-8">
-                            <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">404 - Page Not Found</MudText>
-                            <MudText Typo="Typo.body1" Align="Align.Center">The page you're looking for doesn't exist or has been moved.</MudText>
-                            <MudButton Class="mt-5" Variant="Variant.Filled" Color="Color.Primary" Href="/" Size="Size.Large">Return Home</MudButton>
-                        </MudContainer>
-                    </LayoutView>
-                </NotFound>
-            </Router>
-        </CascadingAuthenticationState>
+    <CascadingAuthenticationState>
+        <Router AppAssembly="@typeof(App).Assembly">
+            <Found Context="routeData">
+                <RouteView RouteData="@routeData" DefaultLayout="@typeof(AuthenticationLayout)" />
+                <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+            </Found>
+            <NotFound>
+                <PageTitle>Not found</PageTitle>
+                <LayoutView Layout="@typeof(AuthenticationLayout)">
+                    <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-10 px-8">
+                        <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">
+                            404 - Page Not Found
+                        </MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center">
+                            The page you're looking for doesn't exist or has been moved.
+                        </MudText>
+                        <MudButton Class="mt-5" Variant="Variant.Filled" Color="Color.Primary"
+                                   Href="/" Size="Size.Large">
+                            Return Home
+                        </MudButton>
+                    </MudContainer>
+                </LayoutView>
+            </NotFound>
+        </Router>
+    </CascadingAuthenticationState>
 }
 
 @code {
-    /// <summary>
-    /// Tracks whether the application has completed initial loading.
-    /// </summary>
     private bool _loaded = false;
 
-    /// <summary>
-    /// Custom theme definition for CineScope with HBO Max inspired colors.
-    /// </summary>
     private MudTheme cineScopeTheme = new MudTheme()
         {
             PaletteDark = new PaletteDark()
             {
                 Black = "#0f0f0f",
                 White = "#ffffff",
-                Primary = "#E50914", // Updated to logo red
-                Secondary = "#f5f5f1", // Off-white for contrast
+                Primary = "#E50914",       // CineScope red
+                PrimaryDarken = "#B8050F", // Darker red for hover
+                PrimaryLighten = "#FF1F30", // Lighter red for highlighting
+                Secondary = "#f5f5f1",
                 Success = "#3bef9e",
                 Error = "#ff3f5b",
                 Warning = "#ffb527",
@@ -90,17 +84,18 @@ else
                 LinesDefault = "#2c2c2c",
                 LinesInputs = "#4a4a4a",
                 TableLines = "#2c2c2c",
-                TableStriped = "#2c2c2c"
+                TableStriped = "#2c2c2c",
+                HoverOpacity = 0.1     // Adjusts hover effect intensity
             },
             Typography = new Typography()
             {
                 Default = new Default()
                 {
                     FontFamily = new[] { "Roboto", "Helvetica", "Arial", "sans-serif" },
-                    FontSize = "1rem",
+                    FontSize = ".875rem",
                     FontWeight = 400,
-                    LineHeight = 1.5,
-                    LetterSpacing = ".00938em"
+                    LineHeight = 1.43,
+                    LetterSpacing = ".01071em"
                 },
                 H1 = new H1()
                 {
@@ -115,19 +110,38 @@ else
                     FontWeight = 700,
                     LineHeight = 1.2,
                     LetterSpacing = "-.00833em"
+                },
+                H3 = new H3()
+                {
+                    FontSize = "1.75rem",
+                    FontWeight = 500,
+                    LineHeight = 1.2,
+                    LetterSpacing = "-.00833em"
+                },
+                H4 = new H4()
+                {
+                    FontSize = "1.5rem",
+                    FontWeight = 500,
+                    LineHeight = 1.2,
+                    LetterSpacing = "-.00833em"
                 }
+            },
+        // Shadow values, if needed
+            Shadows = new Shadow(),
+        // Layout properties
+            LayoutProperties = new LayoutProperties()
+            {
+            // Custom layout properties as needed
+                DrawerWidthLeft = "250px",
+                AppbarHeight = "64px"
             }
         };
 
-    /// <summary>
-    /// Initialization method called when the component is first rendered.
-    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            // Simulate a short delay to ensure all resources are loaded
-            await Task.Delay(500);
+            await Task.Delay(2500);
         }
         catch (Exception ex)
         {
@@ -135,7 +149,6 @@ else
         }
         finally
         {
-            // Always set loaded to true to prevent infinite loading
             _loaded = true;
             StateHasChanged();
         }

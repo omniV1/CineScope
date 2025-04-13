@@ -1,23 +1,7 @@
-﻿:root {
-    /* CineScope logo-inspired theme colors */
-    --cinescope-red: #E50914;
-    --cinescope-dark-red: #B8050F;
-    --cinescope-black: #0f0f0f;
-    --cinescope-dark-bg: #121212;
-    --cinescope-light-text: #f5f5f1;
-    --cinescope-success: #3bef9e;
-    --cinescope-error: #ff3f5b;
-    --cinescope-warning: #ffb527;
-    /* Custom font size variables */
-    --cinescope-font-size-h1: 2.5rem;
-    --cinescope-font-size-h2: 2rem;
-    --cinescope-font-size-h3: 1.75rem;
-    --cinescope-font-size-h4: 1.5rem;
-    --cinescope-font-size-body: 1rem;
-}
-
+﻿/* wwwroot/css/cinescope.css */
+/* Base styles */
 html, body {
-    background-color: var(--cinescope-black);
+    background-color: #0f0f0f;
     color: white;
     font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
     margin: 0;
@@ -26,49 +10,36 @@ html, body {
     overflow-x: hidden;
 }
 
-/* Header/Navigation styling */
+/* Layout fixes to remove dead space */
+.mud-container.mud-container-maxwidth-xl,
+.mud-main-content {
+    padding: 0 !important;
+    margin-top: 0 !important;
+}
+
+article.pa-4,
+.pa-4 {
+    padding: 0 !important;
+}
+
+.mud-container.mud-container-maxwidth-xl > div:first-child {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* App bar styling */
 .cinescope-appbar {
     background-color: rgba(15, 15, 15, 0.95);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--cinescope-dark-red);
+    border-bottom: 1px solid #B8050F;
 }
 
-/* Fix the main container padding - CRITICAL FOR REMOVING DEADSPACE */
-.mud-container.mud-container-maxwidth-xl {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    margin-top: 0 !important;
-}
-
-/* Fix the main content padding - CRITICAL FOR REMOVING DEADSPACE */
-.mud-main-content {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-}
-
-/* Custom movie cards with red accents */
-.movie-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    overflow: hidden;
-    height: 100%;
-    border-bottom: 3px solid var(--cinescope-red);
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 0 !important;
-}
-
-    .movie-card:hover {
-        transform: scale(1.03);
-        box-shadow: 0 8px 16px rgba(229, 9, 20, 0.3);
-    }
-
-/* Custom hero section with red gradient overlay - REDUCED TOP MARGIN */
+/* Hero section styling */
 .hero-section {
     position: relative;
     height: 400px;
-    margin-top: 0 !important;
-    margin-bottom: 1rem !important;
+    margin: 0 0 1rem 0;
     border-radius: 8px;
     overflow: hidden;
 }
@@ -82,60 +53,22 @@ html, body {
     background: linear-gradient(to top, rgba(15, 15, 15, 0.9) 0%, rgba(229, 9, 20, 0.4) 120%, transparent 100%);
 }
 
-.hero-title {
-    font-size: var(--cinescope-font-size-h1) !important;
-    margin-bottom: 0.5rem !important;
+/* Movie card styling */
+.movie-card {
+    transition: transform 0.15s ease-out;
+    will-change: transform;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    overflow: hidden;
+    height: 100%;
+    border-bottom: 3px solid #E50914;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
 }
 
-.hero-description {
-    margin-bottom: 1rem !important;
-}
-
-.mud-button-filled.mud-button-filled-primary {
-    background-color: #E50914 !important;
-}
-
-    .mud-button-filled.mud-button-filled-primary:hover {
-        background-color: #B8050F !important;
-    }
-
-.mud-button-text.mud-button-text-primary {
-    color: #E50914 !important;
-}
-
-.mud-button-outlined.mud-button-outlined-primary {
-    color: #E50914 !important;
-    border-color: #E50914 !important;
-}
-
-/* Override rating colors */
-.mud-rating .mud-rating-item.mud-primary {
-    color: #E50914 !important;
-}
-
-/* Override navigation styles */
-.mud-nav-link.active:not(.mud-nav-link-disabled) {
-    background-color: rgba(229, 9, 20, 0.1) !important;
-    color: #E50914 !important;
-    border-right: 3px solid #E50914 !important;
-}
-
-/* Custom section headers with red underline */
-.section-title {
-    position: relative;
-    padding-bottom: 0.5rem;
-    margin-top: 0.5rem !important;
-    margin-bottom: 1rem !important;
-}
-
-    .section-title:after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 60px;
-        height: 3px;
-        background-color: var(--cinescope-red);
+    .movie-card:hover {
+        transform: translateY(-4px) scale(1.02);
     }
 
 /* Poster container styling */
@@ -145,71 +78,98 @@ html, body {
     overflow: hidden;
 }
 
-/* Fix spacing throughout the application */
-.mud-container, .mud-grid {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
+    .poster-container img {
+        transform: translateZ(0);
+        backface-visibility: hidden;
+    }
+
+/* Section headers with red underline */
+.section-title {
+    position: relative;
+    padding-bottom: 0.5rem;
+    margin: 0.5rem 0 1rem 0;
+}
+
+    .section-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background-color: #E50914;
+    }
+
+/* Search filter container */
+.search-filter-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* Spacing adjustments */
+.mud-grid {
+    row-gap: 16px;
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.mud-card-content {
+    padding: 12px;
+}
+
+.mud-item {
+    padding: 6px;
 }
 
 .mud-divider {
-    margin: 1rem 0 !important;
+    margin: 1rem 0;
 }
 
-/* Typography spacing adjustments */
-h4.mud-typography,
-.mud-typography-h4 {
-    margin-top: 0.5rem !important;
-    margin-bottom: 1rem !important;
-}
-
-/* Make movie lists more compact */
-.mud-grid {
-    row-gap: 16px !important;
-}
-
-/* Adjust card content spacing */
-.mud-card-content {
-    padding: 12px !important;
-}
-
-/* Ensure movie items have minimal spacing */
-.mud-item {
-    padding: 6px !important;
-}
-
-/* Make sure drawer doesn't add extra space */
 .mud-drawer {
-    border-right: 1px solid rgba(229, 9, 20, 0.2) !important;
+    border-right: 1px solid rgba(229, 9, 20, 0.2);
 }
 
-/* Reduce spacing in movie grid */
-.mud-grid-spacing-xs-3 {
-    margin-top: -6px !important;
-    margin-left: -6px !important;
-}
-
-    .mud-grid-spacing-xs-3 > .mud-grid-item {
-        padding-top: 6px !important;
-        padding-left: 6px !important;
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .movie-card:hover {
+        transform: none;
     }
 
-/* Remove space between appbar and content */
-.mud-layout {
+    .search-filter-container {
+        flex-direction: column;
+    }
+
+        .search-filter-container > * {
+            margin-left: 0;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+}
+
+.feature-box {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 200px; /* Set a fixed minimum height for all boxes */
+    padding: 2rem;
+    background-color: #1a1a1a;
+    border-radius: 4px;
+    height: 100%; /* Make sure all boxes take full height of their container */
 }
 
-/* CRUCIAL: Override padding in the main container area */
-article.pa-4 {
-    padding: 0 !important;
+.feature-icon {
+    margin-bottom: 1rem;
+    color: #E50914;
 }
 
-.pa-4 {
-    padding: 0 !important;
+.feature-title {
+    margin-bottom: 1rem;
+    text-align: center;
 }
 
-/* Target the specific elements that might be causing space */
-.mud-container.mud-container-maxwidth-xl > div:first-child {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
+.feature-text {
+    text-align: center;
 }

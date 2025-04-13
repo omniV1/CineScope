@@ -61,7 +61,7 @@
                             </MudText>
                             <div class="d-flex justify-space-between align-center">
                                 <MudText Typo="Typo.caption">@movie.ReleaseDate.Year</MudText>
-                                <MudRating ReadOnly="true" Value="@((int)Math.Round(movie.AverageRating))" Size="Size.Small" />
+                                <MudRating ReadOnly="true" SelectedValue="@((int)Math.Round(movie.AverageRating))" Color="Color.Primary" />
                             </div>
                         </MudCardContent>
                     </MudCard>
