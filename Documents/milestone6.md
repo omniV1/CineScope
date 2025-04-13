@@ -2,11 +2,11 @@
 for CineScope Movie Review Platform
 
 **Team Members:** Carter Wright, Rian Smart, Owen Lindsey, Andrew Mack
-
+**(Adjust as needed for the maintenance team)**
 
 **Grand Canyon University: CST-326**
 
-**Date:** 4/13/2025
+**Date:** (Specify Date)
 
 ---
 
@@ -18,177 +18,198 @@ for CineScope Movie Review Platform
 4.  [Frequency of Software updates](#frequency-of-software-updates)
 5.  [Prioritization of categories of updates](#prioritization-of-categories-of-updates)
 6.  [Methods of Bug Reporting and New Feature Suggestions](#methods-of-bug-reporting-and-new-feature-suggestions)
-7.  [Software Version Control for Bug Fixes and Product Enhancements](#software-version-control-for-bug-fixes-and-product-enhancements)
+7.  [Software Version Control Workflow](#software-version-control-workflow)
 8.  [Training Plan Overview](#training-plan-overview)
 9.  [Software Tools Installation](#software-tools-installation)
-10. [Software Updates](#software-updates)
-11. [Reporting Bugs](#reporting-bugs)
+10. [Software Updates Workflow](#software-updates-workflow)
+11. [Bug Reporting Process](#bug-reporting-process)
 12. [References](#references)
 
 ---
 
 ## Maintenance Plan Overview
 
-This document outlines the plan for maintaining the CineScope Movie Review Platform software after its initial delivery. It covers versioning, delivery, infrastructure requirements, update frequency and prioritization, bug reporting, version control practices, and training for future maintainers and users. The goal is to ensure the long-term stability, usability, and relevance of the CineScope application based on the project's requirements [SDMP-REF-4] and technical design [SDMP-REF-1]. Comprehensive training materials for both IT administrators [SDMP-REF-6] and end-users [SDMP-REF-5] are provided separately.
+Maintaining software effectively requires a clear strategy encompassing various post-delivery activities. This document outlines the comprehensive plan for the ongoing maintenance of the CineScope Movie Review Platform. It details the procedures and guidelines for versioning, deployment, infrastructure management, handling updates, prioritizing tasks, reporting issues, version control practices, and training resources. The primary objective is to ensure the platform remains stable, usable, and relevant, aligning with its initial requirements [SDMP-REF-4] and technical design [SDMP-REF-1]. Separate, detailed training materials support both IT administrators [SDMP-REF-6] and end-users [SDMP-REF-5].
 
 ## Software Version and Delivery
 
-The software for CineScope will be identified using version numbers, potentially aligned with sprint completion or major feature releases tracked in Jira using SCRUM IDs. The project follows a feature-driven development approach, where work is organized around user stories and associated tasks defined in Jira (e.g., SCRUM-19, SCRUM-27).
+A consistent approach to software versioning and delivery is essential for managing releases and deployments effectively. CineScope software versions typically align with the completion of development sprints or the release of major features, tracked using SCRUM IDs within Jira. The project adheres to a feature-driven development methodology, guided by user stories [SDMP-REF-4]. The source code resides in the GitHub repository `https://github.com/omniV1/CineScope`, managed using a defined branching strategy.
 
-The source code is managed in a GitHub repository (`https://github.com/omniV1/CineScope`). A branching strategy is employed to manage development and releases:
-*   **`main` branch**: Represents the stable, production-ready code. Merges to `main` trigger deployments.
-*   **Feature branches**: Created for developing new features or enhancements (e.g., `feature/SCRUM-XX`, `dev/feature-name`). These branches are typically based on the `main` branch.
-*   **Bugfix branches**: Created to address bugs (e.g., `bugfix/SCRUM-YY`). Also branched from `main` or a release branch if applicable.
+**Branching Strategy Summary:**
 
-When a feature or bug fix is complete and tested according to the established procedures [SDMP-REF-3], the corresponding branch is merged into the `main` branch via a Pull Request, following a code review process.
+| Branch Pattern | Purpose | Base Branch | Merge Target |
+|---|---|---|---|
+| `main` | Stable, production-ready code | - | - |
+| `feature/SCRUM-XX` or `dev/feature-name` | New feature development | `main` | `main` |
+| `bugfix/SCRUM-YY` or `hotfix/name` | Bug fixing | `main` / Release | `main` |
 
-CineScope is deployed to **Microsoft Azure**, likely using Azure App Service or a similar service. A CI/CD pipeline, configured using **GitHub Actions**, automatically builds, tests, and deploys the application to Azure whenever changes are merged into the `main` branch. Detailed deployment steps and Azure configuration are covered in the IT Administrator Guide [SDMP-REF-6].
+Changes are integrated into the `main` branch only after thorough review and approval via GitHub Pull Requests, ensuring code quality.
+
+**Deployment Overview:**
+
+The application is delivered to end-users via deployment to the Microsoft Azure cloud platform. This process is automated to ensure consistency and reliability.
+
+| Component | Detail |
+|---|---|
+| Platform | Microsoft Azure (App Service or similar) |
+| CI/CD | GitHub Actions pipeline |
+| Trigger | Merge to `main` branch |
+| Process | Build -> Test [SDMP-REF-3] -> Deploy to Azure |
+| Details | See IT Administrator Guide [SDMP-REF-6] for configuration specifics |
 
 ## Network and Other related IT Infrastructure
 
-To maintain and update the CineScope application, developers or maintainers will require specific tools installed on their development machines. The required infrastructure includes development tools, database access, version control, and potentially Azure management tools. A detailed list of required software and installation steps is provided in the "Software Tools Installation" section below and further elaborated in the IT Administrator Guide [SDMP-REF-6]. The general requirements include:
+Maintaining and updating CineScope requires specific hardware and software infrastructure, primarily for the personnel involved in these tasks. This section outlines the necessary tools and environment components needed for effective development, administration, and maintenance activities.
 
-1.  **Integrated Development Environment (IDE)**: Visual Studio or VS Code.
-2.  **.NET SDK**: Correct version for the project.
-3.  **Database**: MongoDB (local or cloud access).
-4.  **Database Management Tool**: MongoDB Compass or similar.
-5.  **Version Control Client**: Git or GitHub Desktop.
-6.  **Web Browser**: Modern browser for testing.
-7.  **(Optional) Azure CLI / Azure Tools**: For Azure interaction.
+**Required Tools for Maintainers:**
 
-These tools allow developers to access the source code, modify it, manage the database, run the application locally, push changes, and interact with the Azure deployment environment.
+The following table summarizes the core tools required. Detailed installation and configuration steps are available in the IT Administrator Guide [SDMP-REF-6].
+
+| Tool Category | Specific Tool | Purpose | Installation Source / Reference |
+|---|---|---|---|
+| IDE | Visual Studio or VS Code | Code development, debugging | [Visual Studio](https://visualstudio.microsoft.com/downloads/) / [VS Code](https://code.visualstudio.com/) |
+| SDK | .NET SDK (project version) | Build and run application | [Microsoft .NET](https://dotnet.microsoft.com/download) |
+| Database | MongoDB | Data storage | [MongoDB Community](https://www.mongodb.com/try/download/community) / Cloud Atlas [SDMP-REF-2] |
+| DB Management | MongoDB Compass | Database interaction | [MongoDB Compass](https://www.mongodb.com/try/download/compass) |
+| Version Control | Git / GitHub Desktop | Source code management | [Git](https://git-scm.com/downloads) / [GitHub Desktop](https://desktop.github.com/) |
+| Browser | Modern Browser | Web application testing | Standard installation |
+| Cloud CLI (Optional) | Azure CLI | Azure resource management | [Azure CLI Docs](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) |
+
+Refer to Section 9 ([Software Tools Installation](#software-tools-installation)) for a checklist and the IT Administrator Guide [SDMP-REF-6] for comprehensive setup instructions.
 
 ## Frequency of Software updates
 
-Software updates for CineScope will be implemented for several reasons:
-*   **New Features**: Adding new functionality based on user stories in the backlog [SDMP-REF-4].
-*   **Bug Fixes**: Addressing defects discovered during testing [SDMP-REF-3] or reported from production.
-*   **Enhancements**: Improving existing features or usability.
-*   **Dependency Updates**: Updating libraries and frameworks for security or performance improvements.
-*   **Policy Changes**: Implementing changes required by external regulations or internal policies.
+The CineScope platform will evolve over time through regular software updates. This section describes the types of updates anticipated and the typical frequency at which they will be deployed. Updates generally align with the established sprint cycle (e.g., 2 weeks), although urgent fixes might necessitate out-of-band deployments.
 
-The frequency of updates will generally align with the **sprint cycle** (e.g., 2-week sprints). Updates are scheduled based on the priorities set during sprint planning, managed via Jira. Minor bug fixes, especially critical ones found in production, may be deployed more frequently outside the regular sprint cycle via hotfix branches/releases.
+**Types of Software Updates:**
 
-Major updates involving significant new features will be carefully planned and tested [SDMP-REF-3] before release. Software updates will be managed to balance the need for new functionality and fixes with the cost and risk associated with frequent changes. The deployment process itself is detailed in the IT Administrator Guide [SDMP-REF-6].
+| Update Type | Description | Typical Trigger |
+|---|---|---|
+| New Features | Adding functionality per user stories [SDMP-REF-4]. | Sprint Planning |
+| Bug Fixes | Addressing defects found in testing [SDMP-REF-3] or production. | Bug Reports / Jira |
+| Enhancements | Improving existing features/usability. | Backlog / User Feedback |
+| Dependency Updates | Updating libraries for security/performance. | Audits / Releases |
+| Policy Changes | Implementing required regulatory or internal changes. | Policy Updates |
+
+All significant changes are subject to the testing procedures outlined in [SDMP-REF-3] before being released. The deployment methodology itself is covered in the IT Administrator Guide [SDMP-REF-6].
 
 ## Prioritization of categories of updates
 
-Updates for CineScope will be categorized and prioritized as follows:
+With multiple potential updates (bug fixes, new features, etc.), a clear prioritization strategy is needed to allocate resources effectively. This section defines how different categories of updates are prioritized for implementation. The core principle is to address critical issues affecting users first, followed by planned enhancements and features.
 
-1.  **Bug Fixes**:
-    *   **Priority**: Highest priority, especially for bugs affecting core functionality or found in production.
-    *   **Order**: Bugs are prioritized based on severity and user impact. Critical production bugs > Major bugs > Minor bugs. Input from the Product Owner (Rian Smart) and development team determines the exact order.
-    *   **Scheduling**: Addressed immediately or scheduled for the current/next sprint based on severity.
+**Update Prioritization Matrix:**
 
-2.  **New Features / Enhancements**:
-    *   **Priority**: Prioritized below critical bug fixes.
-    *   **Order**: Determined during sprint planning meetings. Prioritization is based on business value, client/Product Owner (Rian Smart) requirements, and strategic goals outlined in project documentation [SDMP-REF-4]. If the client has no preference, the team prioritizes based on dependencies and perceived development efficiency.
-    *   **Scheduling**: Added to sprint backlogs based on priority and team capacity.
+| Category | Priority Level | Scheduling | Determination Basis |
+|---|---|---|---|
+| Bug Fixes (Production - Critical) | Highest | Immediate (Hotfix) | Severity, User Impact, Product Owner Input |
+| Bug Fixes (Production - Major/Minor) | High | Current / Next Sprint | Severity, User Impact, Product Owner Input |
+| Bug Fixes (Testing Phase) | Medium | Next Sprint / Backlog | Severity, Dependency, Team Capacity |
+| New Features / Enhancements | Medium / Low | Sprint Backlog | Business Value [SDMP-REF-4], Product Owner Input, Team Capacity |
 
 ## Methods of Bug Reporting and New Feature Suggestions
 
-Mechanisms for identifying necessary maintenance work:
+Effective maintenance relies on clear communication channels for identifying necessary work. This section details how bugs should be reported by testers and end-users, and how suggestions for new features or enhancements are collected and processed.
 
-*   **Bug Reporting**:
-    *   **Internal (Testing)**: Bugs found during development sprints through manual testing (following ATPs [SDMP-REF-3]), automated tests (unit, integration), or code reviews are logged directly into **Jira** as defects, often linked to the relevant user story or task.
-    *   **External (Production)**: Bugs encountered by end-users or identified through production monitoring (detailed in [SDMP-REF-6]) should be reported to the Product Owner or a designated support channel. End users can refer to the User Guide [SDMP-REF-5] for basic troubleshooting. These reports are then verified and logged as high-priority defects in Jira.
-*   **New Feature Suggestions**:
-    *   Suggestions for new features or significant enhancements primarily come from the **Product Owner (Rian Smart)** based on stakeholder feedback, market analysis, or strategic planning.
-    *   Suggestions are captured in the **Jira backlog** as new user stories or epics.
-    *   These suggestions are discussed, refined, and prioritized during backlog grooming and sprint planning sessions.
+*   **Bug Reporting:**
+    *   **Internal Testing:** Defects discovered during development activities (manual testing [SDMP-REF-3], automated tests, code reviews) must be logged promptly in **Jira**. These reports require detailed reproduction steps, comparison of expected versus actual results, environment specifics, and supporting evidence like logs or screenshots.
+    *   **Production:** Issues encountered by end-users (potentially after consulting the User Guide [SDMP-REF-5]) or identified via system monitoring [SDMP-REF-6] should be directed to the Product Owner or a designated support channel. Once verified, these are logged as high-priority defects in Jira with thorough details.
 
-## Software Version Control for Bug Fixes and Product Enhancements
+*   **New Feature Suggestions:**
+    *   Ideas for enhancing the platform typically come from the **Product Owner (Rian Smart)**, informed by stakeholder input, market trends, or strategic objectives.
+    *   These suggestions are formally captured within the **Jira backlog** as user stories or epics.
+    *   They are subsequently discussed, refined, estimated, and prioritized during backlog grooming and sprint planning ceremonies.
 
-CineScope utilizes Git with a branching strategy hosted on GitHub for version control:
+## Software Version Control Workflow
 
-*   **Bug Fixes**:
-    1.  A bug is identified and logged as a task/issue in Jira (e.g., `SCRUM-XXX`).
-    2.  A developer creates a new branch from the `main` branch (or appropriate release branch), named descriptively (e.g., `bugfix/SCRUM-XXX-login-error`).
-    3.  The developer implements the fix on this branch, commits the changes, and runs relevant tests [SDMP-REF-3].
-    4.  A Pull Request (PR) is created on GitHub to merge the fix branch into `main`.
-    5.  The PR is reviewed by at least one other team member.
-    6.  Upon approval, the branch is merged into `main`, triggering the CI/CD pipeline for deployment to **Azure**.
+A standardized version control workflow using Git and GitHub is crucial for collaborative development, code quality, and release management. This section outlines the step-by-step process for handling both bug fixes and the development of new features within the CineScope codebase.
 
-*   **Product Enhancements (New Features)**:
-    1.  A new feature is defined as a User Story in Jira (e.g., `SCRUM-YYY`).
-    2.  During a sprint, a developer assigned to the story creates a feature branch from `main` (e.g., `feature/SCRUM-YYY-movie-filtering`).
-    3.  The developer implements the feature on this branch, potentially involving multiple commits and pushes. Unit and integration tests are written alongside the code.
-    4.  Once the feature is complete according to the acceptance criteria [SDMP-REF-4], a Pull Request is created to merge the feature branch into `main`.
-    5.  The PR undergoes code review, testing [SDMP-REF-3], and potentially QA validation.
-    6.  Upon approval, the branch is merged into `main`, and the feature is deployed to **Azure**.
+*   **Bug Fixes Workflow:**
+    1.  **Log:** The bug is identified and formally logged in Jira (e.g., `SCRUM-XXX`).
+    2.  **Branch:** A developer creates a specific branch for the fix, usually from `main`, following a naming convention (e.g., `bugfix/SCRUM-XXX-login-error`).
+    3.  **Implement:** The code fix is developed on this branch, including any necessary updates to tests [SDMP-REF-3].
+    4.  **Review:** A Pull Request (PR) is created on GitHub to merge the fix into `main`. Code review by peers is mandatory.
+    5.  **Merge:** After addressing feedback and gaining approval, the PR is merged.
+    6.  **Deploy:** Merging triggers the automated CI/CD pipeline, deploying the fix to Azure.
 
-This process ensures that the `main` branch always contains stable, reviewed code and provides traceability between code changes and Jira tasks/stories.
+*   **Product Enhancements Workflow:**
+    1.  **Define:** The feature is clearly defined as a User Story or Epic in Jira (e.g., `SCRUM-YYY`).
+    2.  **Branch:** A developer creates a feature branch from `main` (e.g., `feature/SCRUM-YYY-movie-filtering`).
+    3.  **Implement:** The feature is built on this branch, including corresponding tests [SDMP-REF-3].
+    4.  **Review:** A PR targeting `main` is created. It undergoes code review and potentially QA validation against acceptance criteria [SDMP-REF-4].
+    5.  **Merge:** Upon approval, the PR is merged into `main`.
+    6.  **Deploy:** The merge initiates the CI/CD process for deployment to Azure.
 
 ## Training Plan Overview
 
-To ensure effective maintenance and utilization of the CineScope software, specific training resources are available for different roles:
+Ensuring that both maintainers and end-users are adequately trained is vital for the success and longevity of the CineScope platform. This section outlines the available training resources tailored to different roles, facilitating effective system management and utilization.
 
-1.  **IT Administrators / Maintainers**:
-    *   **Primary Resource**: The **CineScope Complete IT Administrator Guide** [SDMP-REF-6] provides comprehensive details on initial setup, Azure deployment, MongoDB configuration, monitoring, maintenance, backup/recovery, security, performance optimization, content management, system updates, troubleshooting, and specific team instructions.
-    *   **Key Areas**: Understanding the technology stack [SDMP-REF-1], system architecture [SDMP-REF-1], development environment setup (see below and [SDMP-REF-6]), codebase structure [SDMP-REF-2], development workflow (Git, Jira, CI/CD), testing procedures [SDMP-REF-3], debugging, database management [SDMP-REF-2], and Azure platform specifics [SDMP-REF-6].
-    *   **Methodology**: Review of documentation ([SDMP-REF-1], [SDMP-REF-2], [SDMP-REF-3], [SDMP-REF-4], [SDMP-REF-6], this plan), pair programming, hands-on exercises.
+**Training Resources Matrix:**
 
-2.  **End Users**:
-    *   **Primary Resource**: The **CineScope User Guide** [SDMP-REF-5] details how to use the platform's features, including registration, discovering movies, writing reviews, managing profiles, understanding ratings, and basic troubleshooting.
-    *   **Key Areas**: Navigation, searching/filtering, review creation/management, profile customization.
-    *   **Methodology**: Self-guided review of the User Guide [SDMP-REF-5].
+| Target Audience | Primary Resource | Key Areas Covered | Methodology |
+|---|---|---|---|
+| IT Administrators / Maintainers | IT Administrator Guide [SDMP-REF-6] | Deployment, Config, Monitoring, Maintenance, Backup, Security, Performance, Troubleshooting, Azure Specifics | Documentation Review, Pair Programming, Hands-on Exercises |
+| End Users | User Guide [SDMP-REF-5] | Navigation, Search, Filtering, Review Creation/Management, Profile Customization, Basic Troubleshooting | Self-Guided Document Review |
+| Developers (Maintenance Role) | IT Admin Guide [SDMP-REF-6], Technical Docs ([SDMP-REF-1], [SDMP-REF-2]), Test Procs [SDMP-REF-3], Requirements [SDMP-REF-4] | Environment Understanding, Architecture, Data Access, Testing, Requirements | Documentation Review, Pair Programming |
 
-3.  **Developers**:
-    *   Developers involved in maintenance should be familiar with both the IT Administrator Guide [SDMP-REF-6] (for understanding the environment) and the core development documents ([SDMP-REF-1], [SDMP-REF-2], [SDMP-REF-3], [SDMP-REF-4]).
-
-This multi-faceted approach ensures that all personnel interacting with the system have the necessary knowledge for their roles.
+These resources provide the necessary knowledge base for different personnel interacting with the system.
 
 ## Software Tools Installation
 
-New maintainers (developers or IT administrators) need to set up their environment. The following provides a summary; detailed steps are available in the IT Administrator Guide [SDMP-REF-6].
+Setting up the correct development and administration environment is the first step for any maintainer. This section provides a high-level checklist of the required software tools. For detailed, step-by-step installation and configuration instructions, maintainers must refer to Section 2 ("Initial Setup") of the IT Administrator Guide [SDMP-REF-6].
 
-1.  **Install Visual Studio**: From [https://visualstudio.microsoft.com/downloads/](https://visualstudio.microsoft.com/downloads/). Include "ASP.NET and web development" and potentially "Azure development" workloads. Ensure the correct .NET SDK version is included. (Alternative: .NET SDK + VS Code).
-2.  **Install MongoDB**: Local Community Server from [https://www.mongodb.com/try/download/community](https://www.mongodb.com/try/download/community) or obtain connection details for the cloud instance [SDMP-REF-2].
-3.  **Install MongoDB Compass**: From [https://www.mongodb.com/try/download/compass](https://www.mongodb.com/try/download/compass). Connect to local or cloud instance.
-4.  **Install Git / GitHub Desktop**: Git CLI from [https://git-scm.com/downloads](https://git-scm.com/downloads) or GitHub Desktop from [https://desktop.github.com/](https://desktop.github.com/).
-5.  **Install Azure CLI (Optional)**: From [https://docs.microsoft.com/en-us/cli/azure/install-azure-cli](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli).
-6.  **Clone the Repository**: Use Git CLI, GitHub Desktop, or Visual Studio to clone `https://github.com/omniV1/CineScope.git`.
-7.  **Configure Project Settings**: Open the solution, configure `appsettings.Development.json` with the correct MongoDB connection string [SDMP-REF-2], using user secrets or Azure Key Vault for sensitive data. Build the solution.
+**Installation Checklist:**
 
-Refer to Section 2 ("Initial Setup") of the IT Administrator Guide [SDMP-REF-6] for exhaustive, step-by-step instructions.
+*   [ ] **IDE:** Visual Studio or VS Code with ".NET" and "Azure" workloads.
+*   [ ] **.NET SDK:** Project-specific version.
+*   [ ] **MongoDB:** Local server or Cloud Atlas connection details [SDMP-REF-2].
+*   [ ] **MongoDB Compass:** Database GUI tool.
+*   [ ] **Git / GitHub Desktop:** Version control clients.
+*   [ ] **Azure CLI (Optional):** Command-line interface for Azure.
+*   [ ] **Repository Clone:** Local copy of `https://github.com/omniV1/CineScope.git`.
+*   [ ] **Project Configuration:** Set up `appsettings.Development.json` (using secrets/Key Vault), build solution.
 
-## Software Updates
+## Software Updates Workflow
 
-The process for applying code changes (bug fixes, enhancements) involves development, testing, review, and deployment.
+Applying updates to the CineScope platform follows a defined workflow to ensure changes are implemented safely and effectively. This section outlines the standard sequence of steps from task assignment through to deployment and monitoring. More granular details on pipeline configuration and release management are in the IT Administrator Guide [SDMP-REF-6].
 
-1.  **Task Assignment**: Obtain a Jira task (e.g., `SCRUM-XXX`).
-2.  **Branching**: Update local `main`, create a feature/bugfix branch (`feature/SCRUM-XXX-desc` or `bugfix/SCRUM-YYY-desc`).
-3.  **Implementation & Local Testing**: Code the changes, write/update tests [SDMP-REF-3], test locally.
-4.  **Committing & Pushing**: Commit changes with clear messages, push the branch to GitHub.
-5.  **Pull Request & Code Review**: Create a PR targeting `main`, assign reviewers. Address feedback.
-6.  **Merging**: Once approved and CI checks pass, merge the PR into `main`.
-7.  **Deployment**: The merge triggers the GitHub Actions CI/CD pipeline to deploy to **Azure**. Monitor the deployment.
+**Standard Update Workflow:**
 
-Detailed deployment pipeline configuration and release management procedures are available in the IT Administrator Guide [SDMP-REF-6], Section 9 ("System Updates").
+1.  **Task Assignment:** A developer receives an assigned task or bug fix from Jira.
+2.  **Sync Environment:** The developer updates their local `main` branch with the latest changes from the remote repository (`git pull`).
+3.  **Branching:** A new Git branch is created specifically for the task, following project naming conventions.
+4.  **Implementation:** The necessary code modifications are made, including writing or updating unit and integration tests [SDMP-REF-3].
+5.  **Local Testing:** The developer runs the application and automated tests locally to confirm the changes work as expected and don't introduce regressions.
+6.  **Version Control:** Changes are committed with descriptive messages and pushed to the remote repository on the specific branch.
+7.  **Code Review:** A Pull Request is created on GitHub, targeting the `main` branch. Peers review the code for quality, correctness, and adherence to standards.
+8.  **Merge:** After addressing review feedback and receiving approval(s), the Pull Request is merged into the `main` branch.
+9.  **Automated Deployment:** The merge automatically triggers the configured GitHub Actions CI/CD pipeline. This pipeline builds the application, runs automated tests, and deploys the new version to the Azure environment.
+10. **Monitor:** The deployment process is monitored via the CI/CD tool interface. Post-deployment, application health and logs are checked using Azure monitoring tools [SDMP-REF-6] to ensure the update was successful.
 
-## Reporting Bugs
+## Bug Reporting Process
 
-The process for reporting and handling bugs:
+A clear and efficient bug reporting process is essential for identifying and resolving issues promptly. This section outlines the procedures for reporting bugs found during different phases of the software lifecycle.
 
-*   **Testing Phase Bugs**:
-    1.  Bugs found during development (manual tests [SDMP-REF-3], automated tests, reviews) are logged in **Jira**.
-    2.  Reports include steps to reproduce, expected vs. actual behavior, environment details, screenshots.
-    3.  Bugs are linked to stories/epics, assigned, prioritized, and addressed in sprints.
+*   **Testing Phase Bugs:** These are bugs discovered before a release, during development or testing activities.
+    1.  **Identification:** Issues identified through manual testing [SDMP-REF-3], automated test execution, or code reviews.
+    2.  **Logging:** A new defect issue must be created in **Jira**.
+    3.  **Details:** The Jira issue must include comprehensive information: precise steps to reproduce the bug, the expected behavior versus the observed actual behavior, details about the testing environment (browser, OS, etc.), and any relevant logs or screenshots.
+    4.  **Management:** Defects are linked to relevant user stories or epics, prioritized by the team, and assigned to developers for resolution within the sprint structure.
 
-*   **Production Bugs**:
-    1.  Bugs reported by end-users (who can consult the User Guide [SDMP-REF-5] for basic troubleshooting) or detected via monitoring tools (detailed in [SDMP-REF-6]) are high priority.
-    2.  Reports are channeled to the Product Owner/support contact, verified, and logged as high-priority defects in **Jira**.
-    3.  Investigation is immediate. Fixes may be deployed via a hotfix process or scheduled for the next sprint start.
+*   **Production Bugs:** These are issues reported after the software has been released to end-users.
+    1.  **Reporting/Detection:** Bugs may be reported by end-users (who should first consult the User Guide [SDMP-REF-5] for simple solutions) via designated support channels, or detected automatically by monitoring systems configured as per the IT Admin Guide [SDMP-REF-6].
+    2.  **Verification & Logging:** All production reports are verified by the support or development team. Confirmed bugs are logged as high-priority defects in **Jira** with detailed information.
+    3.  **Investigation:** Production bugs are assigned immediately for investigation to determine the root cause and impact.
+    4.  **Resolution:** Based on severity, a fix is implemented either through an urgent hotfix deployment process or scheduled for the very beginning of the next available sprint.
 
-Clear, detailed reports are crucial. Refer to Section 10 ("Troubleshooting") in the IT Administrator Guide [SDMP-REF-6] for common issues and support procedures.
+Refer to Section 10 ("Troubleshooting") in the IT Administrator Guide [SDMP-REF-6] for more detailed troubleshooting steps and guidance.
 
 ---
 
 ## References
 
-*   **[SDMP-REF-1]**: Technical Design Document. Located at: `Documents/milestone3-Technical-Design.md`. Provides details on system architecture, components, database schema, and technical implementation choices.
-*   **[SDMP-REF-2]**: MongoDB Integration Guide. Located at: `Help/Milestone3_DevHelp.md`. Provides detailed instructions for setting up, configuring, and using MongoDB within the Blazor application.
-*   **[SDMP-REF-3]**: Test Procedures Document. Located at: `Training/Test-procedures-gcu.md`. Outlines the procedures for verifying application functionality, including setup, execution steps, pass/fail criteria, and non-functional test considerations.
-*   **[SDMP-REF-4]**: Software Functional Requirements Document. Located at: `Documents/milestone2-Functional-Requirements-document.md`. Details the functional specifications, user interface designs, and functional/non-functional requirements mapped to use cases and SCRUM IDs.
-*   **[SDMP-REF-5]**: CineScope User Guide. Located at: `Training/User-TrainingModule.md`. Provides guidance for end-users on navigating and utilizing the platform's features.
-*   **[SDMP-REF-6]**: CineScope Complete IT Administrator Guide. Located at: `Training/IT-TrainingModule.md`. Offers comprehensive instructions for IT staff on deployment, configuration, monitoring, maintenance, security, and troubleshooting.
+*   **[SDMP-REF-1]**: Technical Design Document. (`Documents/milestone3-Technical-Design.md`) - System architecture, components, database schema.
+*   **[SDMP-REF-2]**: MongoDB Integration Guide. (`Help/Milestone3_DevHelp.md`) - MongoDB setup, configuration, and usage.
+*   **[SDMP-REF-3]**: Test Procedures Document. (`Training/Test-procedures-gcu.md`) - Functional verification steps, pass/fail criteria.
+*   **[SDMP-REF-4]**: Software Functional Requirements Document. (`Documents/milestone2-Functional-Requirements-document.md`) - Functional specifications, UI designs, requirements mapping.
+*   **[SDMP-REF-5]**: CineScope User Guide. (`Training/User-TrainingModule.md`) - End-user guidance on platform features.
+*   **[SDMP-REF-6]**: CineScope Complete IT Administrator Guide. (`Training/IT-TrainingModule.md`) - Comprehensive IT instructions for deployment, monitoring, maintenance, etc.
