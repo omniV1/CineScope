@@ -50,7 +50,7 @@ CineScope is deployed to **Microsoft Azure**, likely using Azure App Service or 
 
 To maintain and update the CineScope application, developers or maintainers will require the following tools installed on their development machines:
 
-1.  **Integrated Development Environment (IDE)**: **Visual Studio** (latest recommended version) with ASP.NET and web development workload installed. Alternatively, **Visual Studio Code** with the C# extension and .NET SDK can be used.
+1.  **Integrated Development Environment (IDE)**: **Visual Studio** (latest recommended version) with ASP.NET and web development workload installed.  **Visual Studio Code** with the C# extension and .NET SDK can not be used as the plugin was disabled by VSCode directly as of 4/01/2025.
 2.  **.NET SDK**: The version corresponding to the project's target framework (e.g., .NET 6.0 or later, check project files).
 3.  **Database**: **MongoDB**. This can be a local installation or connection details for a cloud-hosted instance (like MongoDB Atlas, used by the project [SDMP-REF-2]).
 4.  **Database Management Tool**: **MongoDB Compass** or a similar GUI tool for interacting with the MongoDB database, inspecting data, and running queries.
