@@ -6,7 +6,7 @@ for CineScope Movie Review Platform
 
 **Grand Canyon University: CST-326**
 
-**Date:** (Specify Date)
+**Date:** 04/13/2025
 
 ---
 
