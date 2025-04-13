@@ -208,8 +208,14 @@ Refer to Section 10 ("Troubleshooting") in the IT Administrator Guide [SDMP-REF-
 ## References
 
 *   **[SDMP-REF-1]**: Technical Design Document. (`Documents/milestone3-Technical-Design.md`) - System architecture, components, database schema.
+[Technical Design](https://github.com/omniV1/CineScope/blob/main/Documents/Technical-Reports/Technical-Design.md) 
 *   **[SDMP-REF-2]**: MongoDB Integration Guide. (`Help/Milestone3_DevHelp.md`) - MongoDB setup, configuration, and usage.
+[Dev help](https://github.com/omniV1/CineScope/blob/main/Documents/Help/Milestone3_DevHelp.md)
 *   **[SDMP-REF-3]**: Test Procedures Document. (`Training/Test-procedures-gcu.md`) - Functional verification steps, pass/fail criteria.
+*   [Test proceedures](https://github.com/omniV1/CineScope/blob/main/Documents/Training/Test-procedures-gcu.md)
 *   **[SDMP-REF-4]**: Software Functional Requirements Document. (`Documents/milestone2-Functional-Requirements-document.md`) - Functional specifications, UI designs, requirements mapping.
+*   [Functional Specifcations](https://github.com/omniV1/CineScope/blob/main/Documents/Technical-Reports/Functional-Requirements.md)
 *   **[SDMP-REF-5]**: CineScope User Guide. (`Training/User-TrainingModule.md`) - End-user guidance on platform features.
+*   [User Guide and FAQ's](https://github.com/omniV1/CineScope/blob/main/Documents/Training/User-TrainingModule.md)
 *   **[SDMP-REF-6]**: CineScope Complete IT Administrator Guide. (`Training/IT-TrainingModule.md`) - Comprehensive IT instructions for deployment, monitoring, maintenance, etc.
+[IT guide](https://github.com/omniV1/CineScope/blob/main/Documents/Training/IT-TrainingModule.md#2-initial-setup) 
