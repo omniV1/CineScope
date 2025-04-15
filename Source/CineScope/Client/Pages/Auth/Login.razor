@@ -150,8 +150,8 @@
                 // Show success message
                 Snackbar.Add("Welcome back!", Severity.Success);
 
-                // Redirect to home page
-                NavigationManager.NavigateTo("/");
+                // Force a complete page refresh to ensure all state is properly loaded
+                await JSRuntime.InvokeVoidAsync("location.replace", "/");
             }
             else
             {

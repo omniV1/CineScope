@@ -155,8 +155,11 @@
         if (firstRender)
         {
             // Set up beforeunload handler to warn about unsaved changes
-            await JSRuntime.InvokeVoidAsync("window.onbeforeunload", 
-                "You may have unsaved changes. Are you sure you want to leave?");
+            await JSRuntime.InvokeVoidAsync("eval", @"
+                window.onbeforeunload = function(e) {
+                    e.preventDefault();
+                    e.returnValue = 'You may have unsaved changes. Are you sure you want to leave?';
+                };");
         }
     }
 }

@@ -114,12 +114,38 @@
 
         // Update movie from form fields
         movie.ReleaseDate = releaseDate ?? DateTime.Now;
-        movie.Genres = selectedGenres.ToList();
+        movie.Genres = selectedGenres?.ToList() ?? new List<string>();
         movie.Actors = actorsString.Split(',')
             .Select(a => a.Trim())
             .Where(a => !string.IsNullOrWhiteSpace(a))
             .ToList();
 
+        // Convert GitHub URL to raw format if needed
+        if (!string.IsNullOrWhiteSpace(movie.PosterUrl) && movie.PosterUrl.Contains("github.com"))
+        {
+            movie.PosterUrl = ConvertToGitHubRawUrl(movie.PosterUrl);
+        }
+
+        // Ensure all properties are properly set
+        movie.Id = Movie.Id; // Preserve the original ID
+        movie.Title = string.IsNullOrWhiteSpace(movie.Title) ? Movie.Title : movie.Title;
+        movie.Description = string.IsNullOrWhiteSpace(movie.Description) ? Movie.Description : movie.Description;
+        movie.Director = string.IsNullOrWhiteSpace(movie.Director) ? Movie.Director : movie.Director;
+        movie.AverageRating = Movie.AverageRating; // Preserve the rating
+        movie.ReviewCount = Movie.ReviewCount; // Preserve the review count
+
         MudDialog.Close(DialogResult.Ok(movie));
+    }
+
+    private string ConvertToGitHubRawUrl(string url)
+    {
+        if (string.IsNullOrWhiteSpace(url)) return url;
+
+        // Check if it's already a raw URL
+        if (url.Contains("raw.githubusercontent.com")) return url;
+
+        // Convert regular GitHub URL to raw URL
+        return url.Replace("github.com", "raw.githubusercontent.com")
+                 .Replace("/blob/", "/");
     }
 }

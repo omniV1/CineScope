@@ -10,39 +10,58 @@
             <MudText Typo="Typo.h6">Banned Words Management</MudText>
 
             <div class="d-flex gap-2">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                           StartIcon="@Icons.Material.Filled.Add"
-                           OnClick="@(async () => await OpenAddWordDialog())">
+                <MudTextField @bind-Value="searchTerm" 
+                             Label="Search Words"
+                             Variant="Variant.Outlined"
+                             Adornment="Adornment.Start"
+                             AdornmentIcon="@Icons.Material.Filled.Search"
+                             OnKeyDown="@SearchBannedWords"
+                             Style="min-width: 300px;"
+                             Class="mt-0" />
+
+                <MudSelect T="string" 
+                          @bind-Value="selectedCategory"
+                          Style="min-width: 150px;"
+                          Variant="Variant.Filled"
+                          Dense="true"
+                          Margin="Margin.Dense"
+                          Placeholder="All Categories"
+                          AdornmentIcon="@Icons.Material.Filled.ArrowDropDown">
+                    <MudSelectItem Value="@string.Empty">All Categories</MudSelectItem>
+                    <MudSelectItem Value="@("Profanity")">Profanity</MudSelectItem>
+                    <MudSelectItem Value="@("Hate Speech")">Hate Speech</MudSelectItem>
+                    <MudSelectItem Value="@("Harassment")">Harassment</MudSelectItem>
+                </MudSelect>
+
+                <MudSelect T="int?" 
+                          @bind-Value="selectedSeverity"
+                          Style="min-width: 150px;"
+                          Variant="Variant.Filled"
+                          Dense="true"
+                          Margin="Margin.Dense"
+                          Placeholder="All Severities"
+                          AdornmentIcon="@Icons.Material.Filled.ArrowDropDown">
+                    <MudSelectItem T="int?" Value="@(null)">All Severities</MudSelectItem>
+                    <MudSelectItem T="int?" Value="@(1)">1 (Low)</MudSelectItem>
+                    <MudSelectItem T="int?" Value="@(2)">2</MudSelectItem>
+                    <MudSelectItem T="int?" Value="@(3)">3 (Medium)</MudSelectItem>
+                    <MudSelectItem T="int?" Value="@(4)">4</MudSelectItem>
+                    <MudSelectItem T="int?" Value="@(5)">5 (High)</MudSelectItem>
+                </MudSelect>
+
+                <MudButton Variant="Variant.Filled" 
+                          Color="Color.Primary"
+                          OnClick="@(async () => await LoadBannedWords())">
+                    Search
+                </MudButton>
+
+                <MudButton Variant="Variant.Filled" 
+                          Color="Color.Primary"
+                          StartIcon="@Icons.Material.Filled.Add"
+                          OnClick="@(async () => await OpenAddWordDialog())">
                     Add New Word
                 </MudButton>
             </div>
-        </div>
-
-        <div class="d-flex gap-2 mb-4">
-            <MudTextField T="string" @bind-Value="searchTerm" Label="Search"
-                          Adornment="Adornment.Start"
-                          AdornmentIcon="@Icons.Material.Filled.Search" />
-
-            <MudSelect T="string" Label="Category" @bind-Value="selectedCategory">
-                <MudSelectItem T="string" Value="@string.Empty">All Categories</MudSelectItem>
-                <MudSelectItem T="string" Value="@("Profanity")">Profanity</MudSelectItem>
-                <MudSelectItem T="string" Value="@("Hate Speech")">Hate Speech</MudSelectItem>
-                <MudSelectItem T="string" Value="@("Harassment")">Harassment</MudSelectItem>
-            </MudSelect>
-
-            <MudSelect T="int?" Label="Severity" @bind-Value="selectedSeverity">
-                <MudSelectItem T="int?" Value="@(null)">All Severities</MudSelectItem>
-                <MudSelectItem T="int?" Value="@(1)">1 (Low)</MudSelectItem>
-                <MudSelectItem T="int?" Value="@(2)">2</MudSelectItem>
-                <MudSelectItem T="int?" Value="@(3)">3 (Medium)</MudSelectItem>
-                <MudSelectItem T="int?" Value="@(4)">4</MudSelectItem>
-                <MudSelectItem T="int?" Value="@(5)">5 (High)</MudSelectItem>
-            </MudSelect>
-
-            <MudButton Variant="Variant.Outlined" Color="Color.Primary"
-                       OnClick="@(async () => await LoadBannedWords())">
-                Apply Filters
-            </MudButton>
         </div>
 
         @if (isLoading)
@@ -112,7 +131,7 @@
             isLoading = true;
 
             var queryParams = new List<string>();
-            if (!string.IsNullOrWhiteSpace(selectedCategory))
+            if (!string.IsNullOrWhiteSpace(selectedCategory) && selectedCategory != string.Empty)
                 queryParams.Add($"category={Uri.EscapeDataString(selectedCategory)}");
             if (selectedSeverity.HasValue)
                 queryParams.Add($"severity={selectedSeverity.Value}");
@@ -265,6 +284,14 @@
         finally
         {
             StateHasChanged();
+        }
+    }
+
+    private async Task SearchBannedWords(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await LoadBannedWords();
         }
     }
 }

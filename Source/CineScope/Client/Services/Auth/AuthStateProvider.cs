@@ -128,9 +128,15 @@ namespace CineScope.Client.Services.Auth
         {
             await _localStorage.RemoveItemAsync("authToken");
             await _localStorage.RemoveItemAsync("user");
-
+            
+            // Clear any other cached data
+            await _localStorage.RemoveItemAsync("userRoles");
+            await _localStorage.RemoveItemAsync("userPreferences");
+            
+            // Clear HTTP client headers
             _httpClient.DefaultRequestHeaders.Authorization = null;
-
+            
+            // Clear all authentication state
             NotifyAuthenticationStateChanged(Task.FromResult(_anonymous));
         }
 

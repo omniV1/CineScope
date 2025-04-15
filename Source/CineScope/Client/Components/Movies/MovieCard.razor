@@ -159,6 +159,13 @@
         {
             isLoadingPoster = true;
             string originalUrl = GetOriginalPosterUrl();
+            
+            // Convert GitHub URLs before caching
+            if (!string.IsNullOrEmpty(originalUrl) && originalUrl.Contains("github.com"))
+            {
+                originalUrl = ConvertToGitHubRawUrl(originalUrl);
+            }
+            
             posterUrl = await MovieCache.GetPosterWithCachingAsync(Movie.Id, originalUrl);
         }
         catch (Exception ex)
@@ -181,7 +188,7 @@
 
         if (loadAttemptCount < MAX_LOAD_ATTEMPTS)
         {
-            posterUrl = $"https://via.placeholder.com/300x450?text={Uri.EscapeDataString(Movie.Title ?? "No Title")}";
+            posterUrl = $"https://placehold.co/300x450/1a1a1a/white?text={Uri.EscapeDataString(Movie.Title ?? "No Title")}";
             StateHasChanged();
         }
         else
@@ -194,13 +201,30 @@
 
     private string GetOriginalPosterUrl()
     {
-        if (!string.IsNullOrEmpty(Movie.PosterUrl) &&
-            (Movie.PosterUrl.StartsWith("http://") || Movie.PosterUrl.StartsWith("https://")))
+        if (!string.IsNullOrEmpty(Movie.PosterUrl))
         {
-            return Movie.PosterUrl;
+            if (Movie.PosterUrl.Contains("github.com"))
+            {
+                return ConvertToGitHubRawUrl(Movie.PosterUrl);
+            }
+            
+            if (Movie.PosterUrl.StartsWith("http://") || Movie.PosterUrl.StartsWith("https://"))
+            {
+                return Movie.PosterUrl;
+            }
         }
 
-        return $"https://via.placeholder.com/300x450?text={Uri.EscapeDataString(Movie.Title ?? "No Title")}";
+        return $"https://placehold.co/300x450/1a1a1a/white?text={Uri.EscapeDataString(Movie.Title ?? "No Title")}";
+    }
+
+    private string ConvertToGitHubRawUrl(string url)
+    {
+        if (string.IsNullOrWhiteSpace(url)) return url;
+        if (url.Contains("raw.githubusercontent.com")) return url;
+        
+        // Convert regular GitHub URL to raw URL
+        return url.Replace("github.com", "raw.githubusercontent.com")
+                 .Replace("/blob/", "/");
     }
 
     private void GoToMovieDetails()
