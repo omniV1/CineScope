@@ -182,16 +182,25 @@
     /* Custom styles to ensure proper alignment */
     .search-filter-container {
         display: flex;
-        align-items: center; /* Center align all items vertically */
+        align-items: center;
         flex-wrap: wrap;
-        gap: 0;
+        gap: 8px;
+        width: 100%;
     }
 
-    /* Wrapper to ensure consistent heights */
     .control-wrapper {
         display: flex;
         align-items: center;
-        height: 40px; /* Fixed height for all controls */
+        height: 40px;
+    }
+
+    .control-wrapper:first-child {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .control-wrapper:nth-child(2) {
+        min-width: 150px;
     }
 
     /* Style for buttons to ensure alignment */
@@ -347,7 +356,7 @@
     private async Task OnGenreChanged(string genre)
     {
         selectedGenre = genre;
-        await LoadMovies();
+        ApplyClientSideFilters();
     }
 
     /// <summary>
@@ -380,15 +389,12 @@
             _debounceTokenSource = new CancellationTokenSource();
             var token = _debounceTokenSource.Token;
 
-            // Small loading indicator or message could be shown here
-
             // Add a small delay for debouncing (300ms is typically good)
             await Task.Delay(300, token);
 
             // If the token wasn't cancelled during the delay, apply filters
             if (!token.IsCancellationRequested)
             {
-                // Search is done client-side with existing data
                 ApplyClientSideFilters();
             }
         }
@@ -408,7 +414,7 @@
     private async Task ClearGenreFilter()
     {
         selectedGenre = string.Empty;
-        await LoadMovies();
+        ApplyClientSideFilters();
     }
 
     /// <summary>
@@ -428,7 +434,7 @@
         selectedGenre = string.Empty;
         minimumRating = 1;
         searchTerm = string.Empty;
-        await LoadMovies();
+        ApplyClientSideFilters();
     }
 
     /// <summary>
@@ -440,6 +446,14 @@
         {
             // Start with all movies
             var filteredMovies = allMovies;
+
+            // Apply genre filter
+            if (!string.IsNullOrEmpty(selectedGenre))
+            {
+                filteredMovies = filteredMovies
+                    .Where(m => m.Genres != null && m.Genres.Contains(selectedGenre))
+                    .ToList();
+            }
 
             // Apply rating filter
             if (minimumRating > 1)

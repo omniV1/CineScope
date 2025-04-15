@@ -3,6 +3,7 @@
 @inject AuthService AuthService
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
+@inject IJSRuntime JSRuntime
 
 @code {
     protected override async Task OnInitializedAsync()
@@ -11,7 +12,9 @@
         {
             await AuthService.Logout();
             Snackbar.Add("You have been logged out successfully.", Severity.Success);
-            NavigationManager.NavigateTo("/");
+            
+            // Force a complete page refresh to clear all state
+            await JSRuntime.InvokeVoidAsync("location.replace", "/");
         }
         catch (Exception ex)
         {

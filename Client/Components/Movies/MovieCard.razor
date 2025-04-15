@@ -141,6 +141,18 @@
         await LoadPosterFromCache();
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        // Reset state when Movie changes
+        if (!string.IsNullOrEmpty(Movie.Id) && posterUrl != GetOriginalPosterUrl())
+        {
+            isLoadingPoster = true;
+            loadAttemptCount = 0;
+            posterLoadAttempted = false;
+            await LoadPosterFromCache();
+        }
+    }
+
     private async Task LoadPosterFromCache()
     {
         try

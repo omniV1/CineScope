@@ -74,7 +74,26 @@
     protected override async Task OnInitializedAsync()
     {
         StateContainer.OnChange += StateHasChanged;
-        
+        await RefreshUserState();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var authState = await AuthState;
+        if (authState?.User?.Identity?.IsAuthenticated == true)
+        {
+            await RefreshUserState();
+        }
+        else
+        {
+            _userProfilePicture = "default.svg";
+            _username = "";
+            StateContainer.UserProfilePicture = _userProfilePicture;
+        }
+    }
+
+    private async Task RefreshUserState()
+    {
         var user = await AuthService.GetCurrentUser();
         if (user != null)
         {
@@ -84,11 +103,6 @@
             _username = user.Username;
             StateContainer.UserProfilePicture = _userProfilePicture;
         }
-    }
-
-    protected override void OnParametersSet()
-    {
-        _userProfilePicture = StateContainer.UserProfilePicture;
     }
 
     void DrawerToggle()
