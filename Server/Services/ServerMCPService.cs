@@ -41,7 +41,7 @@ namespace CineScope.Server.Services
             if (!string.IsNullOrEmpty(apiKey))
             {
                 _httpClient.DefaultRequestHeaders.Add("x-api-key", apiKey);
-                _httpClient.DefaultRequestHeaders.Add("anthropic-version", "2024-01-31");
+                _httpClient.DefaultRequestHeaders.Add("anthropic-version", "2023-06-01");
             }
             else
             {
@@ -178,7 +178,7 @@ namespace CineScope.Server.Services
 
                 // Set required headers
                 _httpClient.DefaultRequestHeaders.Clear();
-                _httpClient.DefaultRequestHeaders.Add("anthropic-version", "2024-01-31");
+                _httpClient.DefaultRequestHeaders.Add("anthropic-version", "2023-06-01");
                 _httpClient.DefaultRequestHeaders.Add("x-api-key", _configuration["AnthropicSettings:ApiKey"] ?? Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY"));
 
                 var messages = new List<Dictionary<string, string>>
