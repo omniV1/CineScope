@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Character encoding for the document -->
+    <meta charset="utf-8" />
+
+    <!-- Responsive viewport settings -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- Page title -->
+    <title>CineScope</title>
+
+    <!-- Base URL for relative URLs -->
+    <base href="/" />
+
+    <!-- Application's main CSS file -->
+    <link href="css/app.css" rel="stylesheet" />
+
+    <!-- MudBlazor-related resources -->
+    <!-- Google Fonts for Roboto font family used by MudBlazor -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+
+    <!-- MudBlazor CSS styles -->
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+
+    <!-- Custom CSS specific to CineScope -->
+    <link href="css/cinescope.css" rel="stylesheet" />
+
+    <link href="css/override.css" rel="stylesheet" />
+
+    <link href="css/profile-pictures.css" rel="stylesheet" />
+
+    <link href="css/movie-card.css" rel="stylesheet" />
+
+    <link href="css/poster-cache.css" rel="stylesheet" />
+
+    <link href="css/loading-animation.css" rel="stylesheet" />
+
+    <!-- Favicon for browser tabs -->
+    <link rel="icon" type="image/png" href="images/cinescope-logo.png" />
+
+    <!-- Google reCAPTCHA -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script>
+        window.initializeRecaptcha = function (elementId) {
+            return new Promise((resolve) => {
+                var checkRecaptchaInterval = setInterval(function () {
+                    if (typeof grecaptcha !== 'undefined' && grecaptcha.render) {
+                        clearInterval(checkRecaptchaInterval);
+                        try {
+                            var widgetId = grecaptcha.render(elementId, {
+                                'sitekey': '6Ld8oAYrAAAAAKxRXwgV4_1PMHv06IudnMlG1_Uh',
+                                'callback': function (response) {
+                                    console.log("reCAPTCHA callback triggered");
+                                }
+                            });
+                            resolve(widgetId);
+                        } catch (e) {
+                            console.error('reCAPTCHA render error:', e);
+                            resolve(null);
+                        }
+                    }
+                }, 100);
+            });
+        };
+
+        window.executeRecaptcha = function () {
+            return new Promise((resolve) => {
+                if (typeof grecaptcha !== 'undefined') {
+                    const response = grecaptcha.getResponse();
+                    resolve(response);
+                } else {
+                    resolve(null);
+                }
+            });
+        };
+
+        window.resetRecaptcha = function () {
+            if (typeof grecaptcha !== 'undefined') {
+                grecaptcha.reset();
+            }
+        };
+    </script>
+</head>
+
+<body>
+    <!-- Root element where Blazor renders the application -->
+    <div id="app">
+        <!-- Loading indicator shown until Blazor initializes -->
+        <div class="loading-progress-text">
+            <div style="text-align: center; padding-top: 100px;">
+                <h1 style="color: #E50914;">CineScope</h1>
+                <p>Loading your cinematic experience...</p>
+                <div class="mud-progress-circular mud-default-text" role="progressbar" style="height: 40px; width: 40px; margin: 20px auto;">
+                    <svg class="mud-progress-circular-svg" viewBox="22 22 44 44">
+                        <circle class="mud-progress-circular-circle-indeterminate" cx="44" cy="44" r="20" fill="none" stroke-width="3"></circle>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blazor WebAssembly framework script -->
+    <script src="_framework/blazor.webassembly.js"></script>
+
+    <!-- MudBlazor JavaScript functionality -->
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+</body>
+
+</html>

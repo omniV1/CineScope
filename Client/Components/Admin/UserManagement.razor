@@ -1,0 +1,191 @@
+﻿@using CineScope.Shared.DTOs
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudCard Elevation="0" Class="mb-4">
+    <MudCardContent>
+        <div class="d-flex justify-space-between align-center flex-wrap gap-2 mb-4">
+            <MudText Typo="Typo.h6">User Management</MudText>
+
+            <div class="d-flex gap-2">
+                <MudTextField @bind-Value="searchQuery" Label="Search" Adornment="Adornment.Start"
+                AdornmentIcon="@Icons.Material.Filled.Search"
+                Immediate="true"
+                OnKeyDown="@SearchUsers" />
+
+                <MudSelect T="string" Label="Role" @bind-Value="selectedRole">
+                    <MudSelectItem Value="@string.Empty"></MudSelectItem>
+                    <MudSelectItem Value="@("User")">User</MudSelectItem>
+                    <MudSelectItem Value="@("Admin")">Admin</MudSelectItem>
+                </MudSelect>
+
+                <MudSelect T="string" Label="Status" @bind-Value="selectedStatus">
+                    <MudSelectItem Value="@string.Empty"></MudSelectItem>
+                    <MudSelectItem Value="@("Active")">Active</MudSelectItem>
+                    <MudSelectItem Value="@("Flagged")">Flagged</MudSelectItem>
+                    <MudSelectItem Value="@("Suspended")">Suspended</MudSelectItem>
+                </MudSelect>
+
+                <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                OnClick="@LoadUsers">
+                    Apply Filters
+                </MudButton>
+            </div>
+        </div>
+
+        @if (isLoading)
+        {
+            <div class="d-flex justify-center my-4">
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+            </div>
+        }
+        else if (users == null || !users.Any())
+        {
+            <MudAlert Severity="Severity.Info">No users found matching the criteria.</MudAlert>
+        }
+        else
+        {
+            <MudTable Items="@users" Hover="true" Breakpoint="Breakpoint.Sm"
+            Loading="@isLoading" LoadingProgressColor="Color.Primary">
+                <HeaderContent>
+                    <MudTh>Username</MudTh>
+                    <MudTh>Role(s)</MudTh>
+                    <MudTh>Status</MudTh>
+                    <MudTh>Edit</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Username">
+                        <div class="d-flex align-center">
+                            <MudAvatar Class="mr-2" Style="height: 30px; width: 30px;">
+                                <img src="@(string.IsNullOrEmpty(context.ProfilePictureUrl) ? "/profile-pictures/default.svg" : context.ProfilePictureUrl)"
+                                alt="No profile picture chosen" />
+                            </MudAvatar>
+                            @context.Username
+                        </div>
+                    </MudTd>
+                    <MudTd DataLabel="Role">
+                        @foreach (var role in context.Roles)
+                        {
+                            <MudChip Size="Size.Small" Color="@(role == "Admin" ? Color.Error : Color.Default)">
+                                @role
+                            </MudChip>
+                        }
+                    </MudTd>
+                    <MudTd DataLabel="Status">
+                        <MudChip Size="Size.Small" Color="@GetStatusColor(context.Status)">
+                            @context.Status
+                        </MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Edit">
+                        <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                            OnClick="@(async () => await OpenUserActionsDialog(context))">
+                            Edit @context.Username
+                        </MudButton>
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="new int[]{10, 25, 50, 100}" />
+                </PagerContent>
+            </MudTable>
+        }
+    </MudCardContent>
+</MudCard>
+
+@code {
+    private List<UserAdminDto> users;
+    private bool isLoading = true;
+    private string searchQuery = "";
+    private string selectedRole = "";
+    private string selectedStatus = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        try
+        {
+            isLoading = true;
+
+            var queryParams = new List<string>();
+            if (!string.IsNullOrWhiteSpace(searchQuery)) queryParams.Add($"search={Uri.EscapeDataString(searchQuery)}");
+            if (!string.IsNullOrWhiteSpace(selectedRole)) queryParams.Add($"role={Uri.EscapeDataString(selectedRole)}");
+            if (!string.IsNullOrWhiteSpace(selectedStatus)) queryParams.Add($"status={Uri.EscapeDataString(selectedStatus)}");
+
+            string url = "api/admin/users";
+            if (queryParams.Any())
+            {
+                url += "?" + string.Join("&", queryParams);
+            }
+
+            var response = await Http.GetAsync(url);
+
+            if (response.IsSuccessStatusCode)
+            {
+                users = await response.Content.ReadFromJsonAsync<List<UserAdminDto>>();
+            }
+            else
+            {
+                Snackbar.Add("Failed to load users", Severity.Error);
+                users = new List<UserAdminDto>();
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+            users = new List<UserAdminDto>();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task SearchUsers(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await LoadUsers();
+        }
+    }
+
+    private Color GetStatusColor(string status) => status switch
+    {
+        "Active" => Color.Success,
+        "Flagged" => Color.Warning,
+        "Suspended" => Color.Error,
+        _ => Color.Default
+    };
+
+    private async Task OpenUserActionsDialog(UserAdminDto user)
+    {
+        var parameters = new DialogParameters
+            {
+                ["User"] = user
+            };
+
+        var dialog = await DialogService.ShowAsync<UserActionsDialog>("User Information and Actions", parameters,
+            new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
+
+        var result = await dialog.Result;
+
+        // If dialog was closed with a result (not canceled) and returned updated user
+        if (!result.Canceled && result.Data is UserAdminDto updatedUser)
+        {
+            // Update the user in the list
+            var index = users.FindIndex(u => u.Id == updatedUser.Id);
+            if (index >= 0)
+            {
+                users[index] = updatedUser;
+                StateHasChanged();
+            }
+
+            // For more thorough updates, you could reload the entire list
+            // await LoadUsers();
+        }
+    }
+}

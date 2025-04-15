@@ -1,0 +1,33 @@
+﻿@using CineScope.Shared.DTOs
+@using CineScope.Client.Components.Movies
+
+<div class="movie-list-section mb-6">
+    <MudText Typo="Typo.h4" Class="mb-4">@Title</MudText>
+
+    @if (Movies != null && Movies.Any())
+    {
+        <MudGrid>
+            @foreach (var movie in Movies)
+            {
+                <MudItem xs="12" sm="6" md="4" lg="3">
+                    <MovieCard Movie="@movie" />
+                </MudItem>
+            }
+        </MudGrid>
+    }
+    else
+    {
+        <MudText Typo="Typo.body1" Class="empty-message">@EmptyMessage</MudText>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public List<MovieDto> Movies { get; set; } = new List<MovieDto>();
+
+    [Parameter]
+    public string Title { get; set; } = "Movies";
+
+    [Parameter]
+    public string EmptyMessage { get; set; } = "No movies found.";
+}

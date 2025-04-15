@@ -1,0 +1,22 @@
+@page "/logout"
+@using CineScope.Client.Services.Auth
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await AuthService.Logout();
+            Snackbar.Add("You have been logged out successfully.", Severity.Success);
+            NavigationManager.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error during logout: {ex.Message}", Severity.Error);
+            NavigationManager.NavigateTo("/");
+        }
+    }
+} 

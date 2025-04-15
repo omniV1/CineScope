@@ -1,0 +1,201 @@
+﻿@using CineScope.Shared.DTOs
+@inject ISnackbar Snackbar
+@inject HttpClient Http
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-width: 800px; padding: 16px;">
+            <MudGrid>
+                <MudItem xs="12" sm="4">
+                    <div class="d-flex flex-column align-center">
+                        <!-- Profile Picture Preview -->
+                        <MudPaper Width="200px" Height="200px" Elevation="0" Square="true" Class="mb-2">
+                            <img src="@(!string.IsNullOrEmpty(user.ProfilePictureUrl) ? user.ProfilePictureUrl : $"https://via.placeholder.com/200x300?text={Uri.EscapeDataString("No profile picture selected")}")"
+                            alt="No profile picture selected"
+                            style="width: 100%; height: 100%; object-fit: cover;" />
+                        </MudPaper>
+
+                        <!-- Username -->
+                        <MudText Label="Username" Variant="Variant.Outlined" FullWidth="true" Class="mb-3">
+                            @user.Username
+                        </MudText>
+
+                        <!-- Roles -->
+                        <MudText FullWidth="true" Class="mb-3">
+                            @foreach (var role in user.Roles)
+                            {
+                                <MudChip Size="Size.Small" Color="@(role == "Admin" ? Color.Error : Color.Default)">
+                                    @role
+                                </MudChip>
+                            }
+                        </MudText>
+                    </div>
+                </MudItem>
+
+                <!-- User Details Section -->
+                <MudItem xs="12" sm="4">
+                    <div>
+                        <!-- Email -->
+                        <MudText Typo="Typo.subtitle2" Class="mb-1">Email</MudText>
+                        <MudText Variant="Variant.Outlined" FullWidth="true" Class="mb-3">
+                            @user.Email
+                        </MudText>
+
+                        <!-- Review Count -->
+                        <MudText Typo="Typo.subtitle2" Class="mb-1">Reviews Written</MudText>
+                        <MudText Variant="Variant.Outlined" FullWidth="true" Class="mb-3">
+                            @user.ReviewCount
+                        </MudText>
+
+                        <!-- Account Status -->
+                        <MudText Typo="Typo.subtitle2" Class="mb-1">Account Status</MudText>
+                        <MudText Variant="Variant.Outlined" FullWidth="true" Class="mb-3" Color="@GetStatusColor(user.Status)">
+                            @user.Status
+                        </MudText>
+
+                        <!-- Join Date -->
+                        <MudText Typo="Typo.subtitle2" Class="mb-1">Joined</MudText>
+                        <MudText Variant="Variant.Outlined" FullWidth="true" Class="mb-3">
+                            @user.JoinDate
+                        </MudText>
+
+                        <!-- Last Login -->
+                        <MudText Typo="Typo.subtitle2" Class="mb-1">Last Active</MudText>
+                        <MudText Variant="Variant.Outlined" FullWidth="true" Class="mb-3">
+                            @user.LastLogin
+                        </MudText>
+                    </div>
+                </MudItem>
+
+                <!-- Actions -->
+                <MudItem xs="12" sm="4">
+                    <!-- Toggle Account Status -->
+                    <MudText Typo="Typo.subtitle2" Class="mb-1">Toggle Account Status</MudText>
+                    @if (user.Status == "Active")
+                    {
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => UpdateUserStatus(user, "Suspended"))" Class="mb-3">
+                            Suspend User
+                        </MudButton>
+                    }
+                    else if (user.Status == "Suspended")
+                    {
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => UpdateUserStatus(user, "Active"))" Class="mb-3">
+                            Activate User
+                        </MudButton>
+                    }
+
+                    <!-- Toggle Admin Privileges -->
+                    <MudText Typo="Typo.subtitle2" Class="mb-1">Toggle Administrative Privileges</MudText>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="async () => await ToggleAdminPrivileges(user)">
+                        @(user.Roles.Contains("Admin") ? "Remove Admin" : "Make Admin")
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Done">Done</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public UserAdminDto User { get; set; }
+    private UserAdminDto user = new UserAdminDto();
+    private IEnumerable<string> roles = new List<string>();
+
+    protected override void OnParametersSet()
+    {
+        // Copy the user to avoid editing the original
+        user = new UserAdminDto
+        {
+            Id = User.Id,
+            Username = User.Username,
+            Email = User.Email,
+            Roles = new List<string>(User.Roles),
+            ProfilePictureUrl = User.ProfilePictureUrl,
+            JoinDate = User.JoinDate,
+            ReviewCount = User.ReviewCount,
+            LastLogin = User.LastLogin,
+            Status = User.Status
+        };
+    }
+
+    private void Done() => MudDialog.Close();
+
+    private async Task UpdateUserStatus(UserAdminDto user, string newStatus)
+    {
+        try
+        {
+            var response = await Http.PutAsJsonAsync($"api/admin/users/{user.Id}/status", newStatus);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Update local state
+                user.Status = newStatus;
+
+                // Force UI refresh
+                StateHasChanged();
+
+                Snackbar.Add($"User {user.Username} {(newStatus == "Active" ? "reactivated" : "suspended")} successfully", Severity.Success);
+
+                // Close and return the updated user to parent component
+                MudDialog.Close(DialogResult.Ok(user));
+            }
+            else
+            {
+                Snackbar.Add("Failed to update user status", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task ToggleAdminPrivileges(UserAdminDto user)
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync($"api/admin/users/{user.Id}/toggle-admin", new { });
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Update local state - toggle the Admin role
+                if (user.Roles.Contains("Admin"))
+                {
+                    user.Roles.Remove("Admin");
+                }
+                else
+                {
+                    user.Roles.Add("Admin");
+                }
+
+                // Force UI refresh
+                StateHasChanged();
+
+                Snackbar.Add($"User {user.Username} {(user.Roles.Contains("Admin") ? "is now an admin" : "is no longer an admin")}", Severity.Success);
+
+                // Close and return the updated user to parent component
+                MudDialog.Close(DialogResult.Ok(user));
+            }
+            else
+            {
+                Snackbar.Add("Failed to update user privileges", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private Color GetStatusColor(string status) => status switch
+    {
+        "Active" => Color.Success,
+        "Flagged" => Color.Warning,
+        "Suspended" => Color.Error,
+        _ => Color.Default
+    };
+}

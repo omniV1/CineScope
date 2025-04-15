@@ -1,0 +1,103 @@
+﻿@using CineScope.Client.Shared.Nav
+@using CineScope.Client.Services.Auth
+@using CineScope.Client.Services
+@inherits LayoutComponentBase
+@using MudBlazor
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+@inject StateContainer StateContainer
+@implements IDisposable
+
+<!-- Main layout container for the application -->
+<MudLayout>
+    <!-- Application header bar -->
+    <MudAppBar Elevation="1" Dense="true" Fixed="true" Class="cinescope-appbar">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+
+        <MudSpacer />
+        <!-- Centered title -->
+        <div class="d-flex align-center justify-center" style="position: absolute; left: 50%; transform: translateX(-50%);">
+            <MudText Typo="Typo.h5">CineScope</MudText>
+        </div>
+        <MudSpacer />
+
+        <!-- User Profile Menu -->
+        <AuthorizeView>
+            <Authorized>
+                <MudMenu AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+                    <ActivatorContent>
+                        <MudAvatar Style="@AvatarStyle" Class="cursor-pointer">
+                            <img src="@($"/profile-pictures/{_userProfilePicture}")" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
+                        </MudAvatar>
+                    </ActivatorContent>
+                    <ChildContent>
+                        <MudMenuItem Href="/profile">My Profile</MudMenuItem>
+                        <MudMenuItem Href="/logout">Logout</MudMenuItem>
+                    </ChildContent>
+                </MudMenu>
+            </Authorized>
+            <NotAuthorized>
+                <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" Href="/login" />
+            </NotAuthorized>
+        </AuthorizeView>
+    </MudAppBar>
+
+    <!-- Navigation drawer for side menu -->
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="1" ClipMode="DrawerClipMode.Always" Fixed="true">
+        <!-- Navigation menu component -->
+        <NavMenu UserProfilePicture="@_userProfilePicture" Username="@_username" />
+    </MudDrawer>
+
+    <!-- Main content area -->
+    <MudMainContent>
+        <div class="pt-14">
+            <!-- Container for page content with padding -->
+            <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-6 px-4">
+                <!-- Render the current page content -->
+                @Body
+            </MudContainer>
+        </div>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; }
+
+    private bool _drawerOpen = true;
+    private string _userProfilePicture = "default.svg";
+    private string _username = "";
+
+    private string AvatarStyle => $"background-color: transparent; cursor: pointer; border-radius: 50%; {(_userProfilePicture == "default.svg" ? "" : "border: 2px solid var(--mud-palette-error);")}";
+
+    protected override async Task OnInitializedAsync()
+    {
+        StateContainer.OnChange += StateHasChanged;
+        
+        var user = await AuthService.GetCurrentUser();
+        if (user != null)
+        {
+            _userProfilePicture = !string.IsNullOrEmpty(user.ProfilePictureUrl) 
+                ? Path.GetFileName(user.ProfilePictureUrl)
+                : "default.svg";
+            _username = user.Username;
+            StateContainer.UserProfilePicture = _userProfilePicture;
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        _userProfilePicture = StateContainer.UserProfilePicture;
+    }
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    public void Dispose()
+    {
+        StateContainer.OnChange -= StateHasChanged;
+    }
+}

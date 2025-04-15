@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#E50914" />
+  
+  <!-- Stylized face - minimalist design -->
+  <circle cx="100" cy="85" r="40" fill="#FFFFFF" />
+  <!-- Hair -->
+  <path d="M60 85 Q60 45, 100 45 Q140 45, 140 85" fill="#333333" />
+  <!-- Eyes -->
+  <circle cx="80" cy="80" r="5" fill="#333333" />
+  <circle cx="120" cy="80" r="5" fill="#333333" />
+  <!-- Smile -->
+  <path d="M80 105 Q100 125, 120 105" stroke="#333333" stroke-width="4" fill="none" />
+  
+  <!-- Shoulders/body suggestion -->
+  <path d="M60 140 Q100 160, 140 140 L140 170 Q100 190, 60 170 Z" fill="#FFFFFF" />
+</svg>
