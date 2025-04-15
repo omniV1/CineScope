@@ -1,0 +1,10 @@
+services:
+  blazorapp:
+    image: cinescope:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "7055:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development

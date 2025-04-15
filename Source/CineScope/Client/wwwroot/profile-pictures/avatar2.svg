@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#1DB954" />
+  
+  <!-- Stylized face - geometric design -->
+  <rect x="70" y="65" width="60" height="70" rx="10" fill="#FFFFFF" />
+  
+  <!-- Hair -->
+  <path d="M70 65 L70 45 L130 45 L130 65" fill="#663399" />
+  
+  <!-- Eyes -->
+  <rect x="80" y="80" width="10" height="5" rx="2" fill="#333333" />
+  <rect x="110" y="80" width="10" height="5" rx="2" fill="#333333" />
+  
+  <!-- Mouth -->
+  <rect x="85" y="100" width="30" height="5" rx="2" fill="#333333" />
+  
+  <!-- Body suggestion -->
+  <path d="M75 135 L125 135 L135 180 L65 180 Z" fill="#FFFFFF" />
+  
+  <!-- Simple accessory - glasses frame -->
+  <path d="M75 80 L85 80 M115 80 L125 80 M75 78 L125 78" stroke="#333333" stroke-width="2" fill="none" />
+</svg>

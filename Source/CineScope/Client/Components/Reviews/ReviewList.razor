@@ -1,0 +1,407 @@
+﻿@using CineScope.Shared.DTOs
+@using CineScope.Client.Components.Reviews
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<div class="review-list-section mb-6">
+    <MudText Typo="Typo.h5" Class="mb-4">@Title</MudText>
+
+    @if (isLoading)
+    {
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Medium" />
+    }
+    else if (Reviews == null || !Reviews.Any())
+    {
+        <MudAlert Severity="Severity.Info">@EmptyMessage</MudAlert>
+    }
+    else
+    {
+        <!-- Filter and Sort Controls -->
+        <div class="d-flex justify-space-between align-center mb-4 flex-wrap gap-2">
+            <!-- Review Count -->
+            <MudText Typo="Typo.body2">Showing @displayedReviews.Count review@(displayedReviews.Count != 1 ? "s" : "")</MudText>
+
+            <div class="d-flex gap-2">
+                <!-- Filter Button -->
+                <MudMenu Icon="@Icons.Material.Filled.FilterList" Label="Filter" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                    <MudMenuItem OnClick="@(() => FilterReviews("all"))">All Ratings</MudMenuItem>
+                    <MudMenuItem OnClick="@(() => FilterReviews("positive"))">Positive (4-5 ★)</MudMenuItem>
+                    <MudMenuItem OnClick="@(() => FilterReviews("neutral"))">Neutral (3 ★)</MudMenuItem>
+                    <MudMenuItem OnClick="@(() => FilterReviews("negative"))">Negative (1-2 ★)</MudMenuItem>
+                </MudMenu>
+
+                <!-- Sort Button -->
+                <MudMenu Icon="@Icons.Material.Filled.Sort" Label="Sort" Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                    <MudMenuItem OnClick="@(() => SortReviews("newest"))">Newest First</MudMenuItem>
+                    <MudMenuItem OnClick="@(() => SortReviews("oldest"))">Oldest First</MudMenuItem>
+                    <MudMenuItem OnClick="@(() => SortReviews("highest"))">Highest Rated</MudMenuItem>
+                    <MudMenuItem OnClick="@(() => SortReviews("lowest"))">Lowest Rated</MudMenuItem>
+                </MudMenu>
+            </div>
+        </div>
+
+        <!-- Active Filters -->
+        @if (currentFilter != "all" || currentSort != "newest")
+        {
+            <MudPaper Elevation="0" Class="pa-2 mb-4" Style="background-color: var(--mud-palette-background-grey)">
+                <div class="d-flex flex-wrap gap-2 align-center">
+                    <MudText Typo="Typo.caption">Active:</MudText>
+
+                    @if (currentFilter != "all")
+                    {
+                        <MudChip T="string" Value="@currentFilter" Size="Size.Small" Color="Color.Primary" Variant="Variant.Outlined"
+                                 OnClose="@(() => FilterReviews("all"))">
+                            @GetFilterName(currentFilter)
+                        </MudChip>
+                    }
+
+                    @if (currentSort != "newest")
+                    {
+                        <MudChip T="string" Value="@currentSort" Size="Size.Small" Color="Color.Secondary" Variant="Variant.Outlined"
+                                 OnClose="@(() => SortReviews("newest"))">
+                            @GetSortName(currentSort)
+                        </MudChip>
+                    }
+
+                    <MudButton Variant="Variant.Text" Color="Color.Error" Size="Size.Small"
+                               OnClick="@ResetFilters">Clear All</MudButton>
+                </div>
+            </MudPaper>
+        }
+
+        <!-- Review List -->
+        <MudList T="ReviewDto" Clickable="false" Dense="false">
+            @foreach (var review in displayedReviews)
+            {
+                <MudListItem T="ReviewDto" Value="@review" Class="pa-0 mb-4">
+                    <MudCard Elevation="2" Class="review-card">
+                        <MudCardContent>
+                            <!-- Review Header -->
+                            <div class="d-flex justify-space-between align-center mb-2">
+                                <MudText Typo="Typo.h6">@review.Username</MudText>
+                                <MudRating ReadOnly="true" SelectedValue="@((int)Math.Round(review.Rating))" Color="Color.Primary" />
+                            </div>
+
+                            <!-- Review Date -->
+                            <MudText Typo="Typo.caption" Class="mb-2">
+                                @review.CreatedAt.ToString("MMMM dd, yyyy")
+                            </MudText>
+
+                            <!-- Review Text -->
+                            <MudText Typo="Typo.body1">@review.Text</MudText>
+                        </MudCardContent>
+
+                        @if (ShowActions && review.UserId == CurrentUserId)
+                        {
+                            <MudCardActions>
+                                <MudButton Variant="Variant.Text" Color="Color.Primary"
+                                           OnClick="@(() => OpenEditDialog(review))">
+                                    Edit
+                                </MudButton>
+                                <MudButton Variant="Variant.Text" Color="Color.Error"
+                                           OnClick="@(() => DeleteReviewAsync(review.Id))">
+                                    Delete
+                                </MudButton>
+                            </MudCardActions>
+                        }
+                    </MudCard>
+                </MudListItem>
+            }
+        </MudList>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// The list of reviews to display.
+    /// </summary>
+    [Parameter]
+    public List<ReviewDto> Reviews { get; set; } = new();
+
+    /// <summary>
+    /// The ID of the movie these reviews are for.
+    /// </summary>
+    [Parameter]
+    public string MovieId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The title of the reviews section.
+    /// </summary>
+    [Parameter]
+    public string Title { get; set; } = "Reviews";
+
+    /// <summary>
+    /// The message to display when there are no reviews.
+    /// </summary>
+    [Parameter]
+    public string EmptyMessage { get; set; } = "No reviews yet. Be the first to share your thoughts!";
+
+    /// <summary>
+    /// Whether to show edit/delete actions for the current user's reviews.
+    /// </summary>
+    [Parameter]
+    public bool ShowActions { get; set; } = false;
+
+    /// <summary>
+    /// The ID of the current user (for showing edit/delete buttons).
+    /// </summary>
+    [Parameter]
+    public string CurrentUserId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Event called when the user wants to edit a review.
+    /// </summary>
+    [Parameter]
+    public EventCallback<ReviewDto> OnEditReview { get; set; }
+
+    /// <summary>
+    /// Event called when a review is deleted.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> OnReviewDeleted { get; set; }
+
+    /// <summary>
+    /// Event called when a review is updated
+    /// </summary>
+    [Parameter]
+    public EventCallback<ReviewDto> OnReviewUpdated { get; set; }
+
+    /// <summary>
+    /// Dictionary mapping movie IDs to their titles for display in edit dialog
+    /// </summary>
+    [Parameter]
+    public Dictionary<string, string> MovieTitles { get; set; } = new();
+
+    /// <summary>
+    /// The filtered and sorted list of reviews to display.
+    /// </summary>
+    private List<ReviewDto> displayedReviews = new();
+
+    /// <summary>
+    /// Loading indicator state.
+    /// </summary>
+    private bool isLoading = false;
+
+    /// <summary>
+    /// Current filter applied to the reviews.
+    /// </summary>
+    private string currentFilter = "all";
+
+    /// <summary>
+    /// Current sort order applied to the reviews.
+    /// </summary>
+    private string currentSort = "newest";
+
+    /// <summary>
+    /// Initializes the component and applies default filtering/sorting.
+    /// </summary>
+    protected override void OnParametersSet()
+    {
+        // Apply default filter and sort when the reviews list changes
+        ApplyFilterAndSort();
+    }
+
+    /// <summary>
+    /// Opens the edit dialog for a review
+    /// </summary>
+    /// <param name="review">The review to edit</param>
+    private async Task OpenEditDialog(ReviewDto review)
+    {
+        // Get the movie title if available
+        string movieTitle = "this movie";
+        if (MovieTitles.ContainsKey(review.MovieId))
+        {
+            movieTitle = MovieTitles[review.MovieId];
+        }
+
+        var parameters = new DialogParameters
+            {
+                ["Review"] = review,
+                ["MovieTitle"] = movieTitle
+            };
+
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true
+            };
+
+        var dialog = await DialogService.ShowAsync<EditReview>("Edit Review", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            // Get the updated review from the dialog result
+            var updatedReview = (ReviewDto)result.Data;
+            Console.WriteLine($"Dialog returned review with rating: {updatedReview.Rating}");
+
+            // Update the review in the local list
+            var index = Reviews.FindIndex(r => r.Id == updatedReview.Id);
+            if (index >= 0)
+            {
+                // Create a completely new list to trigger UI updates
+                var newReviews = new List<ReviewDto>(Reviews);
+                newReviews[index] = updatedReview;
+                Reviews = newReviews;
+
+                Console.WriteLine($"Updated review in list, new rating: {Reviews[index].Rating}");
+
+                // Make sure displayedReviews is also updated
+                ApplyFilterAndSort();
+
+                // Force UI refresh
+                StateHasChanged();
+
+                // Notify parent component
+                await OnReviewUpdated.InvokeAsync(updatedReview);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Deletes a review after confirmation
+    /// </summary>
+    /// <param name="reviewId">The ID of the review to delete</param>
+    private async Task DeleteReviewAsync(string reviewId)
+    {
+        // Show confirmation dialog
+        bool? result = await DialogService.ShowMessageBox(
+            "Confirm Deletion",
+            "Are you sure you want to delete this review? This action cannot be undone.",
+            yesText: "Delete", cancelText: "Cancel"
+        );
+
+        if (result == true)
+        {
+            try
+            {
+                isLoading = true;
+
+                // Call API to delete the review
+                var response = await Http.DeleteAsync($"api/Review/{reviewId}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Remove from local list
+                    var reviewToRemove = Reviews.FirstOrDefault(r => r.Id == reviewId);
+                    if (reviewToRemove != null)
+                    {
+                        // Create a new list reference to ensure UI updates
+                        var newReviews = new List<ReviewDto>(Reviews);
+                        newReviews.Remove(reviewToRemove);
+                        Reviews = newReviews;
+
+                        // Re-apply filters and sort
+                        ApplyFilterAndSort();
+
+                        // Notify parent component
+                        await OnReviewDeleted.InvokeAsync(reviewId);
+
+                        Snackbar.Add("Review deleted successfully", Severity.Success);
+                    }
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    Snackbar.Add($"Failed to delete review: {errorContent}", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+            }
+            finally
+            {
+                isLoading = false;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Applies a filter to the reviews list.
+    /// </summary>
+    /// <param name="filter">Filter type: all, positive, neutral, negative</param>
+    private void FilterReviews(string filter)
+    {
+        currentFilter = filter;
+        ApplyFilterAndSort();
+    }
+
+    /// <summary>
+    /// Applies a sort order to the reviews list.
+    /// </summary>
+    /// <param name="sort">Sort type: newest, oldest, highest, lowest</param>
+    private void SortReviews(string sort)
+    {
+        currentSort = sort;
+        ApplyFilterAndSort();
+    }
+
+    /// <summary>
+    /// Resets filters and sort to default values.
+    /// </summary>
+    private void ResetFilters()
+    {
+        currentFilter = "all";
+        currentSort = "newest";
+        ApplyFilterAndSort();
+    }
+
+    /// <summary>
+    /// Applies the current filter and sort settings to the reviews list.
+    /// </summary>
+    private void ApplyFilterAndSort()
+    {
+        if (Reviews == null)
+        {
+            displayedReviews = new();
+            return;
+        }
+
+        // First apply filter
+        var filteredReviews = currentFilter switch
+        {
+            "positive" => Reviews.Where(r => r.Rating >= 4).ToList(),
+            "neutral" => Reviews.Where(r => r.Rating == 3).ToList(),
+            "negative" => Reviews.Where(r => r.Rating <= 2).ToList(),
+            _ => Reviews.ToList() // "all" filter
+        };
+
+        // Then apply sort
+        displayedReviews = currentSort switch
+        {
+            "oldest" => filteredReviews.OrderBy(r => r.CreatedAt).ToList(),
+            "highest" => filteredReviews.OrderByDescending(r => r.Rating).ToList(),
+            "lowest" => filteredReviews.OrderBy(r => r.Rating).ToList(),
+            _ => filteredReviews.OrderByDescending(r => r.CreatedAt).ToList() // "newest" sort
+        };
+
+        // Force UI refresh after updating displayedReviews
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Gets a user-friendly name for the current filter.
+    /// </summary>
+    private string GetFilterName(string filter) => filter switch
+    {
+        "positive" => "Positive Ratings (4-5★)",
+        "neutral" => "Neutral Ratings (3★)",
+        "negative" => "Negative Ratings (1-2★)",
+        _ => "All Ratings"
+    };
+
+    /// <summary>
+    /// Gets a user-friendly name for the current sort order.
+    /// </summary>
+    private string GetSortName(string sort) => sort switch
+    {
+        "oldest" => "Oldest First",
+        "highest" => "Highest Rated",
+        "lowest" => "Lowest Rated",
+        _ => "Newest First"
+    };
+}

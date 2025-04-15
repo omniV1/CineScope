@@ -1,0 +1,183 @@
+﻿@* Login page component that handles user authentication *@
+@page "/login"
+@using CineScope.Shared.Auth
+@using CineScope.Client.Services.Auth
+@using CineScope.Client.Services
+@using System.ComponentModel.DataAnnotations
+@layout AuthLayout
+
+@* Import required services and components *@
+@inject NavigationManager NavigationManager
+@inject AuthService AuthService
+@inject ISnackbar Snackbar
+@inject RecaptchaService RecaptchaService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>CineScope - Sign In</PageTitle>
+
+@* Main container for the login form *@
+<MudContainer MaxWidth="MaxWidth.Small" Class="pa-4">
+    <MudPaper Elevation="3" Class="pa-4">
+        @* Login form header *@
+        <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-4">Welcome Back!</MudText>
+        <MudText Typo="Typo.subtitle1" Align="Align.Center" Class="mb-4">Sign in to continue your cinematic journey</MudText>
+
+        @* Login form with validation *@
+        <MudForm @ref="form" @bind-IsValid="@success">
+            @* Username/Email field *@
+            <MudTextField 
+                @bind-Value="loginRequest.UsernameOrEmail" 
+                Label="Username or Email" 
+                Variant="Variant.Outlined"
+                Class="mb-3"
+                Required="true"
+                RequiredError="Username or email is required"
+                Immediate="true" />
+
+            @* Password field with show/hide functionality *@
+            <MudTextField 
+                @bind-Value="loginRequest.Password" 
+                Label="Password" 
+                Variant="Variant.Outlined"
+                InputType="@(showPassword ? InputType.Text : InputType.Password)"
+                Adornment="Adornment.End"
+                AdornmentIcon="@(showPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff)"
+                OnAdornmentClick="() => showPassword = !showPassword"
+                Class="mb-3"
+                Required="true"
+                RequiredError="Password is required" />
+
+            @* reCAPTCHA verification *@
+            <div class="mb-3">
+                <Recaptcha @ref="recaptcha" />
+            </div>
+
+            @* Error message display *@
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <MudAlert Severity="Severity.Error" Class="my-2">@errorMessage</MudAlert>
+            }
+
+            @* Login button with loading state *@
+            <MudButton 
+                Variant="Variant.Filled" 
+                Color="Color.Primary" 
+                FullWidth="true"
+                OnClick="ProcessLogin"
+                Disabled="@(!success || isLoading)"
+                Class="mt-3">
+                @if (isLoading)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    <MudText Class="ms-2">Signing in...</MudText>
+                }
+                else
+                {
+                    <MudText>Sign In</MudText>
+                }
+            </MudButton>
+
+            @* Registration link *@
+            <MudText Align="Align.Center" Class="mt-4">
+                Don't have an account? 
+                <MudLink Href="/register" Underline="Underline.Always">Create one</MudLink>
+            </MudText>
+        </MudForm>
+    </MudPaper>
+</MudContainer>
+
+<link href="css/auth.css" rel="stylesheet" />
+
+@code {
+    // Form reference and validation state
+    private MudForm form;
+    private bool success;
+    private bool showPassword;
+    private bool isLoading;
+    private string errorMessage;
+    private Recaptcha recaptcha;
+
+    // Login request model
+    private LoginRequest loginRequest = new();
+
+    // Get the return URL from query parameters (where to go after login)
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string ReturnUrl { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // Clear any existing error message when the page loads
+        errorMessage = string.Empty;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("initializeRecaptcha", "loginRecaptcha");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"reCAPTCHA initialization error: {ex.Message}");
+            }
+        }
+    }
+
+    // Handle the login process
+    private async Task ProcessLogin()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = string.Empty;
+
+            // Validate the form
+            await form.Validate();
+            if (!form.IsValid) return;
+
+            // Verify reCAPTCHA
+            var recaptchaResponse = await RecaptchaService.ExecuteRecaptchaAsync("login");
+            if (string.IsNullOrEmpty(recaptchaResponse))
+            {
+                errorMessage = "Please complete the reCAPTCHA verification";
+                return;
+            }
+
+            // Verify the reCAPTCHA token with the server
+            var isVerified = await RecaptchaService.VerifyTokenAsync(recaptchaResponse, "login");
+            if (!isVerified)
+            {
+                errorMessage = "reCAPTCHA verification failed. Please try again.";
+                await recaptcha.ResetAsync();
+                return;
+            }
+
+            // Attempt to log in
+            var result = await AuthService.Login(loginRequest);
+            if (result.Success)
+            {
+                // Show success message and redirect to home or return URL
+                Snackbar.Add("Welcome back!", Severity.Success);
+                NavigationManager.NavigateTo(string.IsNullOrEmpty(ReturnUrl) ? "/" : ReturnUrl);
+            }
+            else
+            {
+                errorMessage = result.Message;
+                await recaptcha.ResetAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "An unexpected error occurred. Please try again.";
+            Console.WriteLine($"Login error: {ex.Message}");
+            await recaptcha.ResetAsync();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

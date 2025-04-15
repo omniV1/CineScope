@@ -1,0 +1,205 @@
+﻿@* This is the main entry point of our web application *@
+
+@* Import the services we need *@
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Routing
+@using MudBlazor
+@using System.Threading.Tasks
+@using CineScope.Client.Shared
+
+@* Set up error handling for the entire application *@
+<CascadingAuthenticationState>
+    @* This handles any errors that occur in the app *@
+    <Error>
+        @* Set up the theme (colors, fonts, etc.) for our app *@
+        <MudThemeProvider Theme="@_theme" />
+        
+        @* Add support for snackbar notifications (those little messages that pop up) *@
+        <MudSnackbarProvider />
+        
+        @* Add support for dialogs (pop-up windows) *@
+        <MudDialogProvider />
+        
+        @* This is where the actual routing (navigation between pages) happens *@
+        <Router AppAssembly="@typeof(App).Assembly">
+            <Found Context="routeData">
+                @* If the page is found, check if the user needs to be logged in *@
+                <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                    @* What to show while we're checking if the user is authorized *@
+                    <Authorizing>
+                        <LoadingAnimation />
+                    </Authorizing>
+                    @* What to show if the user isn't authorized *@
+                    <NotAuthorized>
+                        @if (context.User.Identity?.IsAuthenticated != true)
+                        {
+                            <RedirectToLogin />
+                        }
+                        else
+                        {
+                            <p class="not-authorized">You are not authorized to access this resource.</p>
+                        }
+                    </NotAuthorized>
+                </AuthorizeRouteView>
+            </Found>
+            @* What to show if the page isn't found (404 error) *@
+            <NotFound>
+                <PageTitle>Not found</PageTitle>
+                <LayoutView Layout="@typeof(MainLayout)">
+                    <MudContainer Class="mt-16 text-center">
+                        <MudText Typo="Typo.h2" Class="mud-text-secondary mb-n2">404</MudText>
+                        <MudText Typo="Typo.h4" Class="mt-4">Page Not Found</MudText>
+                        <MudText Typo="Typo.subtitle1" Class="mt-4">The page you're looking for doesn't exist or has been moved.</MudText>
+                        <MudButton Href="" Color="Color.Primary" Variant="Variant.Filled" Class="mt-8">Go Home</MudButton>
+                    </MudContainer>
+                </LayoutView>
+            </NotFound>
+        </Router>
+    </Error>
+</CascadingAuthenticationState>
+
+@code {
+    // Define our custom color theme
+    private MudTheme _theme = new MudTheme()
+    {
+        Palette = new PaletteLight()
+        {
+            // Main colors
+            Primary = "#1E88E5",       // Blue
+            Secondary = "#ff4081",     // Pink
+            Tertiary = "#1ec8e5",     // Light Blue
+            
+            // Background colors
+            Background = "#F5F5F5",   // Light Grey
+            Surface = "#FFFFFF",      // White
+            DrawerBackground = "#FFFFFF",
+            DrawerText = "rgba(0,0,0,0.7)",
+            
+            // Text colors
+            TextPrimary = "rgba(0,0,0,0.87)",
+            TextSecondary = "rgba(0,0,0,0.6)",
+            
+            // Action colors
+            ActionDefault = "#424242",
+            ActionDisabled = "#757575",
+            ActionDisabledBackground = "#E0E0E0",
+            
+            // Error and warning colors
+            Error = "#f44336",        // Red
+            Success = "#4caf50",      // Green
+            Warning = "#ff9800",      // Orange
+            Info = "#2196f3"         // Light Blue
+        },
+        Typography = new Typography()
+        {
+            // Font settings
+            Default = new Default()
+            {
+                FontFamily = new[] { "Roboto", "Helvetica", "Arial", "sans-serif" },
+                FontSize = ".875rem",
+                FontWeight = 400,
+                LineHeight = 1.43,
+                LetterSpacing = ".01071em"
+            },
+            H1 = new H1()
+            {
+                FontSize = "6rem",
+                FontWeight = 300,
+                LineHeight = 1.167,
+                LetterSpacing = "-.01562em"
+            },
+            H2 = new H2()
+            {
+                FontSize = "2rem",
+                FontWeight = 700,
+                LineHeight = 1.2,
+                LetterSpacing = "-.00833em"
+            },
+            H3 = new H3()
+            {
+                FontSize = "1.75rem",
+                FontWeight = 500,
+                LineHeight = 1.2,
+                LetterSpacing = "-.00833em"
+            },
+            H4 = new H4()
+            {
+                FontSize = "1.5rem",
+                FontWeight = 500,
+                LineHeight = 1.2,
+                LetterSpacing = "-.00833em"
+            }
+        },
+        Shadows = new Shadow(),
+        LayoutProperties = new LayoutProperties()
+        {
+            DrawerWidthLeft = "250px",
+            AppbarHeight = "64px"
+        }
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await Task.Delay(2500);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error during initialization: {ex.Message}");
+        }
+        finally
+        {
+            _loaded = true;
+            StateHasChanged();
+        }
+    }
+}
+
+@* Components for handling specific scenarios *@
+
+@* Shows a loading animation while checking authorization *@
+@code {
+    private class LoadingAnimation : ComponentBase
+    {
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder)
+        {
+            builder.OpenElement(0, "div");
+            builder.AddAttribute(1, "class", "loading-container");
+            builder.AddMarkupContent(2, @"
+                <div class=""loading-animation"">
+                    <div class=""spinner""></div>
+                    <p>Loading...</p>
+                </div>
+            ");
+            builder.CloseElement();
+        }
+    }
+}
+
+@* Redirects users to the login page *@
+@code {
+    private class RedirectToLogin : ComponentBase
+    {
+        [Inject]
+        private NavigationManager Navigation { get; set; }
+
+        protected override void OnInitialized()
+        {
+            Navigation.NavigateTo($"login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}", true);
+        }
+    }
+}
+
+@* Handles errors in the application *@
+@code {
+    private class Error : ErrorBoundary
+    {
+        protected override Task OnErrorAsync(Exception exception)
+        {
+            // Log the error (you could add more detailed logging here)
+            Console.WriteLine($"Error: {exception.Message}");
+            return Task.CompletedTask;
+        }
+    }
+}

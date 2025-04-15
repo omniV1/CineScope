@@ -1,0 +1,122 @@
+﻿@* This is the main layout that wraps around all pages in our application *@
+@using CineScope.Client.Shared.Nav
+@using CineScope.Client.Services.Auth
+@using CineScope.Client.Services
+@inherits LayoutComponentBase
+@using MudBlazor
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+@inject StateContainer StateContainer
+@implements IDisposable
+
+@* Main layout container for the application *@
+<MudLayout>
+    @* Top navigation bar (app bar) *@
+    <MudAppBar Elevation="1" Dense="true" Fixed="true" Class="cinescope-appbar">
+        @* Hamburger menu button *@
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+
+        <MudSpacer />
+        @* Centered title *@
+        <div class="d-flex align-center justify-center" style="position: absolute; left: 50%; transform: translateX(-50%);">
+            <MudText Typo="Typo.h5">CineScope</MudText>
+        </div>
+        <MudSpacer />
+
+        @* User Profile Menu (shows different options when logged in vs logged out) *@
+        <AuthorizeView>
+            <Authorized>
+                @* Dropdown menu for logged-in users *@
+                <MudMenu AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+                    <ActivatorContent>
+                        @* User's profile picture *@
+                        <MudAvatar Style="@AvatarStyle" Class="cursor-pointer">
+                            <img src="@($"/profile-pictures/{_userProfilePicture}")" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
+                        </MudAvatar>
+                    </ActivatorContent>
+                    <ChildContent>
+                        @* Dropdown menu items *@
+                        <MudMenuItem Href="/profile">My Profile</MudMenuItem>
+                        <MudMenuItem Href="/logout">Logout</MudMenuItem>
+                    </ChildContent>
+                </MudMenu>
+            </Authorized>
+            <NotAuthorized>
+                @* Login button for users who aren't logged in *@
+                <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit" Href="/login" />
+            </NotAuthorized>
+        </AuthorizeView>
+    </MudAppBar>
+
+    @* Side navigation drawer (opens with hamburger menu) *@
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="1" ClipMode="DrawerClipMode.Always" Fixed="true">
+        @* Navigation menu component *@
+        <NavMenu UserProfilePicture="@_userProfilePicture" Username="@_username" />
+    </MudDrawer>
+
+    @* Main content area *@
+    <MudMainContent>
+        @* Add padding below the fixed app bar *@
+        <div class="pt-14">
+            @* Container for page content with padding *@
+            <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-6 px-4">
+                @* Render the current page content *@
+                @Body
+            </MudContainer>
+        </div>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    // Get the current user's authentication state
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; }
+
+    // Track if the side drawer is open
+    private bool _drawerOpen = true;
+    
+    // Store user information
+    private string _userProfilePicture = "default.svg";
+    private string _username = "";
+
+    // Style for the avatar based on whether it's the default picture
+    private string AvatarStyle => $"background-color: transparent; cursor: pointer; border-radius: 50%; {(_userProfilePicture == "default.svg" ? "" : "border: 2px solid var(--mud-palette-error);")}";
+
+    // Initialize the component
+    protected override async Task OnInitializedAsync()
+    {
+        // Subscribe to state changes
+        StateContainer.OnChange += StateHasChanged;
+        
+        // Load user information
+        var user = await AuthService.GetCurrentUser();
+        if (user != null)
+        {
+            // Set the profile picture (use default if none set)
+            _userProfilePicture = !string.IsNullOrEmpty(user.ProfilePictureUrl) 
+                ? Path.GetFileName(user.ProfilePictureUrl)
+                : "default.svg";
+            _username = user.Username;
+            StateContainer.UserProfilePicture = _userProfilePicture;
+        }
+    }
+
+    // Update when parameters change
+    protected override void OnParametersSet()
+    {
+        _userProfilePicture = StateContainer.UserProfilePicture;
+    }
+
+    // Toggle the side drawer open/closed
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    // Clean up when component is disposed
+    public void Dispose()
+    {
+        StateContainer.OnChange -= StateHasChanged;
+    }
+}
