@@ -16,26 +16,6 @@
 
 <PageTitle>@(movie?.Title ?? "Movie Details") - CineScope</PageTitle>
 
-<!-- Authentication Debug Panel -->
-<AuthorizeView>
-    <Authorized>
-        <MudAlert Severity="Severity.Info" Class="mb-4">
-            <MudText>Authentication Status: <strong>Logged in as @context.User.Identity.Name</strong></MudText>
-            <MudText>User ID: @currentUserId</MudText>
-            <MudText>Claims: @string.Join(", ", context.User.Claims.Select(c => $"{c.Type}={c.Value}"))</MudText>
-        </MudAlert>
-    </Authorized>
-    <NotAuthorized>
-        <MudAlert Severity="Severity.Warning" Class="mb-4">
-            <MudText>Authentication Status: <strong>Not logged in</strong></MudText>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                       OnClick="@(() => NavigationManager.NavigateTo($"/login?returnUrl={Uri.EscapeDataString(NavigationManager.Uri)}"))">
-                Log In Now
-            </MudButton>
-        </MudAlert>
-    </NotAuthorized>
-</AuthorizeView>
-
 @if (isLoading)
 {
     <div class="d-flex justify-center my-8">
@@ -58,7 +38,9 @@ else
         <!-- Movie Poster -->
         <MudItem xs="12" sm="4" md="3">
             <MudCard Elevation="3" Class="movie-poster-card">
-                <MudCardMedia Image="@GetPosterUrl()" Height="450" />
+                <div class="poster-container">
+                    <img src="@GetPosterUrl()" alt="@movie.Title" />
+                </div>
             </MudCard>
 
             <!-- Refresh Button -->
@@ -147,12 +129,11 @@ else
             @if (showReviewForm)
             {
                 <MudDivider Class="my-6" />
-                <CreateReview MovieId="@MovieId" OnReviewSubmitted="HandleReviewSubmitted" CurrentUserId="@currentUserId" />
+                <CreateReview MovieId="@MovieId" OnReviewSubmitted="HandleReviewSubmitted" CurrentUserId="@currentUserId" MovieTitle="@movie.Title" />
             }
         </Authorized>
     </AuthorizeView>
 
-    <!-- Reviews Section -->
     <MudDivider Class="my-6" />
 
     @if (isLoadingReviews)
@@ -179,16 +160,40 @@ else
                             CurrentUserId="@currentUserId"
                             MovieTitles="@movieTitles"
                             OnReviewUpdated="HandleReviewUpdated"
-                            OnReviewDeleted="HandleReviewDeleted" />
+                            OnReviewDeleted="HandleReviewDeleted"
+                            Title="" />
             </Authorized>
             <NotAuthorized>
                 <ReviewList Reviews="@reviews" MovieId="@MovieId"
                             ShowActions="false"
-                            EmptyMessage="No reviews yet. Login to be the first to share your thoughts!" />
+                            EmptyMessage="No reviews yet. Login to be the first to share your thoughts!"
+                            Title="" />
             </NotAuthorized>
         </AuthorizeView>
     }
 }
+
+<style>
+    .movie-poster-card {
+        background-color: var(--mud-palette-background-grey);
+    }
+
+    .movie-poster-card .poster-container {
+        position: relative;
+        width: 100%;
+        padding-top: 150%; /* 2:3 aspect ratio */
+        overflow: hidden;
+    }
+
+    .movie-poster-card .poster-container img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+</style>
 
 @code {
     // Add AuthStateProvider so we can diagnose auth issues
@@ -215,29 +220,6 @@ else
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            Console.WriteLine("Checking authentication state...");
-
-            // Get authentication state for debugging
-            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-            Console.WriteLine($"Is authenticated: {authState.User.Identity.IsAuthenticated}");
-            if (authState.User.Identity.IsAuthenticated)
-            {
-                Console.WriteLine($"Username: {authState.User.Identity.Name}");
-                Console.WriteLine($"Claims: {string.Join(", ", authState.User.Claims.Select(c => $"{c.Type}={c.Value}"))}");
-            }
-
-            // Get the current user ID
-            var user = await AuthService.GetCurrentUser();
-            currentUserId = user?.Id ?? string.Empty;
-            Console.WriteLine($"Current user ID from AuthService: {currentUserId}");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Authentication debugging error: {ex.Message}");
-        }
-
         await LoadMovie();
         await LoadReviews();
         LoadMovieTitles();
@@ -267,16 +249,10 @@ else
         try
         {
             isLoading = true;
-
-            // Debug: Print the movie ID we're loading
-            Console.WriteLine($"Loading movie with ID: {MovieId} (forceRefresh: {forceRefresh})");
-
-            // Use the cache service to get the movie
             movie = await MovieCache.GetCachedMovieByIdAsync(MovieId);
 
             if (movie == null)
             {
-                // If not in cache, fetch from API
                 var response = await Http.GetAsync($"/api/Movie/{MovieId}");
                 if (response.IsSuccessStatusCode)
                 {
@@ -288,18 +264,12 @@ else
                 }
                 else
                 {
-                    Console.WriteLine("Movie not found in cache or API");
                     Snackbar.Add("Failed to load movie details", Severity.Error);
                 }
-            }
-            else
-            {
-                Console.WriteLine($"Loaded movie: {movie.Title} with ID: {movie.Id}");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error loading movie: {ex.Message}");
             Snackbar.Add($"Error: {ex.Message}", Severity.Error);
         }
         finally
@@ -317,45 +287,28 @@ else
         {
             isLoadingReviews = true;
 
-            // Debug message for the movie ID we're requesting reviews for
-            Console.WriteLine($"Requesting reviews for movie ID: {MovieId} (forceRefresh: {forceRefresh})");
-
-            // Try to get reviews from local storage cache first
             if (!forceRefresh)
             {
                 var cachedReviews = await GetReviewsFromCache();
                 if (cachedReviews != null)
                 {
                     reviews = cachedReviews;
-                    Console.WriteLine($"Retrieved {reviews.Count} reviews from cache");
                     return;
                 }
             }
 
-            // Call the API to get reviews for this movie
             var response = await Http.GetAsync($"/api/Review/movie/{MovieId}");
-
-            Console.WriteLine($"Review API response status: {response.StatusCode}");
 
             if (response.IsSuccessStatusCode)
             {
                 reviews = await response.Content.ReadFromJsonAsync<List<ReviewDto>>() ?? new();
-                Console.WriteLine($"Loaded {reviews.Count} reviews from API");
-
-                // Cache the reviews for future requests
                 await SaveReviewsToCache(reviews);
             }
             else
             {
-                // Try to get more detailed error information
-                var errorContent = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Failed to load reviews: {response.StatusCode}. Details: {errorContent}");
-
-                // For development purposes only - use sample data if API fails
                 if (IsDevelopmentEnvironment())
                 {
                     reviews = GenerateSampleReviews();
-                    Console.WriteLine("Using sample reviews due to API error");
                 }
                 else
                 {
@@ -365,13 +318,9 @@ else
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error loading reviews: {ex.Message}");
-
-            // For development purposes only - use sample data if exception occurs
             if (IsDevelopmentEnvironment())
             {
                 reviews = GenerateSampleReviews();
-                Console.WriteLine("Using sample reviews due to exception");
             }
             else
             {
@@ -392,7 +341,6 @@ else
         try
         {
             var cacheKey = $"{REVIEWS_CACHE_KEY_PREFIX}{MovieId}";
-            // Fixed: Correct parameter passing for JavaScript interop
             var json = await JSRuntime.InvokeAsync<string>("localStorage.getItem", new object[] { cacheKey });
 
             if (string.IsNullOrEmpty(json))
@@ -400,15 +348,13 @@ else
 
             var cachedData = JsonSerializer.Deserialize<CachedData<List<ReviewDto>>>(json);
 
-            // Check if cache is expired
             if (cachedData == null || DateTime.UtcNow.Subtract(cachedData.Timestamp).TotalMinutes > REVIEWS_CACHE_EXPIRATION_MINUTES)
                 return null;
 
             return cachedData.Data;
         }
-        catch (Exception ex)
+        catch
         {
-            Console.WriteLine($"Error retrieving reviews from cache: {ex.Message}");
             return null;
         }
     }
@@ -428,13 +374,11 @@ else
                 };
 
             var json = JsonSerializer.Serialize(cachedData);
-            // Fixed: Correct parameter passing for JavaScript interop
             await JSRuntime.InvokeVoidAsync("localStorage.setItem", new object[] { cacheKey, json });
-            Console.WriteLine($"Saved {reviews.Count} reviews to cache");
         }
-        catch (Exception ex)
+        catch
         {
-            Console.WriteLine($"Error saving reviews to cache: {ex.Message}");
+            // Silently fail if caching doesn't work
         }
     }
 
@@ -446,13 +390,11 @@ else
         try
         {
             var cacheKey = $"{REVIEWS_CACHE_KEY_PREFIX}{MovieId}";
-            // Fixed: Correct parameter passing for JavaScript interop
             await JSRuntime.InvokeVoidAsync("localStorage.removeItem", new object[] { cacheKey });
-            Console.WriteLine("Invalidated reviews cache");
         }
-        catch (Exception ex)
+        catch
         {
-            Console.WriteLine($"Error invalidating reviews cache: {ex.Message}");
+            // Silently fail if cache invalidation doesn't work
         }
     }
 

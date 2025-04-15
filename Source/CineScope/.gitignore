@@ -3,8 +3,6 @@
 **/appsettings.Development.json
 **/appsettings.Production.json
 !**/appsettings.template.json
-.env
-.env.*
 
 ## Ignore Visual Studio files
 .vs/
@@ -56,4 +54,3 @@ bld/
 ## Ignore OS files
 .DS_Store
 Thumbs.db 
-.fake

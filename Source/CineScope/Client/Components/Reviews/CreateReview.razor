@@ -9,7 +9,7 @@
 <MudCard Elevation="3" Class="create-review-form mb-4">
     <MudCardHeader>
         <CardHeaderContent>
-            <MudText Typo="Typo.h5">Write a Review</MudText>
+            <MudText Typo="Typo.h5">@(string.IsNullOrEmpty(MovieTitle) ? "Write a Review" : $"Review {MovieTitle}")</MudText>
         </CardHeaderContent>
     </MudCardHeader>
 
@@ -20,7 +20,7 @@
                           Required="true" RequiredError="Review text is required"
                           Variant="Variant.Outlined" Lines="5"
                           Counter="1000" MaxLength="1000"
-                          HelperText="Share your thoughts about this movie"
+                          HelperText="@(string.IsNullOrEmpty(MovieTitle) ? "Share your thoughts about this movie" : $"Share your thoughts about {MovieTitle}")"
                           Class="mb-4" />
 
             <!-- Rating section with better visual grouping -->
@@ -110,6 +110,12 @@
     /// </summary>
     [Parameter]
     public EventCallback<ReviewDto> OnReviewSubmitted { get; set; }
+
+    /// <summary>
+    /// The title of the movie being reviewed.
+    /// </summary>
+    [Parameter]
+    public string MovieTitle { get; set; } = string.Empty;
 
     /// <summary>
     /// Review data model.

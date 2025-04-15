@@ -1,35 +1,21 @@
-@* This page handles the logout process. When a user navigates here, they are automatically logged out. *@
 @page "/logout"
-
-@* Import required services *@
 @using CineScope.Client.Services.Auth
-@inject NavigationManager NavigationManager
 @inject AuthService AuthService
+@inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 
-@* This component doesn't have any visible content because it automatically processes the logout *@
 @code {
-    // This method runs when the component is first loaded
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            // Call the AuthService to log the user out
             await AuthService.Logout();
-            
-            // Show a success message to the user
-            Snackbar.Add("You have been successfully logged out", Severity.Success);
-            
-            // Redirect the user back to the home page
+            Snackbar.Add("You have been logged out successfully.", Severity.Success);
             NavigationManager.NavigateTo("/");
         }
         catch (Exception ex)
         {
-            // If something goes wrong during logout, show an error message
-            Snackbar.Add("An error occurred during logout", Severity.Error);
-            Console.WriteLine($"Logout error: {ex.Message}");
-            
-            // Still redirect to home page even if there's an error
+            Snackbar.Add($"Error during logout: {ex.Message}", Severity.Error);
             NavigationManager.NavigateTo("/");
         }
     }

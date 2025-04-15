@@ -1,232 +1,241 @@
-﻿@* This is the home page of CineScope - the first page users see when they visit the site *@
-@page "/"
+﻿@page "/"
 @using Microsoft.AspNetCore.Components.Authorization
 @using CineScope.Client.Services
 @using CineScope.Shared.DTOs
 @using CineScope.Client.Components.Movies
 @using System.Net.Http.Json
-@using MudBlazor
-@using System.Text.Json
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 @inject MovieCacheService MovieCache
 
-<PageTitle>CineScope - Discover Movies</PageTitle>
+<PageTitle>CineScope - Discover Your Next Movie</PageTitle>
 
-@* Main content container *@
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
-    @* Hero section with welcome message and search *@
-    <MudPaper Elevation="3" Class="pa-8 mb-8" Style="background: linear-gradient(135deg, var(--mud-palette-primary) 0%, var(--mud-palette-primary-darken) 100%);">
+<!-- Hero Section -->
+<div class="hero-section">
+    <div style="position: absolute; inset: 0; background-image: url('@heroBackgroundUrl'); background-size: cover; background-position: center;">
+        <div class="hero-overlay"></div>
+    </div>
+
+    <MudContainer MaxWidth="MaxWidth.Large" Class="hero-content">
         <MudGrid>
-            <MudItem xs="12" sm="8">
-                @* Welcome message *@
-                <MudText Typo="Typo.h3" Color="Color.Surface" Class="mb-4">Welcome to CineScope</MudText>
-                <MudText Typo="Typo.body1" Color="Color.Surface" Class="mb-8">
-                    Discover new movies, share your thoughts, and join the conversation.
+            <MudItem xs="12" md="8">
+                <MudText Typo="Typo.h2" Color="Color.Surface" Class="mb-4">
+                    Your Movie Journey Starts Here
                 </MudText>
-                
-                @* Search box *@
-                <MudTextField @bind-Value="searchQuery" 
-                            Label="Search movies..." 
-                            Variant="Variant.Outlined"
-                            Adornment="Adornment.End"
-                            AdornmentIcon="@Icons.Material.Filled.Search"
-                            OnAdornmentClick="SearchMovies"
-                            Class="mt-3"
-                            Style="background-color: var(--mud-palette-surface);"
-                            @onkeyup="@(e => { if (e.Key == "Enter") { SearchMovies(); }})" />
+                <MudText Typo="Typo.h5" Color="Color.Surface" Class="mb-6">
+                    Join thousands of movie enthusiasts sharing their thoughts, discovering new films,
+                    and connecting through the magic of cinema.
+                </MudText>
+                <div class="d-flex gap-4 flex-wrap">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large"
+                               Href="/movies">
+                        Explore Movies
+                    </MudButton>
+                    <AuthorizeView>
+                        <Authorized>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Surface" Size="Size.Large"
+                                       Href="/my-reviews">
+                                My Reviews
+                            </MudButton>
+                        </Authorized>
+                        <NotAuthorized>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Surface" Size="Size.Large"
+                                       Href="/register">
+                                Join Community
+                            </MudButton>
+                        </NotAuthorized>
+                    </AuthorizeView>
+                </div>
             </MudItem>
         </MudGrid>
-    </MudPaper>
+    </MudContainer>
+</div>
 
-    @* Loading state *@
-    @if (isLoading)
+<!-- Features Section -->
+<MudGrid>
+  <MudItem xs="12" sm="4">
+    <div class="feature-box">
+      <MudIcon Icon="@Icons.Material.Filled.RateReview" Color="Color.Primary" Size="Size.Large" Class="feature-icon" />
+      <MudText Typo="Typo.h6" Class="feature-title">Share Your Voice</MudText>
+      <MudText Class="feature-text">
+        Write detailed reviews, rate movies, and help others discover great films through your unique perspective.
+      </MudText>
+    </div>
+  </MudItem>
+  
+  <MudItem xs="12" sm="4">
+    <div class="feature-box">
+      <MudIcon Icon="@Icons.Material.Filled.Explore" Color="Color.Primary" Size="Size.Large" Class="feature-icon" />
+      <MudText Typo="Typo.h6" Class="feature-title">Discover Movies</MudText>
+      <MudText Class="feature-text">
+        Find your next favorite film through personalized recommendations and curated lists.
+      </MudText>
+    </div>
+  </MudItem>
+  
+  <MudItem xs="12" sm="4">
+    <div class="feature-box">
+      <MudIcon Icon="@Icons.Material.Filled.Groups" Color="Color.Primary" Size="Size.Large" Class="feature-icon" />
+      <MudText Typo="Typo.h6" Class="feature-title">Join the Community</MudText>
+      <MudText Class="feature-text">
+        Connect with fellow movie lovers and be part of a vibrant cinematic community.
+      </MudText>
+    </div>
+  </MudItem>
+</MudGrid>
+<!-- Top Rated Movies Section -->
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-16">
+    <div class="d-flex justify-space-between align-center mb-4">
+        <MudText Typo="Typo.h4">Top Rated Movies</MudText>
+        <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/movies">View All</MudButton>
+    </div>
+
+    @if (isLoadingTopRated)
     {
         <div class="d-flex justify-center my-4">
             <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
         </div>
     }
+    else if (topRatedMovies.Count == 0)
+    {
+        <MudAlert Severity="Severity.Warning">
+            No top rated movies found. Please check back later.
+        </MudAlert>
+    }
     else
     {
-        @* Featured Movies Section *@
-        @if (featuredMovies != null && featuredMovies.Any())
-        {
-            <MudText Typo="Typo.h5" Class="mb-4">Featured Movies</MudText>
-            <MudGrid>
-                @foreach (var movie in featuredMovies.Take(4))
-                {
-                    <MudItem xs="12" sm="6" md="3">
-                        @* Movie card component *@
-                        <MudCard Class="movie-card" @onclick="@(() => NavigateToMovie(movie.Id))">
-                            @* Movie poster *@
-                            <MudCardMedia Image="@GetPosterUrl(movie.PosterPath)" 
-                                         Height="400" 
-                                         Style="background-size: cover; background-position: center;" />
-                            <MudCardContent>
-                                @* Movie title *@
-                                <MudText Typo="Typo.h6" Class="mt-3">@movie.Title</MudText>
-                                @* Release year *@
-                                <MudText Typo="Typo.body2">@movie.ReleaseDate.Year</MudText>
-                                @* Rating display *@
-                                <div class="d-flex align-center mt-2">
-                                    <MudRating ReadOnly="true" SelectedValue="@((int)Math.Round(movie.Rating))" />
-                                    <MudText Typo="Typo.body2" Class="ml-2">@movie.Rating.ToString("F1")</MudText>
-                                </div>
-                            </MudCardContent>
-                        </MudCard>
-                    </MudItem>
-                }
-            </MudGrid>
-        }
-
-        @* Recent Reviews Section *@
-        @if (recentReviews != null && recentReviews.Any())
-        {
-            <MudDivider Class="my-6" />
-            <MudText Typo="Typo.h5" Class="mb-4">Recent Reviews</MudText>
-            <MudGrid>
-                @foreach (var review in recentReviews.Take(3))
-                {
-                    <MudItem xs="12" sm="6" md="4">
-                        @* Review card *@
-                        <MudCard Class="review-card">
-                            <MudCardHeader>
-                                <CardHeaderAvatar>
-                                    @* Reviewer's profile picture *@
-                                    <MudAvatar Color="Color.Secondary">
-                                        @review.Username.FirstOrDefault()
-                                    </MudAvatar>
-                                </CardHeaderAvatar>
-                                <CardHeaderContent>
-                                    @* Reviewer's name and movie title *@
-                                    <MudText Typo="Typo.body1">@review.Username</MudText>
-                                    <MudText Typo="Typo.body2">reviewed @review.MovieTitle</MudText>
-                                </CardHeaderContent>
-                                <CardHeaderActions>
-                                    @* Review rating *@
-                                    <MudRating ReadOnly="true" SelectedValue="@((int)review.Rating)" Size="Size.Small" />
-                                </CardHeaderActions>
-                            </MudCardHeader>
-                            <MudCardContent>
-                                @* Review text *@
-                                <MudText Typo="Typo.body2" Style="overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
-                                    @review.Text
-                                </MudText>
-                            </MudCardContent>
-                            <MudCardActions>
-                                @* Link to full review *@
-                                <MudButton Variant="Variant.Text" Color="Color.Primary" 
-                                          @onclick="@(() => NavigateToMovie(review.MovieId))">
-                                    Read More
-                                </MudButton>
-                            </MudCardActions>
-                        </MudCard>
-                    </MudItem>
-                }
-            </MudGrid>
-        }
+        <div class="card-grid">
+            @foreach (var movie in topRatedMovies)
+            {
+                <MovieCard Movie="@movie" />
+            }
+        </div>
     }
 </MudContainer>
 
-@code {
-    // Properties to store page data
-    private bool isLoading = true;
-    private string searchQuery = "";
-    private List<MovieDto> featuredMovies;
-    private List<ReviewDto> recentReviews;
+<!-- Recently Added Section -->
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-16">
+    <div class="d-flex justify-space-between align-center mb-4">
+        <MudText Typo="Typo.h4">Recently Added</MudText>
+        <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/movies">View All</MudButton>
+    </div>
 
-    // Load data when the page first loads
+    @if (isLoadingRecent)
+    {
+        <div class="d-flex justify-center my-4">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+        </div>
+    }
+    else if (recentlyAddedMovies.Count == 0)
+    {
+        <MudAlert Severity="Severity.Warning">
+            No recently added movies found. Stay tuned for updates!
+        </MudAlert>
+    }
+    else
+    {
+        <div class="card-grid">
+            @foreach (var movie in recentlyAddedMovies)
+            {
+                <MovieCard Movie="@movie" />
+            }
+        </div>
+    }
+</MudContainer>
+
+<!-- Call to Action Section -->
+<MudContainer MaxWidth="MaxWidth.False" Class="mt-16 mb-16">
+    <MudPaper Class="py-16" Style="background: linear-gradient(to right, var(--mud-palette-primary), var(--mud-palette-primary-darken))">
+        <MudContainer MaxWidth="MaxWidth.Medium">
+            <div class="text-center">
+                <MudText Typo="Typo.h3" Color="Color.Surface" Class="mb-4">
+                    Ready to Start Your Movie Journey?
+                </MudText>
+                <MudText Typo="Typo.body1" Color="Color.Surface" Class="mb-8">
+                    Join CineScope today and become part of a community that celebrates the art of cinema.
+                </MudText>
+                <AuthorizeView>
+                    <Authorized>
+                        <MudButton Variant="Variant.Filled" Color="Color.Surface" Size="Size.Large"
+                                   Href="/movies">
+                            Explore Movies
+                        </MudButton>
+                    </Authorized>
+                    <NotAuthorized>
+                        <MudButton Variant="Variant.Filled" Color="Color.Surface" Size="Size.Large"
+                                   Href="/register">
+                            Sign Up Now
+                        </MudButton>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>
+        </MudContainer>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private string heroBackgroundUrl = "https://m.media-amazon.com/images/M/MV5BNDkwY2I3ZWQtZGYxMC00N2QyLTg2MmQtZTU5ZTY0Y2M0YTY4XkEyXkFqcGdeQXVyMjMxOTE0ODA@._V1_.jpg";
+    private List<MovieDto> topRatedMovies = new();
+    private List<MovieDto> recentlyAddedMovies = new();
+    private bool isLoadingTopRated = true;
+    private bool isLoadingRecent = true;
+
     protected override async Task OnInitializedAsync()
+    {
+        await LoadTopRatedMovies();
+        await LoadRecentMovies();
+    }
+
+    private async Task LoadTopRatedMovies()
     {
         try
         {
-            // Load featured movies and recent reviews simultaneously
-            var featuredTask = LoadFeaturedMovies();
-            var reviewsTask = LoadRecentReviews();
-            await Task.WhenAll(featuredTask, reviewsTask);
+            isLoadingTopRated = true;
+            var response = await Http.GetAsync("/api/Movie");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var allMovies = await response.Content.ReadFromJsonAsync<List<MovieDto>>() ?? new List<MovieDto>();
+                topRatedMovies = allMovies
+                    .OrderByDescending(m => m.AverageRating)
+                    .Take(4)
+                    .ToList();
+            }
         }
         catch (Exception ex)
         {
-            // Show error message if something goes wrong
-            Snackbar.Add("Error loading content: " + ex.Message, Severity.Error);
+            Console.WriteLine($"Error loading top rated movies: {ex.Message}");
         }
         finally
         {
-            // Hide loading spinner
-            isLoading = false;
+            isLoadingTopRated = false;
         }
     }
 
-    // Load the featured movies from the server
-    private async Task LoadFeaturedMovies()
+    private async Task LoadRecentMovies()
     {
         try
         {
-            // Get featured movies from the API
-            var response = await Http.GetAsync("api/Movie/featured");
+            isLoadingRecent = true;
+            var response = await Http.GetAsync("/api/Movie");
+
             if (response.IsSuccessStatusCode)
             {
-                featuredMovies = await response.Content.ReadFromJsonAsync<List<MovieDto>>();
-            }
-            else
-            {
-                throw new Exception($"Error: {response.StatusCode}");
+                var allMovies = await response.Content.ReadFromJsonAsync<List<MovieDto>>() ?? new List<MovieDto>();
+                recentlyAddedMovies = allMovies
+                    .OrderByDescending(m => m.ReleaseDate)
+                    .Take(4)
+                    .ToList();
             }
         }
         catch (Exception ex)
         {
-            // Show error message if loading fails
-            Snackbar.Add($"Failed to load featured movies: {ex.Message}", Severity.Error);
-            featuredMovies = new List<MovieDto>();
+            Console.WriteLine($"Error loading recent movies: {ex.Message}");
         }
-    }
-
-    // Load recent reviews from the server
-    private async Task LoadRecentReviews()
-    {
-        try
+        finally
         {
-            // Get recent reviews from the API
-            var response = await Http.GetAsync("api/Review/recent");
-            if (response.IsSuccessStatusCode)
-            {
-                recentReviews = await response.Content.ReadFromJsonAsync<List<ReviewDto>>();
-            }
-            else
-            {
-                throw new Exception($"Error: {response.StatusCode}");
-            }
+            isLoadingRecent = false;
         }
-        catch (Exception ex)
-        {
-            // Show error message if loading fails
-            Snackbar.Add($"Failed to load recent reviews: {ex.Message}", Severity.Error);
-            recentReviews = new List<ReviewDto>();
-        }
-    }
-
-    // Handle movie search
-    private void SearchMovies()
-    {
-        if (!string.IsNullOrWhiteSpace(searchQuery))
-        {
-            // Navigate to movies page with search query
-            NavigationManager.NavigateTo($"/movies?search={Uri.EscapeDataString(searchQuery)}");
-        }
-    }
-
-    // Navigate to a specific movie's details page
-    private void NavigateToMovie(string movieId)
-    {
-        NavigationManager.NavigateTo($"/movies/{movieId}");
-    }
-
-    // Get the full URL for a movie poster
-    private string GetPosterUrl(string posterPath)
-    {
-        return !string.IsNullOrEmpty(posterPath) 
-            ? $"/poster-cache/{posterPath}" 
-            : "/images/no-poster.png";
     }
 }

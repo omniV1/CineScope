@@ -170,7 +170,7 @@ namespace CineScope.Server.Services
                     if (string.IsNullOrEmpty(apiKey))
                     {
                         _logger.LogWarning("No Anthropic API key provided. Service will not function properly.");
-                        return "Error: Anthropic API key is not configured. Please set up your API key in appsettings.json.";
+                        return "Error: Anthropic API key is not configured. Please set the API key using .NET User Secrets (in development) or environment variables (in production).";
                     }
                     
                     _httpClient.DefaultRequestHeaders.Add("x-api-key", apiKey);
@@ -178,8 +178,8 @@ namespace CineScope.Server.Services
 
                 // Set required headers
                 _httpClient.DefaultRequestHeaders.Clear();
-                _httpClient.DefaultRequestHeaders.Add("anthropic-version", "2023-06-01");
-                _httpClient.DefaultRequestHeaders.Add("x-api-key", _configuration["AnthropicSettings:ApiKey"]);
+                _httpClient.DefaultRequestHeaders.Add("anthropic-version", "2024-01-31");
+                _httpClient.DefaultRequestHeaders.Add("x-api-key", _configuration["AnthropicSettings:ApiKey"] ?? Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY"));
 
                 var messages = new List<Dictionary<string, string>>
                 {
