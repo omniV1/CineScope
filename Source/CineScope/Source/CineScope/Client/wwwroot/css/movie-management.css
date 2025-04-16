@@ -1,0 +1,68 @@
+.genre-select-popover {
+    background-color: var(--mud-palette-background);
+    z-index: 1500;
+}
+
+.genre-select-popover .mud-list-item {
+    padding: 8px 16px;
+    min-height: 40px;
+}
+
+.genre-select-popover .mud-list-item:hover {
+    background-color: var(--mud-palette-action-default-hover);
+}
+
+.genre-select {
+    margin: 0;
+}
+
+.genre-select .mud-input-control {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.genre-select .mud-input.mud-input-filled {
+    margin-top: 0;
+}
+
+.genre-select .mud-input-label {
+    transform: translate(0, 4px) scale(0.75);
+    background: transparent;
+}
+
+.genre-select .mud-input-filled {
+    background-color: var(--mud-palette-background);
+    border: 1px solid var(--mud-palette-lines-default);
+    border-radius: 4px;
+}
+
+.genre-select .mud-input-filled:hover {
+    background-color: var(--mud-palette-background-grey);
+}
+
+.genre-select .mud-input.mud-input-filled:before,
+.genre-select .mud-input.mud-input-filled:after {
+    content: none;
+}
+
+.mud-select {
+    color: var(--mud-palette-text-primary);
+}
+
+.mud-select-input {
+    background-color: var(--mud-palette-background);
+}
+
+.mud-input.mud-input-outlined {
+    margin-top: 0;
+}
+
+.mud-input > .mud-input-outlined-border {
+    border-color: var(--mud-palette-lines-default);
+}
+
+.mud-input.mud-input-outlined .mud-input-label.mud-input-label-animated {
+    background-color: var(--mud-palette-background);
+    padding: 0 5px;
+    margin: 0 -5px;
+} 

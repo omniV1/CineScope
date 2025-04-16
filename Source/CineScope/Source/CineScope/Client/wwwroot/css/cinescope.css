@@ -1,0 +1,175 @@
+﻿/* wwwroot/css/cinescope.css */
+/* Base styles */
+html, body {
+    background-color: #0f0f0f;
+    color: white;
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+/* Layout fixes to remove dead space */
+.mud-container.mud-container-maxwidth-xl,
+.mud-main-content {
+    padding: 0 !important;
+    margin-top: 0 !important;
+}
+
+article.pa-4,
+.pa-4 {
+    padding: 0 !important;
+}
+
+.mud-container.mud-container-maxwidth-xl > div:first-child {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* App bar styling */
+.cinescope-appbar {
+    background-color: rgba(15, 15, 15, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid #B8050F;
+}
+
+/* Hero section styling */
+.hero-section {
+    position: relative;
+    height: 400px;
+    margin: 0 0 1rem 0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.hero-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 2rem;
+    background: linear-gradient(to top, rgba(15, 15, 15, 0.9) 0%, rgba(229, 9, 20, 0.4) 120%, transparent 100%);
+}
+
+/* Movie card styling */
+.movie-card {
+    transition: transform 0.15s ease-out;
+    will-change: transform;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    overflow: hidden;
+    height: 100%;
+    border-bottom: 3px solid #E50914;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+}
+
+    .movie-card:hover {
+        transform: translateY(-4px) scale(1.02);
+    }
+
+/* Poster container styling */
+.poster-container {
+    position: relative;
+    padding-top: 150%;
+    overflow: hidden;
+}
+
+    .poster-container img {
+        transform: translateZ(0);
+        backface-visibility: hidden;
+    }
+
+/* Section headers with red underline */
+.section-title {
+    position: relative;
+    padding-bottom: 0.5rem;
+    margin: 0.5rem 0 1rem 0;
+}
+
+    .section-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background-color: #E50914;
+    }
+
+/* Search filter container */
+.search-filter-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* Spacing adjustments */
+.mud-grid {
+    row-gap: 16px;
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.mud-card-content {
+    padding: 12px;
+}
+
+.mud-item {
+    padding: 6px;
+}
+
+.mud-divider {
+    margin: 1rem 0;
+}
+
+.mud-drawer {
+    border-right: 1px solid rgba(229, 9, 20, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .movie-card:hover {
+        transform: none;
+    }
+
+    .search-filter-container {
+        flex-direction: column;
+    }
+
+        .search-filter-container > * {
+            margin-left: 0;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+}
+
+.feature-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 200px; /* Set a fixed minimum height for all boxes */
+    padding: 2rem;
+    background-color: #1a1a1a;
+    border-radius: 4px;
+    height: 100%; /* Make sure all boxes take full height of their container */
+}
+
+.feature-icon {
+    margin-bottom: 1rem;
+    color: #E50914;
+}
+
+.feature-title {
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.feature-text {
+    text-align: center;
+}

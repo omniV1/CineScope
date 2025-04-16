@@ -1,0 +1,74 @@
+﻿@using CineScope.Shared.DTOs
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-width: 500px; padding: 0">
+            <MudTextField @bind-Value="bannedWord.Word" Label="Word/Phrase"
+                          Required="true" RequiredError="Word is required"
+                          Variant="Variant.Outlined" Class="mb-4" />
+
+            <MudSelect @bind-Value="bannedWord.Category" Label="Category"
+                       Required="true" RequiredError="Category is required"
+                       Variant="Variant.Outlined" Class="mb-4">
+                <MudSelectItem Value="@("Profanity")">Profanity</MudSelectItem>
+                <MudSelectItem Value="@("Hate Speech")">Hate Speech</MudSelectItem>
+                <MudSelectItem Value="@("Harassment")">Harassment</MudSelectItem>
+                <MudSelectItem Value="@("Adult Content")">Adult Content</MudSelectItem>
+                <MudSelectItem Value="@("Other")">Other</MudSelectItem>
+            </MudSelect>
+
+            <MudSelect @bind-Value="bannedWord.Severity" Label="Severity"
+                       Required="true" RequiredError="Severity is required"
+                       Variant="Variant.Outlined" Class="mb-4"
+                       HelperText="Higher severity words are more strictly filtered">
+                <MudSelectItem Value="1">1 (Low)</MudSelectItem>
+                <MudSelectItem Value="2">2</MudSelectItem>
+                <MudSelectItem Value="3">3 (Medium)</MudSelectItem>
+                <MudSelectItem Value="4">4</MudSelectItem>
+                <MudSelectItem Value="5">5 (High)</MudSelectItem>
+            </MudSelect>
+
+            <MudSwitch @bind-Checked="bannedWord.IsActive" Label="Active" Color="Color.Primary" />
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(string.IsNullOrWhiteSpace(bannedWord.Word))">
+            @(string.IsNullOrEmpty(bannedWord.Id) ? "Add" : "Update")
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public BannedWordDto BannedWord { get; set; }
+
+    private BannedWordDto bannedWord = new BannedWordDto();
+
+    protected override void OnParametersSet()
+    {
+        // Make a copy of the parameter to avoid modifying the original
+        bannedWord = new BannedWordDto
+            {
+                Id = BannedWord.Id,
+                Word = BannedWord.Word,
+                Category = BannedWord.Category,
+                Severity = BannedWord.Severity,
+                IsActive = BannedWord.IsActive
+            };
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void Submit()
+    {
+        if (string.IsNullOrWhiteSpace(bannedWord.Word))
+        {
+            return;
+        }
+
+        MudDialog.Close(DialogResult.Ok(bannedWord));
+    }
+}

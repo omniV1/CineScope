@@ -1,0 +1,57 @@
+## Ignore sensitive configuration files
+**/appsettings.json
+**/appsettings.Development.json
+**/appsettings.Production.json
+!**/appsettings.template.json
+
+## Ignore Visual Studio files
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+## Ignore build output
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Ignore NuGet packages
+*.nupkg
+**/packages/*
+!**/packages/build/
+*.nuget.props
+*.nuget.targets
+
+## Ignore user secrets
+**/secrets.json
+*.Development.json
+
+## Ignore environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+## Ignore IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+## Ignore OS files
+.DS_Store
+Thumbs.db 
+.fake

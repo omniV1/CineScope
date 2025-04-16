@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#00A8E1" />
+  
+  <!-- Stylized animal avatar - fox design -->
+  <path d="M70 80 L100 50 L130 80 L120 130 L80 130 Z" fill="#FF6B00" />
+  
+  <!-- Ears -->
+  <path d="M70 80 L60 50 L85 65 Z" fill="#FF6B00" />
+  <path d="M130 80 L140 50 L115 65 Z" fill="#FF6B00" />
+  
+  <!-- Eyes -->
+  <circle cx="85" cy="90" r="5" fill="#FFFFFF" />
+  <circle cx="115" cy="90" r="5" fill="#FFFFFF" />
+  <circle cx="85" cy="90" r="2" fill="#000000" />
+  <circle cx="115" cy="90" r="2" fill="#000000" />
+  
+  <!-- Nose -->
+  <path d="M95 105 L100 110 L105 105 Z" fill="#333333" />
+  
+  <!-- Mouth -->
+  <path d="M95 115 L105 115" stroke="#333333" stroke-width="2" fill="none" />
+  
+  <!-- Chest/body -->
+  <path d="M85 130 L115 130 L110 160 L90 160 Z" fill="#FFFFFF" />
+</svg>
