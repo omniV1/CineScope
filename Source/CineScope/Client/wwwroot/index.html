@@ -43,19 +43,37 @@
     <!-- Google reCAPTCHA -->
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script>
-        window.initializeRecaptcha = function (elementId) {
-            return new Promise((resolve) => {
+        let recaptchaResponse = null;
+        let recaptchaWidget = null;
+
+        window.initializeRecaptcha = async function (elementId) {
+            return new Promise(async (resolve) => {
+                // Fetch configuration
+                const response = await fetch('appsettings.json');
+                const config = await response.json();
+                const siteKey = config.ReCaptcha.SiteKey;
+
                 var checkRecaptchaInterval = setInterval(function () {
                     if (typeof grecaptcha !== 'undefined' && grecaptcha.render) {
                         clearInterval(checkRecaptchaInterval);
                         try {
-                            var widgetId = grecaptcha.render(elementId, {
-                                'sitekey': '6Ld8oAYrAAAAAKxRXwgV4_1PMHv06IudnMlG1_Uh',
+                            recaptchaWidget = grecaptcha.render(elementId, {
+                                'sitekey': siteKey,
+                                'size': 'normal',
+                                'theme': 'dark',
                                 'callback': function (response) {
-                                    console.log("reCAPTCHA callback triggered");
+                                    console.log("reCAPTCHA callback triggered with response length:", response?.length);
+                                    recaptchaResponse = response;
+                                },
+                                'expired-callback': function() {
+                                    console.log("reCAPTCHA expired");
+                                    recaptchaResponse = null;
+                                    if (recaptchaWidget !== null) {
+                                        grecaptcha.reset(recaptchaWidget);
+                                    }
                                 }
                             });
-                            resolve(widgetId);
+                            resolve(recaptchaWidget);
                         } catch (e) {
                             console.error('reCAPTCHA render error:', e);
                             resolve(null);
@@ -68,17 +86,41 @@
         window.executeRecaptcha = function () {
             return new Promise((resolve) => {
                 if (typeof grecaptcha !== 'undefined') {
-                    const response = grecaptcha.getResponse();
-                    resolve(response);
+                    try {
+                        // First try to get response from the widget
+                        let response = recaptchaResponse;
+                        
+                        // If no stored response, try getting it directly
+                        if (!response && recaptchaWidget !== null) {
+                            response = grecaptcha.getResponse(recaptchaWidget);
+                        }
+
+                        if (response) {
+                            console.log("Found reCAPTCHA response with length:", response.length);
+                            resolve(response);
+                        } else {
+                            console.log("No reCAPTCHA response available. Please complete the challenge.");
+                            resolve(null);
+                        }
+                    } catch (e) {
+                        console.error('reCAPTCHA execute error:', e);
+                        resolve(null);
+                    }
                 } else {
+                    console.error('reCAPTCHA not loaded');
                     resolve(null);
                 }
             });
         };
 
         window.resetRecaptcha = function () {
-            if (typeof grecaptcha !== 'undefined') {
-                grecaptcha.reset();
+            if (typeof grecaptcha !== 'undefined' && recaptchaWidget !== null) {
+                try {
+                    recaptchaResponse = null;
+                    grecaptcha.reset(recaptchaWidget);
+                } catch (e) {
+                    console.error('reCAPTCHA reset error:', e);
+                }
             }
         };
     </script>
