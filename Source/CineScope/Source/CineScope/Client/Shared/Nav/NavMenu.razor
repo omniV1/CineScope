@@ -1,0 +1,81 @@
+﻿@using MudBlazor
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+
+<div class="d-flex flex-column h-100">
+    <!-- Navigation menu for the application -->
+    <MudNavMenu>
+        <!-- Home link -->
+        <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+
+        <!-- Movies link -->
+        <MudNavLink Href="movies" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Movie">Movies</MudNavLink>
+
+        <!-- MCP Demo link -->
+        <MudNavLink Href="mcp" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.QuestionAnswer">
+            <div class="d-flex flex-column">
+                <div>Help & FAQ</div>
+                <MudText Typo="Typo.caption">Ask Claude about movies</MudText>
+            </div>
+        </MudNavLink>
+
+        <!-- Admin dashboard link - only shown for admins -->
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+                <MudNavLink Href="admin" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AdminPanelSettings">
+                    Admin Dashboard
+                </MudNavLink>
+            </Authorized>
+        </AuthorizeView>
+    </MudNavMenu>
+
+    <!-- User Profile Section at Bottom -->
+    <div class="mt-auto">
+        <MudDivider Class="my-2" />
+        <AuthorizeView>
+            <Authorized>
+                <div class="pa-4">
+                    <div class="d-flex align-center mb-2" style="cursor: pointer;" @onclick="@(() => NavigationManager.NavigateTo("/profile"))">
+                        <MudAvatar Class="mr-3" Style="@AvatarStyle">
+                            <img src="@($"/profile-pictures/{UserProfilePicture}")" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
+                        </MudAvatar>
+                        <div>
+                            <MudText Typo="Typo.subtitle1">@Username</MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">View Profile</MudText>
+                        </div>
+                    </div>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Error" 
+                              FullWidth="true" Href="logout" 
+                              StartIcon="@Icons.Material.Filled.Logout">
+                        Logout
+                    </MudButton>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <div class="pa-4">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" 
+                              FullWidth="true" Class="mb-2" Href="login"
+                              StartIcon="@Icons.Material.Filled.Login">
+                        Login
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" 
+                              FullWidth="true" Href="register"
+                              StartIcon="@Icons.Material.Filled.PersonAdd">
+                        Register
+                    </MudButton>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string UserProfilePicture { get; set; } = "default.svg";
+
+    [Parameter]
+    public string Username { get; set; } = "";
+
+    private string AvatarStyle => $"background-color: transparent; border-radius: 50%; {(UserProfilePicture == "default.svg" ? "" : "border: 2px solid var(--mud-palette-error);")}";
+}

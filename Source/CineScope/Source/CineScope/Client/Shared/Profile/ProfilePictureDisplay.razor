@@ -1,0 +1,31 @@
+﻿@using CineScope.Client.Shared.Profile
+
+<MudAvatar Size="@Size" Style="@($"width: {Width}px; height: {Height}px;")">
+    @if (!string.IsNullOrEmpty(Url))
+    {
+        <img src="@Url" alt="@(Username ?? "Profile Picture")" />
+    }
+    else
+    {
+        <MudIcon Icon="@Icons.Material.Filled.Person" />
+    }
+</MudAvatar>
+
+@code {
+    [Parameter] public string Url { get; set; }
+    [Parameter] public string Username { get; set; }
+    [Parameter] public Size Size { get; set; } = Size.Medium;
+    [Parameter] public int Width { get; set; } = 40;
+    [Parameter] public int Height { get; set; } = 40;
+
+    protected override void OnInitialized()
+    {
+        // If URL is null or empty, use the default profile picture
+        if (string.IsNullOrEmpty(Url))
+        {
+            Url = ProfilePictureOptions.DefaultProfilePicture;
+        }
+
+        Console.WriteLine($"ProfilePictureDisplay initialized with URL: {Url}");
+    }
+}

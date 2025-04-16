@@ -1,0 +1,77 @@
+﻿/* 
+ * Optimizations for movie poster caching and loading
+ */
+
+/* Base container for movie posters with hardware acceleration */
+.poster-container {
+    position: relative;
+    width: 100%;
+    padding-top: 150%; /* 2:3 aspect ratio */
+    overflow: hidden;
+    background-color: #1a1a1a; /* Dark background for when image is loading */
+    transform: translateZ(0);
+    will-change: contents;
+    contain: strict;
+}
+
+    /* Image transitions when loading completes */
+    .poster-container img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: opacity 0.2s ease-out;
+        transform: translateZ(0);
+        will-change: opacity;
+        contain: strict;
+    }
+
+/* Loading skeleton style */
+.poster-skeleton {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: #1a1a1a;
+    z-index: 1;
+}
+
+/* Missing poster placeholder */
+.poster-missing {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: #1a1a1a;
+    color: #f5f5f1;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Performance optimizations for the card */
+.movie-card {
+    transition: transform 0.15s ease-out;
+    will-change: transform;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-font-smoothing: subpixel-antialiased;
+    contain: layout style;
+}
+
+    /* Use transform instead of box-shadow for better performance */
+    .movie-card:hover {
+        transform: translateY(-4px) scale(1.02);
+    }
+
+/* Disable hover effects on mobile to save resources */
+@media (max-width: 600px) {
+    .movie-card:hover {
+        transform: none;
+    }
+}

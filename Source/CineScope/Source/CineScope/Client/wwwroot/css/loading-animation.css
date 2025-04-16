@@ -1,0 +1,147 @@
+﻿/* wwwroot/css/loading-animation.css - Refined Curtains (with brightened waviness) */
+.loading-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #0f0f0f;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #1a1a1a;
+    perspective: 1200px;
+}
+
+.curtain {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 50%;
+    background: #c00;
+    /* Darker red */
+    background: linear-gradient(to bottom, #e50914 0%, #c00 50%, #a00 100%);
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.4);
+    /* Displacement mapping with brighter PNG and 'screen' blend mode */
+    background-image: url('/images/noise_light.png'); /* Lighter noise texture */
+    background-size: cover;
+    mix-blend-mode: screen; /* Use 'screen' to lighten */
+}
+
+.curtain-left {
+    left: 0;
+    transform-origin: left center;
+    animation: curtainLeftRefined 2.2s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;
+    border-right: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.curtain-right {
+    right: 0;
+    transform-origin: right center;
+    animation: curtainRightRefined 2.2s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;
+    border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+    .curtain::after,
+    .curtain-left::before,
+    .curtain-right::before {
+        content: none;
+    }
+
+@keyframes curtainLeftRefined {
+    0% {
+        transform: scaleX(1) rotateY(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scaleX(0.01) rotateY(-90deg);
+        opacity: 0.9;
+    }
+}
+
+@keyframes curtainRightRefined {
+    0% {
+        transform: scaleX(1) rotateY(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scaleX(0.01) rotateY(90deg);
+        opacity: 0.9;
+    }
+}
+
+.curtain::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 8px;
+    background: #444;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    z-index: 2;
+}
+
+.stage::before,
+.stage::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 5%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.3), transparent);
+    z-index: 90;
+}
+
+.stage::before {
+    left: 0;
+}
+
+.stage::after {
+    right: 0;
+    transform: scaleX(-1);
+}
+
+.loading-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    opacity: 0;
+    animation: fadeIn 0.9s 0s forwards; /* Immediately fade in */
+}
+
+.title {
+    color: #e50914;
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+}
+
+.subtitle {
+    color: white;
+    margin-top: 1rem;
+    font-size: 1.2rem;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
