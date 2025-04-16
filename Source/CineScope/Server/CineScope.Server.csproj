@@ -23,7 +23,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Client\CineScope.Client.csproj" />
     <ProjectReference Include="..\Shared\CineScope.Shared.csproj" />
-    <ProjectReference Include="..\CineScope.MCPServer\CineScope.MCPServer.csproj" />
   </ItemGroup>
 
 

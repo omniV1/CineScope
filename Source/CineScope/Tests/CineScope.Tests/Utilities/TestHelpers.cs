@@ -37,10 +37,10 @@ namespace CineScope.Tests.Utilities
                 AverageRating = 4.0,
                 Genres = new List<string> { "Action", "Drama" },
                 Director = "Test Director",
-                Cast = new List<string> { "Actor 1", "Actor 2" },
+                Actors = new List<string> { "Actor 1", "Actor 2" },
                 Description = "Test movie description",
                 PosterUrl = "https://example.com/poster.jpg",
-                TrailerUrl = "https://example.com/trailer.mp4"
+                ReviewCount = 0
             };
         }
 
@@ -54,10 +54,9 @@ namespace CineScope.Tests.Utilities
                 AverageRating = 4.0,
                 Genres = new List<string> { "Action", "Drama" },
                 Director = "Test Director",
-                Cast = new List<string> { "Actor 1", "Actor 2" },
+                Actors = new List<string> { "Actor 1", "Actor 2" },
                 Description = "Test movie description",
-                PosterUrl = "https://example.com/poster.jpg",
-                TrailerUrl = "https://example.com/trailer.mp4"
+                PosterUrl = "https://example.com/poster.jpg"
             };
         }
 
@@ -89,7 +88,7 @@ namespace CineScope.Tests.Utilities
                 MovieId = movieId ?? Guid.NewGuid().ToString(),
                 UserId = userId ?? Guid.NewGuid().ToString(),
                 Rating = 4,
-                Comment = "Test review comment",
+                Text = "Test review text",
                 CreatedAt = DateTime.UtcNow
             };
         }

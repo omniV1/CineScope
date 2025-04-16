@@ -1,5 +1,4 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35818.85
 MinimumVisualStudioVersion = 16.0.0.0
@@ -13,6 +12,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9A19103F-16F7-4668-BE54-9A1E7A4F7556}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CineScope.UnitTests", "Tests\CineScope.UnitTests\CineScope.UnitTests.csproj", "{FFB13441-2802-476A-8106-6F935923EA10}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CineScope.Tests", "Tests\CineScope.Tests\CineScope.Tests.csproj", "{FFB13442-2802-476A-8106-6F935923EA11}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,9 +65,37 @@ Global
 		{23612614-8B06-4A95-9F7B-A42637B9558B}.Release|x64.Build.0 = Release|Any CPU
 		{23612614-8B06-4A95-9F7B-A42637B9558B}.Release|x86.ActiveCfg = Release|Any CPU
 		{23612614-8B06-4A95-9F7B-A42637B9558B}.Release|x86.Build.0 = Release|Any CPU
+		{FFB13441-2802-476A-8106-6F935923EA10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFB13441-2802-476A-8106-6F935923EA10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFB13441-2802-476A-8106-6F935923EA10}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FFB13441-2802-476A-8106-6F935923EA10}.Debug|x64.Build.0 = Debug|Any CPU
+		{FFB13441-2802-476A-8106-6F935923EA10}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FFB13441-2802-476A-8106-6F935923EA10}.Debug|x86.Build.0 = Debug|Any CPU
+		{FFB13441-2802-476A-8106-6F935923EA10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFB13441-2802-476A-8106-6F935923EA10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFB13441-2802-476A-8106-6F935923EA10}.Release|x64.ActiveCfg = Release|Any CPU
+		{FFB13441-2802-476A-8106-6F935923EA10}.Release|x64.Build.0 = Release|Any CPU
+		{FFB13441-2802-476A-8106-6F935923EA10}.Release|x86.ActiveCfg = Release|Any CPU
+		{FFB13441-2802-476A-8106-6F935923EA10}.Release|x86.Build.0 = Release|Any CPU
+		{FFB13442-2802-476A-8106-6F935923EA11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFB13442-2802-476A-8106-6F935923EA11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFB13442-2802-476A-8106-6F935923EA11}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FFB13442-2802-476A-8106-6F935923EA11}.Debug|x64.Build.0 = Debug|Any CPU
+		{FFB13442-2802-476A-8106-6F935923EA11}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FFB13442-2802-476A-8106-6F935923EA11}.Debug|x86.Build.0 = Debug|Any CPU
+		{FFB13442-2802-476A-8106-6F935923EA11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFB13442-2802-476A-8106-6F935923EA11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFB13442-2802-476A-8106-6F935923EA11}.Release|x64.ActiveCfg = Release|Any CPU
+		{FFB13442-2802-476A-8106-6F935923EA11}.Release|x64.Build.0 = Release|Any CPU
+		{FFB13442-2802-476A-8106-6F935923EA11}.Release|x86.ActiveCfg = Release|Any CPU
+		{FFB13442-2802-476A-8106-6F935923EA11}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FFB13441-2802-476A-8106-6F935923EA10} = {9A19103F-16F7-4668-BE54-9A1E7A4F7556}
+		{FFB13442-2802-476A-8106-6F935923EA11} = {9A19103F-16F7-4668-BE54-9A1E7A4F7556}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ED85E90D-5D3D-45EE-9707-553B1A2A8379}

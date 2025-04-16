@@ -1,1 +1,0 @@
-mongodb+srv://CineScopeAdmin2:Password@cinescope.xxpge.mongodb.net/?retryWrites=true&w=majority&appName=cinescope

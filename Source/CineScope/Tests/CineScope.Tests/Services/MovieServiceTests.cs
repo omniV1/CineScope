@@ -8,20 +8,22 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Moq;
 using Xunit;
+using CineScope.Server.Interfaces;
+using CineScope.Server.Data;
 
 namespace CineScope.Tests.Services
 {
     public class MovieServiceTests
     {
         private readonly Mock<IMongoDbService> _mockMongoDbService;
-        private readonly Mock<IMovieCacheService> _mockCacheService;
-        private readonly MovieService _movieService;
+        private readonly Mock<IMovieCacheService> _mockMovieCacheService;
+        private readonly IMovieService _movieService;
         private readonly MongoDbSettings _settings;
 
         public MovieServiceTests()
         {
             _mockMongoDbService = new Mock<IMongoDbService>();
-            _mockCacheService = new Mock<IMovieCacheService>();
+            _mockMovieCacheService = new Mock<IMovieCacheService>();
             _settings = new MongoDbSettings
             {
                 MoviesCollectionName = "Movies",
@@ -35,7 +37,7 @@ namespace CineScope.Tests.Services
             _movieService = new MovieService(
                 _mockMongoDbService.Object,
                 mockOptions.Object,
-                _mockCacheService.Object);
+                _mockMovieCacheService.Object);
         }
 
         [Fact]
@@ -48,7 +50,7 @@ namespace CineScope.Tests.Services
                 new MovieDto { Id = "2", Title = "Test Movie 2", ReleaseDate = DateTime.Now, AverageRating = 3.8 }
             };
             
-            _mockCacheService.Setup(c => c.GetAllMovies()).Returns(mockedMovies);
+            _mockMovieCacheService.Setup(c => c.GetAllMovies()).Returns(mockedMovies);
 
             // Act
             var result = await _movieService.GetAllMoviesAsync();
@@ -57,7 +59,7 @@ namespace CineScope.Tests.Services
             Assert.Equal(mockedMovies.Count, result.Count);
             Assert.Equal(mockedMovies[0].Title, result[0].Title);
             Assert.Equal(mockedMovies[1].Title, result[1].Title);
-            _mockCacheService.Verify(c => c.GetAllMovies(), Times.Once);
+            _mockMovieCacheService.Verify(c => c.GetAllMovies(), Times.Once);
             _mockMongoDbService.Verify(m => m.GetCollection<Movie>(_settings.MoviesCollectionName), Times.Never);
         }
 
@@ -89,7 +91,7 @@ namespace CineScope.Tests.Services
                 .Setup(m => m.GetCollection<Movie>(_settings.MoviesCollectionName))
                 .Returns(mockCollection.Object);
 
-            _mockCacheService.Setup(c => c.GetAllMovies()).Returns(new List<MovieDto>());
+            _mockMovieCacheService.Setup(c => c.GetAllMovies()).Returns(new List<MovieDto>());
 
             // Act
             var result = await _movieService.GetAllMoviesAsync();
@@ -98,7 +100,7 @@ namespace CineScope.Tests.Services
             Assert.Equal(mockedMovies.Count, result.Count);
             Assert.Equal(mockedMovies[0].Title, result[0].Title);
             Assert.Equal(mockedMovies[1].Title, result[1].Title);
-            _mockCacheService.Verify(c => c.GetAllMovies(), Times.Once);
+            _mockMovieCacheService.Verify(c => c.GetAllMovies(), Times.Once);
             _mockMongoDbService.Verify(m => m.GetCollection<Movie>(_settings.MoviesCollectionName), Times.Once);
         }
 
@@ -208,6 +210,76 @@ namespace CineScope.Tests.Services
                     It.IsAny<ReplaceOptions>(),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
+        }
+
+        [Fact]
+        public async Task CreateMovieAsync_CreatesSuccessfully()
+        {
+            // Arrange
+            var newMovie = new MovieDto 
+            { 
+                Id = "1", 
+                Title = "New Movie", 
+                ReleaseDate = DateTime.Now,
+                AverageRating = 4.0,
+                Genres = new List<string> { "Action", "Drama" }
+            };
+
+            var mockCollection = new Mock<IMongoCollection<Movie>>();
+            mockCollection
+                .Setup(c => c.InsertOneAsync(
+                    It.IsAny<Movie>(),
+                    It.IsAny<InsertOneOptions>(),
+                    It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            _mockMongoDbService
+                .Setup(m => m.GetCollection<Movie>(_settings.MoviesCollectionName))
+                .Returns(mockCollection.Object);
+
+            // Act
+            var result = await _movieService.CreateMovieAsync(newMovie);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(newMovie.Title, result.Title);
+            Assert.Equal(newMovie.Genres, result.Genres);
+            mockCollection.Verify(
+                c => c.InsertOneAsync(
+                    It.Is<Movie>(m => m.Title == newMovie.Title),
+                    It.IsAny<InsertOneOptions>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+            _mockMovieCacheService.Verify(c => c.ClearCache(), Times.Once);
+        }
+
+        [Fact]
+        public async Task DeleteMovieAsync_WhenMovieExists_DeletesSuccessfully()
+        {
+            // Arrange
+            var movieId = "1";
+            var mockCollection = new Mock<IMongoCollection<Movie>>();
+            mockCollection
+                .Setup(c => c.DeleteOneAsync(
+                    It.IsAny<FilterDefinition<Movie>>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new DeleteResult.Acknowledged(1));
+
+            _mockMongoDbService
+                .Setup(m => m.GetCollection<Movie>(_settings.MoviesCollectionName))
+                .Returns(mockCollection.Object);
+
+            // Act
+            var result = await _movieService.DeleteMovieAsync(movieId);
+
+            // Assert
+            Assert.True(result);
+            mockCollection.Verify(
+                c => c.DeleteOneAsync(
+                    It.IsAny<FilterDefinition<Movie>>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+            _mockMovieCacheService.Verify(c => c.ClearCache(), Times.Once);
         }
     }
 } 

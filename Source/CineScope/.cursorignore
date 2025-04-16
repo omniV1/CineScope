@@ -1,1 +1,58 @@
 # Add directories or file patterns to ignore during indexing (e.g. foo/ or *.csv)
+
+# Ignore build output directories
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+
+# Ignore package directories
+packages/
+node_modules/
+
+# Ignore Visual Studio files
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+
+# Ignore sensitive files
+**/appsettings.json
+**/appsettings.Development.json
+**/appsettings.Production.json
+**/secrets.json
+.env
+.env.*
+
+# Ignore large binary files and media
+*.mp4
+*.mov
+*.avi
+*.zip
+*.tar.gz
+*.7z
+*.jar
+
+# Ignore database files
+*.mdf
+*.ldf
+*.db
+
+# Ignore logs
+*.log
+logs/
+Log/
+
+# Ignore temporary files
+[Tt]emp/
+*.tmp
+*.temp
+*~
+
+# Ignore test results
+TestResults/
+[Tt]est[Rr]esult*/
+
+# Ignore documentation (optional, uncomment if needed)
+# docs/
+# documentation/

@@ -91,13 +91,13 @@ namespace CineScope.Tests.Controllers
             // Arrange
             var movieId = "nonexistent";
             _mockMovieService.Setup(s => s.GetMovieByIdAsync(movieId))
-                .ReturnsAsync((MovieDto)null);
+                .ReturnsAsync((MovieDto?)null);
 
             // Act
             var result = await _controller.GetMovieById(movieId);
 
             // Assert
-            Assert.IsType<NotFoundResult>(result.Result);
+            Assert.IsType<NotFoundObjectResult>(result.Result);
         }
 
         [Fact]
@@ -114,13 +114,13 @@ namespace CineScope.Tests.Controllers
             };
 
             _mockMovieService.Setup(s => s.UpdateMovieAsync(movieId, updateMovie))
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync(true);
 
             // Act
             var result = await _controller.UpdateMovie(movieId, updateMovie);
 
             // Assert
-            Assert.IsType<OkResult>(result);
+            Assert.IsType<NoContentResult>(result);
             _mockMovieService.Verify(s => s.UpdateMovieAsync(movieId, updateMovie), Times.Once);
         }
 
@@ -139,7 +139,7 @@ namespace CineScope.Tests.Controllers
             var result = await _controller.UpdateMovie(movieId, updateMovie);
 
             // Assert
-            Assert.IsType<BadRequestResult>(result);
+            Assert.IsType<BadRequestObjectResult>(result);
             _mockMovieService.Verify(s => s.UpdateMovieAsync(It.IsAny<string>(), It.IsAny<MovieDto>()), Times.Never);
         }
 

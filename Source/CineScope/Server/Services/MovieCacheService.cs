@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using CineScope.Server.Interfaces;
 
 namespace CineScope.Server.Services
 {
@@ -13,7 +14,7 @@ namespace CineScope.Server.Services
     /// Service responsible for caching movie-related data.
     /// Provides methods to store and retrieve movie data from cache.
     /// </summary>
-    public class MovieCacheService
+    public class MovieCacheService : IMovieCacheService
     {
         private readonly IMemoryCache _cache;
         private readonly ILogger<MovieCacheService> _logger;
@@ -241,6 +242,11 @@ namespace CineScope.Server.Services
                     ? (int)((_cacheHits / (double)(_cacheHits + _cacheMisses)) * 100)
                     : 0 }
             };
+        }
+
+        public void ClearCache()
+        {
+            _cache.Remove(ALL_MOVIES_CACHE_KEY);
         }
     }
 
