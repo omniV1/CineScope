@@ -1,0 +1,156 @@
+﻿@using Microsoft.AspNetCore.Components.Routing
+@using MudBlazor
+@using System.Threading.Tasks
+@using CineScope.Client.Shared
+
+<MudThemeProvider Theme="cineScopeTheme" IsDarkMode="true" />
+<MudDialogProvider FullWidth="true" MaxWidth="MaxWidth.ExtraLarge" />
+<MudSnackbarProvider />
+
+@if (!_loaded)
+{
+    <div class="loading-container">
+        <div class="stage">
+            <div class="curtain curtain-left"></div>
+            <div class="curtain curtain-right"></div>
+            <div class="loading-content">
+                <h1 class="title">CineScope</h1>
+                <div class="loading-spinner">
+                    <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+                </div>
+                <p class="subtitle">Setting the stage for you...</p>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <CascadingAuthenticationState>
+        <Router AppAssembly="@typeof(App).Assembly">
+            <Found Context="routeData">
+                <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+                <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+            </Found>
+            <NotFound>
+                <PageTitle>Not found</PageTitle>
+                <LayoutView Layout="@typeof(MainLayout)">
+                    <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-10 px-8">
+                        <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">
+                            404 - Page Not Found
+                        </MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center">
+                            The page you're looking for doesn't exist or has been moved.
+                        </MudText>
+                        <MudButton Class="mt-5" Variant="Variant.Filled" Color="Color.Primary"
+                                   Href="/" Size="Size.Large">
+                            Return Home
+                        </MudButton>
+                    </MudContainer>
+                </LayoutView>
+            </NotFound>
+        </Router>
+    </CascadingAuthenticationState>
+}
+
+@code {
+    private bool _loaded = false;
+
+    private MudTheme cineScopeTheme = new MudTheme()
+        {
+            PaletteDark = new PaletteDark()
+            {
+                Black = "#0f0f0f",
+                White = "#ffffff",
+                Primary = "#E50914",       // CineScope red
+                PrimaryDarken = "#B8050F", // Darker red for hover
+                PrimaryLighten = "#FF1F30", // Lighter red for highlighting
+                Secondary = "#f5f5f1",
+                Success = "#3bef9e",
+                Error = "#ff3f5b",
+                Warning = "#ffb527",
+                Info = "#2196f3",
+                Background = "#0f0f0f",
+                BackgroundGrey = "#1a1a1a",
+                Surface = "#1a1a1a",
+                AppbarBackground = "#0f0f0f",
+                AppbarText = "#ffffff",
+                DrawerBackground = "#1a1a1a",
+                DrawerText = "#ffffff",
+                TextPrimary = "#ffffff",
+                TextSecondary = "#b3b3b3",
+                ActionDefault = "#ffffff",
+                ActionDisabled = "#636363",
+                ActionDisabledBackground = "#2c2c2c",
+                LinesDefault = "#2c2c2c",
+                LinesInputs = "#4a4a4a",
+                TableLines = "#2c2c2c",
+                TableStriped = "#2c2c2c",
+                HoverOpacity = 0.1     // Adjusts hover effect intensity
+            },
+            Typography = new Typography()
+            {
+                Default = new Default()
+                {
+                    FontFamily = new[] { "Roboto", "Helvetica", "Arial", "sans-serif" },
+                    FontSize = ".875rem",
+                    FontWeight = 400,
+                    LineHeight = 1.43,
+                    LetterSpacing = ".01071em"
+                },
+                H1 = new H1()
+                {
+                    FontSize = "2.5rem",
+                    FontWeight = 700,
+                    LineHeight = 1.167,
+                    LetterSpacing = "-.01562em"
+                },
+                H2 = new H2()
+                {
+                    FontSize = "2rem",
+                    FontWeight = 700,
+                    LineHeight = 1.2,
+                    LetterSpacing = "-.00833em"
+                },
+                H3 = new H3()
+                {
+                    FontSize = "1.75rem",
+                    FontWeight = 500,
+                    LineHeight = 1.2,
+                    LetterSpacing = "-.00833em"
+                },
+                H4 = new H4()
+                {
+                    FontSize = "1.5rem",
+                    FontWeight = 500,
+                    LineHeight = 1.2,
+                    LetterSpacing = "-.00833em"
+                }
+            },
+        // Shadow values, if needed
+            Shadows = new Shadow(),
+        // Layout properties
+            LayoutProperties = new LayoutProperties()
+            {
+            // Custom layout properties as needed
+                DrawerWidthLeft = "250px",
+                AppbarHeight = "64px"
+            }
+        };
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await Task.Delay(2500);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error during initialization: {ex.Message}");
+        }
+        finally
+        {
+            _loaded = true;
+            StateHasChanged();
+        }
+    }
+}

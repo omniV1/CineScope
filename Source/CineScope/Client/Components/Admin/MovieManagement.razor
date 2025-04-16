@@ -1,0 +1,256 @@
+﻿@using CineScope.Shared.DTOs
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudCard Elevation="0" Class="mb-4">
+    <MudCardContent>
+        <div class="d-flex justify-space-between align-center flex-wrap gap-2 mb-4">
+            <MudText Typo="Typo.h6">Movie Management</MudText>
+
+            <div class="d-flex gap-2">
+                <MudTextField @bind-Value="searchTerm" 
+                             Label="Search Movies"
+                             Variant="Variant.Outlined"
+                             Adornment="Adornment.Start"
+                             AdornmentIcon="@Icons.Material.Filled.Search"
+                             OnKeyDown="@SearchMovies" 
+                             Class="mt-0" />
+
+                <MudSelect T="string" 
+                          Label="Genre" 
+                          @bind-Value="selectedGenre" 
+                          Style="min-width: 150px;"
+                          AnchorOrigin="Origin.BottomCenter"
+                          Variant="Variant.Filled"
+                          Margin="Margin.Dense"
+                          Class="genre-select"
+                          PopoverClass="genre-select-popover">
+                    <MudSelectItem Value="@string.Empty">All Genres</MudSelectItem>
+                    <MudSelectItem Value="@("Action")">Action</MudSelectItem>
+                    <MudSelectItem Value="@("Comedy")">Comedy</MudSelectItem>
+                    <MudSelectItem Value="@("Drama")">Drama</MudSelectItem>
+                    <MudSelectItem Value="@("Horror")">Horror</MudSelectItem>
+                    <MudSelectItem Value="@("Sci-Fi")">Sci-Fi</MudSelectItem>
+                    <MudSelectItem Value="@("Romance")">Romance</MudSelectItem>
+                    <MudSelectItem Value="@("Thriller")">Thriller</MudSelectItem>
+                    <MudSelectItem Value="@("Adventure")">Adventure</MudSelectItem>
+                    <MudSelectItem Value="@("Fantasy")">Fantasy</MudSelectItem>
+                </MudSelect>
+
+                <MudButton Variant="Variant.Filled" 
+                          Color="Color.Primary"
+                          OnClick="@LoadMovies">
+                    Search
+                </MudButton>
+
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Add"
+                           OnClick="@OpenAddMovieDialog">
+                    Add Movie
+                </MudButton>
+            </div>
+        </div>
+
+        @if (isLoading)
+        {
+            <div class="d-flex justify-center my-4">
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+            </div>
+        }
+        else if (movies == null || !movies.Any())
+        {
+            <MudAlert Severity="Severity.Info">No movies found matching the criteria.</MudAlert>
+        }
+        else
+        {
+            <div class="d-flex flex-wrap gap-4">
+                @foreach (var movie in movies)
+                {
+                    <MudCard Style="width: 200px; height: 350px;" @onclick="@(() => EditMovie(movie))">
+                        <MudCardMedia Image="@GetPosterUrl(movie)"
+                                      Height="280" />
+                        <MudCardContent Style="padding: 8px;">
+                            <MudText Typo="Typo.body1" Style="font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                @movie.Title
+                            </MudText>
+                            <div class="d-flex justify-space-between align-center">
+                                <MudText Typo="Typo.caption">@movie.ReleaseDate.Year</MudText>
+                                <MudRating ReadOnly="true" SelectedValue="@((int)Math.Round(movie.AverageRating))" Color="Color.Primary" />
+                            </div>
+                        </MudCardContent>
+                    </MudCard>
+                }
+            </div>
+        }
+    </MudCardContent>
+</MudCard>
+
+@code {
+    private List<MovieDto> movies;
+    private bool isLoading = true;
+    private string searchTerm = "";
+    private string selectedGenre = "";
+
+    private string GetPosterUrl(MovieDto movie)
+    {
+        if (string.IsNullOrEmpty(movie.PosterUrl))
+            return $"https://via.placeholder.com/300x450?text={Uri.EscapeDataString(movie.Title)}";
+
+        if (movie.PosterUrl.Contains("github.com"))
+            return ConvertToGitHubRawUrl(movie.PosterUrl);
+
+        return movie.PosterUrl;
+    }
+
+    private string ConvertToGitHubRawUrl(string url)
+    {
+        if (string.IsNullOrWhiteSpace(url)) return url;
+        if (url.Contains("raw.githubusercontent.com")) return url;
+        return url.Replace("github.com", "raw.githubusercontent.com")
+                 .Replace("/blob/", "/");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMovies();
+    }
+
+    private async Task LoadMovies()
+    {
+        try
+        {
+            isLoading = true;
+
+            string url = "api/Movie";
+
+            if (!string.IsNullOrEmpty(selectedGenre))
+            {
+                url = $"api/Movie/genre/{Uri.EscapeDataString(selectedGenre)}";
+            }
+
+            var response = await Http.GetAsync(url);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var allMovies = await response.Content.ReadFromJsonAsync<List<MovieDto>>();
+
+                // Apply client-side search filter
+                if (!string.IsNullOrWhiteSpace(searchTerm) && allMovies != null)
+                {
+                    movies = allMovies
+                        .Where(m => m.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+                }
+                else
+                {
+                    movies = allMovies;
+                }
+            }
+            else
+            {
+                Snackbar.Add("Failed to load movies", Severity.Error);
+                movies = new List<MovieDto>();
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+            movies = new List<MovieDto>();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task SearchMovies(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await LoadMovies();
+        }
+    }
+
+    private async Task OpenAddMovieDialog()
+    {
+        var parameters = new DialogParameters
+            {
+                ["Movie"] = new MovieDto
+                {
+                    ReleaseDate = DateTime.Now,
+                    Genres = new List<string>(),
+                    Actors = new List<string>()
+                },
+                ["IsNew"] = true
+            };
+
+        var dialog = await DialogService.ShowAsync<MovieEditDialog>("Add New Movie", parameters,
+            new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
+
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is MovieDto newMovie)
+        {
+            try
+            {
+                var response = await Http.PostAsJsonAsync("api/Movie", newMovie);
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Movie added successfully", Severity.Success);
+                    await LoadMovies();
+                }
+                else
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    Snackbar.Add($"Failed to add movie: {error}", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task EditMovie(MovieDto movie)
+    {
+        var parameters = new DialogParameters
+            {
+                ["Movie"] = movie,
+                ["IsNew"] = false
+            };
+
+        var dialog = await DialogService.ShowAsync<MovieEditDialog>($"Edit Movie: {movie.Title}", parameters,
+            new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
+
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is MovieDto updatedMovie)
+        {
+            try
+            {
+                var response = await Http.PutAsJsonAsync($"api/Movie/{updatedMovie.Id}", updatedMovie);
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Movie updated successfully", Severity.Success);
+                    await LoadMovies();
+                }
+                else
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    Snackbar.Add($"Failed to update movie: {error}", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+}
+
+<link href="css/movie-management.css" rel="stylesheet" />

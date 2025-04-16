@@ -1,0 +1,316 @@
+﻿@page "/my-reviews"
+@using System.Net.Http.Json
+@using CineScope.Client.Components.Reviews
+@using CineScope.Client.Services
+@using CineScope.Client.Services.Auth
+@using CineScope.Shared.DTOs
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+@inject AuthService AuthService
+@attribute [Authorize]
+
+<PageTitle>My Reviews - CineScope</PageTitle>
+
+<MudText Typo="Typo.h4" Class="mb-4">My Reviews</MudText>
+
+@if (isLoading)
+{
+    <div class="d-flex justify-center my-4">
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+    </div>
+}
+else if (reviews.Count == 0)
+{
+    <MudAlert Severity="Severity.Info" Class="my-4">
+        You haven't posted any reviews yet.
+    </MudAlert>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/movies" Class="mt-4">
+        Browse Movies to Review
+    </MudButton>
+}
+else
+{
+    <MudGrid>
+        <MudItem xs="12">
+            <MudPaper Class="pa-4 mb-4" Elevation="0">
+                <MudText Typo="Typo.subtitle1">
+                    You have @reviews.Count review@(reviews.Count != 1 ? "s" : "")
+                </MudText>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12">
+            <!-- Reviews list with movie info -->
+            @foreach (var reviewGroup in reviews.GroupBy(r => r.MovieId))
+            {
+                <MudCard Elevation="3" Class="mb-4">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">
+                                <MudLink Href="@($"/movie/{reviewGroup.Key}")">
+                                    @GetMovieTitle(reviewGroup.Key)
+                                </MudLink>
+                            </MudText>
+                        </CardHeaderContent>
+                        <CardHeaderActions>
+                            <MudButton Variant="Variant.Text" Color="Color.Primary"
+                                       Href="@($"/movie/{reviewGroup.Key}")">
+                                View Movie
+                            </MudButton>
+                        </CardHeaderActions>
+                    </MudCardHeader>
+
+                    @foreach (var review in reviewGroup)
+                    {
+                        <MudCardContent>
+                            <div class="d-flex justify-space-between align-center mb-2">
+                                <MudText Typo="Typo.subtitle2">Your Rating</MudText>
+                                <MudRating ReadOnly="true"
+                                           Value="@((int)Math.Round(review.Rating))"
+                                           SelectedValue="@((int)Math.Round(review.Rating))" />
+                            </div>
+
+                            <MudText Typo="Typo.caption" Class="mb-2">
+                                Posted on @review.CreatedAt.ToString("MMMM dd, yyyy")
+                            </MudText>
+
+                            <MudText Typo="Typo.body1">@review.Text</MudText>
+
+                            <div class="d-flex justify-end mt-3">
+                                <MudButton Variant="Variant.Text" Color="Color.Secondary"
+                                           OnClick="@(() => EditReview(review))">
+                                    Edit
+                                </MudButton>
+                                <MudButton Variant="Variant.Text" Color="Color.Error"
+                                           OnClick="@(() => DeleteReview(review.Id))">
+                                    Delete
+                                </MudButton>
+                            </div>
+                        </MudCardContent>
+                    }
+                </MudCard>
+            }
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+    // State variables
+    private List<ReviewDto> reviews = new();
+    private Dictionary<string, string> movieTitles = new();
+    private bool isLoading = true;
+    private string currentUserId = string.Empty;
+
+    /// <summary>
+    /// Initialize the component and load user reviews
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Get current user from auth service
+            var user = await AuthService.GetCurrentUser();
+            if (user == null)
+            {
+                // If not logged in, redirect to login page
+                NavigationManager.NavigateTo("/login?returnUrl=/my-reviews");
+                return;
+            }
+
+            currentUserId = user.Id;
+            await LoadReviews();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+            isLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Load the current user's reviews
+    /// </summary>
+    private async Task LoadReviews()
+    {
+        try
+        {
+            isLoading = true;
+
+            // Load reviews for current user
+            var response = await Http.GetAsync($"api/Review/user/{currentUserId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                reviews = await response.Content.ReadFromJsonAsync<List<ReviewDto>>() ?? new();
+
+                // If in development with no real data, generate sample reviews
+                if (reviews.Count == 0 && IsDevelopmentEnvironment())
+                {
+                    reviews = GenerateSampleReviews();
+                }
+
+                // Load movie titles for all review movies
+                await LoadMovieTitles();
+            }
+            else
+            {
+                Snackbar.Add("Failed to load your reviews", Severity.Warning);
+                reviews = new();
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+            reviews = new();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// Load movie titles for all movies in the user's reviews
+    /// </summary>
+    private async Task LoadMovieTitles()
+    {
+        try
+        {
+            // Get unique movie IDs
+            var movieIds = reviews.Select(r => r.MovieId).Distinct().ToList();
+
+            foreach (var movieId in movieIds)
+            {
+                var response = await Http.GetAsync($"api/Movie/{movieId}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var movie = await response.Content.ReadFromJsonAsync<MovieDto>();
+                    if (movie != null)
+                    {
+                        movieTitles[movieId] = movie.Title;
+                    }
+                }
+            }
+        }
+        catch
+        {
+            // If we can't load titles, use placeholders
+            foreach (var movieId in reviews.Select(r => r.MovieId).Distinct())
+            {
+                if (!movieTitles.ContainsKey(movieId))
+                {
+                    movieTitles[movieId] = $"Movie {movieId}";
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Get the title for a movie
+    /// </summary>
+    private string GetMovieTitle(string movieId)
+    {
+        return movieTitles.ContainsKey(movieId) ? movieTitles[movieId] : $"Movie {movieId}";
+    }
+
+    /// <summary>
+    /// Handle review editing
+    /// </summary>
+    private void EditReview(ReviewDto review)
+    {
+        // In a real app, we would open an edit dialog or navigate to an edit page
+        // For this demo, we'll just show a message
+        Snackbar.Add("Edit functionality would be implemented here", Severity.Info);
+    }
+
+    /// <summary>
+    /// Delete a review after confirmation
+    /// </summary>
+    private async Task DeleteReview(string reviewId)
+    {
+        // In a real app, we would show a confirmation dialog first
+        bool confirmed = true; // Simulate user confirmation
+
+        if (confirmed)
+        {
+            try
+            {
+                isLoading = true;
+
+                // Call API to delete the review
+                var response = await Http.DeleteAsync($"api/Review/{reviewId}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Remove from local list
+                    reviews.RemoveAll(r => r.Id == reviewId);
+                    Snackbar.Add("Review deleted successfully", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add("Failed to delete review", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+            }
+            finally
+            {
+                isLoading = false;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Check if we're in development environment
+    /// </summary>
+    private bool IsDevelopmentEnvironment()
+    {
+        // In a real app, this would check configuration
+        // For now, this will be false because we don't want accounts to be generated with pre-written reviews
+        return false;
+    }
+
+    /// <summary>
+    /// Generate sample reviews for development
+    /// </summary>
+    private List<ReviewDto> GenerateSampleReviews()
+    {
+        return new List<ReviewDto>
+        {
+            new()
+            {
+                Id = "sample1",
+                MovieId = "movie1",
+                UserId = currentUserId,
+                Username = "You",
+                Rating = 5,
+                Text = "This is one of the best films I've seen this year. The direction is flawless and the performances are outstanding. Highly recommended!",
+                CreatedAt = DateTime.Now.AddDays(-5)
+            },
+            new()
+            {
+                Id = "sample2",
+                MovieId = "movie2",
+                UserId = currentUserId,
+                Username = "You",
+                Rating = 3,
+                Text = "Decent film but nothing groundbreaking. The cinematography was beautiful but the plot had some major holes that were hard to ignore.",
+                CreatedAt = DateTime.Now.AddDays(-15)
+            },
+            new()
+            {
+                Id = "sample3",
+                MovieId = "movie3",
+                UserId = currentUserId,
+                Username = "You",
+                Rating = 4,
+                Text = "Great movie with amazing visuals and a compelling story. The only reason I didn't give it 5 stars is because the ending felt a bit rushed.",
+                CreatedAt = DateTime.Now.AddDays(-30)
+            }
+        };
+    }
+}

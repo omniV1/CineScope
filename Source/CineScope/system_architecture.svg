@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<svg width='800' height='720' xmlns='http://www.w3.org/2000/svg'>
+    <!-- Background and border -->
+    <rect width='100%' height='100%' fill='#f8f9fa' rx='10' ry='10' />
+    
+    <!-- Title -->
+    <text x='400' y='30' font-family='Arial, sans-serif' font-size='20' text-anchor='middle' font-weight='bold'>CineScope System Architecture</text>
+    
+    <!-- Development Environment Section -->
+    <rect x='40' y='60' width='720' height='130' fill='#e9ecef' rx='8' ry='8' stroke='#343a40' stroke-width='2' stroke-dasharray='5,5' />
+    <text x='70' y='85' font-family='Arial, sans-serif' font-size='16' font-weight='bold'>Development Environment</text>
+
+    <!-- Development Tools -->
+    <rect x='70' y='100' width='160' height='70' fill='white' rx='6' ry='6' stroke='#343a40' stroke-width='1' />
+    <text x='150' y='125' font-family='Arial, sans-serif' font-size='14' text-anchor='middle' font-weight='bold'>Visual Studio</text>
+    <image x='115' y='135' width='30' height='30' href='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCI+PHBhdGggZmlsbD0iIzUyNjBmZiIgZD0iTTI0IDI0VjE0LjJsMTYuMiA5LjhMMjQgMzMuOHpNMjQgMjR2MTkuOGwyNC0xNC44VjEweiIvPjwvc3ZnPg==' />
+    
+    <rect x='260' y='100' width='160' height='70' fill='white' rx='6' ry='6' stroke='#343a40' stroke-width='1' />
+    <text x='340' y='125' font-family='Arial, sans-serif' font-size='14' text-anchor='middle' font-weight='bold'>Source Control</text>
+    <image x='305' y='135' width='30' height='30' href='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTQ4LjgzOCAwQzIxLjgzOSAwIDAgMjEuODM5IDAgNDguODM4YzAgMjEuNTgyIDE0LjAwMiAzOS45MiAzMy40MjMgNDYuMzkyIDIuNDQyLjQ1MSAzLjM0NC0xLjA1NyAzLjM0NC0yLjM0NiAwLS42Ni0uMDI3LTIuODQ2LS4wMzktNS4xOC0xMy41OSAyLjk1Mi0xNi40NzEtNS43NjYtMTYuNDcxLTUuNzY2LTIuMjI0LTUuNjQ4LTUuNDI4LTcuMTUyLTUuNDI4LTcuMTUyLTQuNDM2LTMuMDM1LjMzNS0yLjk3NS4zMzUtMi45NzUgNC45MDYuMzQ2IDcuNDk3IDUuMDM4IDcuNDk3IDUuMDM4IDQuMzYxIDcuNDcgMTEuNDQ3IDUuMzEzIDE0LjIyOSA0LjA2My40MTYtMy4xNjMgMS43MDctNS4zMiAzLjA5Ny02LjUzOC0xMC44MzktMS4yMzMtMjIuMjQzLTUuNDI4LTIyLjI0My0yNC4xNDMgMC01LjMzNiAxLjkwOS05LjY5OSA1LjAxNS0xMy4xMjYtLjQ5OS0xLjIzLTIuMTcxLTYuMTguLjQ4MS0xMi45MDYgMCAwIDQuMDkyLTEuMzEgMTMuNCA1LjAwMyAzLjg4OS0xLjA4MiA4LjA1Ni0xLjYyMiAxMi4yMTUtMS42NDIgNC4xNS4wMiA4LjMyNy41NiAxMi4yMTcgMS42NDIgOS4zMDMtNi4zMTQgMTMuMzg1LTUuMDAzIDEzLzM4NS01LjAwMyAyLjY2MSA2LjcyNi45OSAxMS42NzUuNDkyIDEyLjkwNiAzLjExNiAzLjQyNyA1LjAwOCA3Ljc5IDUuMDA4IDEzLjEyNiAwIDE4Ljc2Ni0xMS40MiAyMi44OS0yMi4yODcgMjQuMDk2IDEuNzM5IDEuNTAzIDMuMjk1IDQuNDY0IDMuMjk1IDguOTk1IDAgNi40OTctLjA1NyAxMS43NC0uMDU3IDEzLjMyOSAwIDEuMjk3Ljg5NCAyLjgxNiAzLjM2OCAyLjMzNyAxOS4zOTMtNi40ODkgMzMuMzgtMjQuODEgMzMuMzgtNDYuMzgzQzk3LjY3NyAyMS44NCAxNS44MzkgMCA0OC44MzggMHoiIGZpbGw9IiMxYjFmMjMiLz48L3N2Zz4=' />
+    
+    <rect x='450' y='100' width='160' height='70' fill='white' rx='6' ry='6' stroke='#343a40' stroke-width='1' />
+    <text x='530' y='125' font-family='Arial, sans-serif' font-size='14' text-anchor='middle' font-weight='bold'>CI/CD Pipeline</text>
+    <image x='495' y='135' width='30' height='30' href='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MiA0MiI+PHBhdGggZD0iTTM3LjU5IDAgSDQuNDFDMS45NyAwIDAgMS45NyAwIDQuNDF2MzMuMThDMCA0MC4wMyAxLjk3IDQyIDQuNDEgNDJoMzMuMThjMi40NCAwIDQuNDEtMS45NyA0LjQxLTQuNDFWNC40MUMzIDEuOTcgNDAuMDMgMCAzNy41OSAwem0tOC4xMSAzMy43OWMtLjIyLjIyLS41LjMzLS43Ny4zM3MtLjU1LS4xMS0uNzctLjMzTDIxIDE5LjM4VjMzLjVjMCAuNi0uNDkgMS4wOS0xLjA5IDEuMDlzLTEuMDktLjQ5LTEuMDktMS4wOVYxOS4zOEwxMi4wOSAzMy43OWMtLjQ0LjQ0LTEuMTUuMzgtMS41OS0uMDYtLjMzLS41Ni0uMTMtMS4yOS40My0xLjUzbDE0LjUtMjEuMmMuMjItLjMyLjU5LS41Ljk4LS40OC4zOS4wMi43NC4yNS45Mi41OWwxNC41IDIxLjJjLjI4LjQyLjE1IDEuMS0uMDYgMS41NS0uMS4xMy0uMzUuMjEtLjU5LjIzeiIgZmlsbD0iIzIxOTZmMyIvPjwvc3ZnPg==' />
+    
+    <!-- Azure Deployment Section -->
+    <rect x='40' y='210' width='720' height='360' fill='#e9ecef' rx='8' ry='8' stroke='#343a40' stroke-width='2' stroke-dasharray='5,5' />
+    <text x='70' y='240' font-family='Arial, sans-serif' font-size='16' font-weight='bold'>Azure Deployment</text>
+    <image x='170' y='225' width='30' height='30' href='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NSA0NSI+PHBhdGggZD0iTTQxLjcgMjEuM2wtMTAgNS44LTEwLjgtNi4yLTEyLjcgNi43LjEuM0wyMiA0NWwyMy0xMy40di0uM2wtMy4zLTEweiIgZmlsbD0iIzAwYTFlZCIvPjxwYXRoIGQ9Ik0zMS43IDE0LjVsLTEwLTEwLTEzLjYgNy44IDE2LjQgMTctMi41LTEuNC01LjYtOC45LTcuMyAzLjlMMjIgNDVsMjMtMTMuNHYtLjNsLTEzLjMtMTYuOHoiIGZpbGw9IiMwMDYxZDUiLz48cGF0aCBkPSJNNi41IDEzLjNMMCA5Ljg1IDEwLjUgMGwxMS41IDQuM0w2LjUgMTMuM3oiIGZpbGw9IiMyM2U1ZmYiLz48cGF0aCBkPSJNMjEuNyA0LjNMMTAuNSAwIDEzLjEgMTAuNSAyMiAyMi4ybDEzLjMtNi43LTEzLjYtMTEuMnoiIGZpbGw9IiM1OCVhY2ZiIi8+PC9zdmc+' />
+    
+    <!-- Frontend Layer Box -->
+    <rect x='100' y='270' width='600' height='80' fill='#ffe6f2' rx='6' ry='6' stroke='#343a40' stroke-width='1' />
+    <text x='120' y='295' font-family='Arial, sans-serif' font-size='14' font-weight='bold'>Frontend Layer</text>
+    
+    <!-- Frontend Components -->
+    <rect x='150' y='300' width='200' height='40' fill='white' rx='4' ry='4' stroke='#343a40' stroke-width='1' />
+    <text x='250' y='325' font-family='Arial, sans-serif' font-size='12' text-anchor='middle'>Blazor Components</text>
+    <image x='165' y='305' width='25' height='25' href='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NiA5NiI+PHBhdGggZD0iTTk1LjIwNCA0NS43OThTODEuODA0IDU5LjE5OSA2OC4zOTggNzIuNDAzQzU0Ljc5IDg1LjgwMyA1MC4zOTQgOTAuMiA0NS4zOTQgOTMuOTk4Yy0uNjAyLjM5OS0xLjQwMi42MDItMi40MDIuNjAyLTEgMC0yLS4yLTIuNDAyLS42MDJDMzUuMTk0IDkwLjIgMzAuNzk0IDg1LjgwMyAxNy4xOTMgNzIuNDAzQzMuODAxIDU5LjE5OSAwIDU0IDAgNDUuNzk4UzYuOCAyNS4yIDIxLjIgMjUuMkMzMC4zOTggMjUuMiA0MyAzNS4zOTggNDMgMzUuMzk4UzU1LjU5OCAyNS4yIDY0LjgwMSAyNS4yQzc5LjE5OCAyNS4yIDk1LjIwNCAzNS41OTggOTUuMjA0IDQ1Ljc5OHoiIGZpbGw9IiM1MTJiZDQiLz48L3N2Zz4=' />
+    
+    <rect x='450' y='300' width='200' height='40' fill='white' rx='4' ry='4' stroke='#343a40' stroke-width='1' />
+    <text x='550' y='325' font-family='Arial, sans-serif' font-size='12' text-anchor='middle'>WebAssembly</text>
+    <image x='465' y='305' width='25' height='25' href='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBhdGggZD0iTTI3LjIgOC45NUwyMC4wNSA1Ljc1IDEyLjUgMiA0Ljk1IDUuNzVWMjMuNUwxMi41IDMwbDcuNTUtMy4yNSA3LjE1LTMuMlY4Ljk1eiIgZmlsbD0iIzY1NGZmMCIvPjxwYXRoIGQ9Ik0xNi4yIDE2Ljg1bC01LTE1LjggMi42NS0xLjYgNy41IDIzLjgtMTAuMTUtNC40di05LjE1bDUgNy4xNXoiIGZpbGw9IiNmZmYiIG9wYWNpdHk9Ii43NSIvPjwvc3ZnPg==' />
+    
+    <!-- Backend Layer Box -->
+    <rect x='100' y='375' width='600' height='80' fill='#fff0b3' rx='6' ry='6' stroke='#343a40' stroke-width='1' />
+    <text x='120' y='400' font-family='Arial, sans-serif' font-size='14' font-weight='bold'>Backend Layer</text>
+    
+    <!-- Backend Components -->
+    <rect x='120' y='405' width='160' height='40' fill='white' rx='4' ry='4' stroke='#343a40' stroke-width='1' />
+    <text x='200' y='430' font-family='Arial, sans-serif' font-size='12' text-anchor='middle'>C# API Controllers</text>
+    <image x='135' y='410' width='25' height='25' href='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHBhdGggZD0iTTMxLjkwMyAzMS41MnYtLjgxaC0uOTUzVjMwLjNoLS45MnYxLjAxaC00LjI2di44MWguOTUzdi43NzNoLS45NTN2LjgxaC40NzZ2LjgxaDMuNzg0di44MWguOTUzdi0uODE2aC0uOTUzVjM5LjJoMy4wMDNWNzUuM0gzMC45NlYxNDkuN2guOTUzdjE1OC41aC0uOTUzVjMyNy4yaC45NTN2LTE1OC41aC0uOTUzVjE0OS43aC45NTN2LTc1LjNoLjk1M1YzMC4zaC0uOTUzVjMxLjUyeiIgZmlsbD0iIzYwMDQ3OCIvPjxwYXRoIGQ9Ik0zMS45MDMgMzEuNTJoLS45NTNWMTQ5LjdIMzAuMDN2LTE1OC41aC0uOTJ2LTEwMS43aC00LjI2djEwMS43aC0uOTUzdjE1OC41SDI0Ljc2djc1LjNIMjguNTQ0djE1Ny43aC40NzZ2LTc0LjJoLjQ3NnYtODIuNWgzLjc4NHYtNzUuM2guOTUzVjE0OS43aC45NTNWMzEuNTJ6IiBmaWxsPSIjOWIyZDk3Ii8+PHBhdGggZD0iTTI2LjYxMyAzMi4zMzZoLTQuMjZ2Ljk2OGgtLjkydjcuNzczaC0uOTUzdjAuODE2SDI0Ljc2djAuNzczaDMuNzg0djAuODE2SDMwLjk2VjM5LjI5NEgzMC4wM1Y0MC4xMWgtLjk1M1YzOS4yOTRIMzAuMDNWMzEuNTJoLjk1M1YyOS43NWgtMy4wMDNWMzEuNTJoLS45NTNWMTQ5LjdoMy4wMDNWNzUuM0gyNi42MTNWMzIuMzM2ek0yOC41NDQgMzIuMzM2aC0uOTUzdjcuNzczaC45NTNWMzIuMzM2ek0zMC4wMyAzMC43MTZoLS45NTN2LjgyaC45NTN2LS44MnptMCA3Ljc3M2gtLjk1M3YxLjAzNmg5NTN2LTEuMDM2em0wIDQuMjZoLS45NTN2Ljk2OGguOTUzdjIuMDcyem0wLjk1My0xMS43NjNoLS45NTN2Ljc4OGguOTUzVjMwLjM1NnoiIGZpbGw9IiMwMGM4NDciLz48L3N2Zz4=' />
+    
+    <rect x='320' y='405' width='160' height='40' fill='white' rx='4' ry='4' stroke='#343a40' stroke-width='1' />
+    <text x='400' y='430' font-family='Arial, sans-serif' font-size='12' text-anchor='middle'>Business Logic</text>
+    
+    <rect x='520' y='405' width='160' height='40' fill='white' rx='4' ry='4' stroke='#343a40' stroke-width='1' />
+    <text x='600' y='430' font-family='Arial, sans-serif' font-size='12' text-anchor='middle'>Services</text>
+    
+    <!-- Data Access Layer Box -->
+    <rect x='100' y='480' width='600' height='80' fill='#e6ffed' rx='6' ry='6' stroke='#343a40' stroke-width='1' />
+    <text x='120' y='505' font-family='Arial, sans-serif' font-size='14' font-weight='bold'>Data Access Layer</text>
+    
+    <!-- Data Access Components -->
+    <rect x='150' y='510' width='220' height='40' fill='white' rx='4' ry='4' stroke='#343a40' stroke-width='1' />
+    <text x='260' y='535' font-family='Arial, sans-serif' font-size='12' text-anchor='middle'>MongoDB Connection</text>
+    <image x='165' y='515' width='25' height='25' href='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBhdGggZD0iTTE2LjYyNSAzMnYtNC42MjVjMC0uMjUtLjEyNS0uNzUtLjM3NS0xLjEyNS0uMjUtLjM3NS0uNS0uNjI1LTEuMjUtLjYyNWgtLjc1QzEzLjUgMjUuNjI1IDEzLjI1IDI2IDEzIDI2LjM3NWMtLjI1LjM3NS0uMzc1Ljg3NS0uMzc1IDEuMTI1VjMySDlWMGg3LjYyNWMzLjc1IDAgNi42MjUuNzUgOC42MjUgMi4xMjUgMiAxLjM3NSAzIDMuNSAzIDYuMjUgMCAyLS42MjUgMy43NS0xLjg3NSA1LTEuMjUgMS4yNS0zIDIuMjUtNS4yNSAyLjg3NS45LjI1LjYyNS43NSAxLjEyNSAxLjI1LjUuNS44NzUgMS4yNSAxLjEyNSAyLjEyNWwzLjEyNSA5LjI1Yy4yNS43NS4zNzUgMS4yNS4zNzUgMS41VjMyaC00LjVsLTMuNS0xMC42MjV6TTEzLjc1IDUuMzc1VjEzaDMuNWMxLjI1IDAgMi4yNS0uMzc1IDMtMS4xMjUuNzUtLjc1IDEuMTI1LTEuNzUgMS4xMjUtMy4xMjUgMC0xLjI1LS4zNzUtMi4yNS0xLjEyNS0zLS43NS0uNzUtMS43NS0xLjEyNS0zLTEuMTI1aC0zLjUiIGZpbGw9IiM0ZGJiNDciLz48L3N2Zz4=' />
+    
+    <rect x='430' y='510' width='220' height='40' fill='white' rx='4' ry='4' stroke='#343a40' stroke-width='1' />
+    <text x='540' y='535' font-family='Arial, sans-serif' font-size='12' text-anchor='middle'>Data Models</text>
+    
+    <!-- MongoDB Section -->
+    <rect x='40' y='605' width='720' height='90' fill='#e9ecef' rx='8' ry='8' stroke='#343a40' stroke-width='2' stroke-dasharray='5,5' />
+    <text x='70' y='620' font-family='Arial, sans-serif' font-size='16' font-weight='bold'>MongoDB Database</text>
+    <image x='170' y='605' width='30' height='30' href='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBhdGggZD0iTTE2LjYyNSAzMnYtNC42MjVjMC0uMjUtLjEyNS0uNzUtLjM3NS0xLjEyNS0uMjUtLjM3NS0uNS0uNjI1LTEuMjUtLjYyNWgtLjc1QzEzLjUgMjUuNjI1IDEzLjI1IDI2IDEzIDI2LjM3NWMtLjI1LjM3NS0uMzc1Ljg3NS0uMzc1IDEuMTI1VjMySDlWMGg3LjYyNWMzLjc1IDAgNi42MjUuNzUgOC42MjUgMi4xMjUgMiAxLjM3NSAzIDMuNSAzIDYuMjUgMCAyLS42MjUgMy43NS0xLjg3NSA1LTEuMjUgMS4yNS0zIDIuMjUtNS4yNSAyLjg3NS45LjI1LjYyNS43NSAxLjEyNSAxLjI1LjUuNS44NzUgMS4yNSAxLjEyNSAyLjEyNWwzLjEyNSA5LjI1Yy4yNS43NS4zNzUgMS4yNS4zNzUgMS41VjMyaC00LjVsLTMuNS0xMC42MjV6TTEzLjc1IDUuMzc1VjEzaDMuNWMxLjI1IDAgMi4yNS0uMzc1IDMtMS4xMjUuNzUtLjc1IDEuMTI1LTEuNzUgMS4xMjUtMy4xMjUgMC0xLjI1LS4zNzUtMi4yNS0xLjEyNS0zLS43NS0uNzUtMS43NS0xLjEyNS0zLTEuMTI1aC0zLjUiIGZpbGw9IiM0ZGJiNDciLz48L3N2Zz4=' />
+    
+    <!-- Database Component -->
+    <rect x='200' y='625' width='400' height='40' fill='#dbe9f6' rx='4' ry='4' stroke='#343a40' stroke-width='1' />
+    <text x='400' y='650' font-family='Arial, sans-serif' font-size='12' text-anchor='middle'>MongoDB Database (Users, Movies, Reviews, BannedWords)</text>
+    <image x='215' y='630' width='25' height='25' href='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBhdGggZD0iTTE2LjYyNSAzMnYtNC42MjVjMC0uMjUtLjEyNS0uNzUtLjM3NS0xLjEyNS0uMjUtLjM3NS0uNS0uNjI1LTEuMjUtLjYyNWgtLjc1QzEzLjUgMjUuNjI1IDEzLjI1IDI2IDEzIDI2LjM3NWMtLjI1LjM3NS0uMzc1Ljg3NS0uMzc1IDEuMTI1VjMySDlWMGg3LjYyNWMzLjc1IDAgNi42MjUuNzUgOC42MjUgMi4xMjUgMiAxLjM3NSAzIDMuNSAzIDYuMjUgMCAyLS42MjUgMy43NS0xLjg3NSA1LTEuMjUgMS4yNS0zIDIuMjUtNS4yNSAyLjg3NS45LjI1LjYyNS43NSAxLjEyNSAxLjI1LjUuNS44NzUgMS4yNSAxLjEyNSAyLjEyNWwzLjEyNSA5LjI1Yy4yNS43NS4zNzUgMS4yNS4zNzUgMS41VjMyaC00LjVsLTMuNS0xMC42MjV6TTEzLjc1IDUuMzc1VjEzaDMuNWMxLjI1IDAgMi4yNS0uMzc1IDMtMS4xMjUuNzUtLjc1IDEuMTI1LTEuNzUgMS4xMjUtMy4xMjUgMC0xLjI1LS4zNzUtMi4yNS0xLjEyNS0zLS43NS0uNzUtMS43NS0xLjEyNS0zLTEuMTI1aC0zLjUiIGZpbGw9IiM0ZGJiNDciLz48L3N2Zz4=' />
+    
+    <!-- Vertical Arrows -->
+    <line x1='400' y1='190' x2='400' y2='210' stroke='#343a40' stroke-width='2' marker-end='url(#arrow)' />
+    <line x1='400' y1='350' x2='400' y2='375' stroke='#343a40' stroke-width='2' marker-end='url(#arrow)' />
+    <line x1='400' y1='455' x2='400' y2='480' stroke='#343a40' stroke-width='2' marker-end='url(#arrow)' />
+    <line x1='400' y1='560' x2='400' y2='605' stroke='#343a40' stroke-width='2' marker-end='url(#arrow)' />
+    
+    <!-- Arrow Definition -->
+    <defs>
+        <marker id='arrow' markerWidth='10' markerHeight='10' refX='9' refY='3' orient='auto' markerUnits='strokeWidth'>
+            <path d='M0,0 L0,6 L9,3 z' fill='#343a40' />
+        </marker>
+    </defs>
+</svg> 

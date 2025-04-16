@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#4A4AFF" />
+  
+  <!-- Gamer character design -->
+  <rect x="70" y="60" width="60" height="70" rx="15" fill="#FFCC00" />
+  
+  <!-- Headphones -->
+  <path d="M70 80 L60 80 L60 110 L70 110" stroke="#333333" stroke-width="5" fill="none" />
+  <path d="M130 80 L140 80 L140 110 L130 110" stroke="#333333" stroke-width="5" fill="none" />
+  <path d="M60 80 L60 70 Q100 50, 140 70 L140 80" stroke="#333333" stroke-width="5" fill="none" />
+  
+  <!-- Gaming glasses -->
+  <rect x="75" y="85" width="20" height="10" rx="2" fill="#FF3366" />
+  <rect x="105" y="85" width="20" height="10" rx="2" fill="#FF3366" />
+  <path d="M95 90 L105 90" stroke="#333333" stroke-width="2" />
+  
+  <!-- Smile -->
+  <path d="M85 110 Q100 120, 115 110" stroke="#333333" stroke-width="2" fill="none" />
+  
+  <!-- Controller body suggestion -->
+  <path d="M70 130 L130 130 Q120 160, 80 160 Z" fill="#FFCC00" />
+  
+  <!-- Controller buttons -->
+  <circle cx="90" cy="145" r="5" fill="#FF3366" />
+  <circle cx="110" cy="145" r="5" fill="#33CC33" />
+</svg>

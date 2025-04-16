@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#36C5F0" />
+  
+  <!-- Ninja-inspired character -->
+  <circle cx="100" cy="95" r="40" fill="#333333" />
+  
+  <!-- Mask -->
+  <rect x="60" y="80" width="80" height="30" rx="5" fill="#222222" />
+  
+  <!-- Eyes -->
+  <ellipse cx="80" cy="95" rx="10" ry="5" fill="#FFFFFF" />
+  <ellipse cx="120" cy="95" rx="10" ry="5" fill="#FFFFFF" />
+  
+  <!-- Headband -->
+  <path d="M60 80 Q100 70, 140 80" fill="#E63946" />
+  <path d="M60 80 Q100 70, 140 80" fill="none" stroke="#E63946" stroke-width="10" />
+  
+  <!-- Headband tail -->
+  <path d="M140 80 L160 90 L170 70" fill="#E63946" />
+  
+  <!-- Shoulders -->
+  <path d="M60 130 Q100 150, 140 130 L130 150 Q100 160, 70 150 Z" fill="#333333" />
+  
+  <!-- Throwing star -->
+  <path d="M30 40 L40 60 L60 40 L40 30 Z" fill="#CCCCCC" transform="rotate(30, 45, 45)" />
+</svg>
