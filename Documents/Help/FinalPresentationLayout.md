@@ -1,4 +1,3 @@
-I'll develop the 7 slide presentation following your specific structure:
 
 ## Slide 1: Business Need
 
