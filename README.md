@@ -6,41 +6,58 @@
 
 CineScope is a modern, user-friendly movie review platform that enables movie enthusiasts to share their opinions and discover new films. Built using C# ASP.NET Core Blazor with MongoDB as the database system, the platform delivers a responsive web interface where users can browse movies by various categories, write and manage reviews, and interact with other users' content.
 
-## Table of Contents
-- [Features](#features)
-- [System Architecture](#system-architecture)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Configuration](#configuration)
-- [Usage](#usage)
-- [Technologies Used](#technologies-used)
-- [Project Structure](#project-structure)
-- [API Documentation](#api-documentation)
-- [Development Team](#development-team)
-- [Contributing](#contributing)
-- [License](#license)
+## Team Members
+
+| Name | Role | Department |
+|------|------|------------|
+| Carter Wright | Scrum Master | Development |
+| Rian Smart | Product Owner | Management |
+| Owen Lindsey | Developer | Development |
+| Andrew Mack | Developer | Development |
 
 ## Features
 
-- **User Authentication**: Secure login/registration system with advanced security features
-- **Movie Browsing**: Browse films by category, rating, release date and more
+- **User Authentication**: Secure login/registration system with account protection
+- **Movie Browsing**: Browse films by category, rating, and release date
 - **Review Management**: Create, read, update, and delete your movie reviews
 - **Content Filtering**: Automatic moderation of user-submitted content
 - **Responsive Design**: Seamless experience across desktop and mobile devices
-- **Admin Dashboard**: Comprehensive admin interface for content moderation and user management
+- **Admin Dashboard**: Content moderation and user management tools
 
-## System Architecture
+## Repository Structure
 
-CineScope follows an N-layer architecture:
+```
+CineScope/
+├── Documents/                  # Documentation files
+│   ├── Help/                   # Guides and training materials
+│   ├── Images/                 # Wireframes and diagrams
+│   ├── Requirements/           # Functional and non-functional requirements
+│   │   ├── FunctionalRequirements.md    # Detailed functional requirements
+│   │   ├── NonFunctionalRequirements.md # Performance and quality requirements
+│   │   └── User-Stories.md     # User stories and priorities
+│   ├── Technical-Reports/      # Technical design and documentation
+│   │   ├── Functional-Requirements.md   # Full requirements specification
+│   │   ├── Technical-Design.md # System architecture and implementation details
+│   │   └── Version-description.md # Project status and milestones
+│   └── Training/               # Training modules
+│       ├── IT-TrainingModule.md # IT administrator guide
+│       └── User-TrainingModule.md # End-user documentation
+├── Source/                     # Source code
+│   └── CineScope/              # Main application
+│       ├── Client/             # Blazor WebAssembly client application
+│       ├── Server/             # ASP.NET Core server application
+│       └── Shared/             # Shared code between Client and Server
+└── README.md                   # This file
+```
 
-![N-Layer Architecture](Documents/Images/Updated_N-Layer.png)
+## Key Documentation
 
-- **Client Layer**: Blazor WebAssembly application running in the browser
-- **Server Layer**: ASP.NET Core Web API with controller endpoints
-- **Service Layer**: Business logic implementation with services
-- **Data Access Layer**: MongoDB data repositories
-- **Database Layer**: MongoDB database for data storage
+- **System Architecture**: See [Technical Design Document](Documents/Technical-Reports/Technical-Design.md)
+- **Project Requirements**: See [Functional Requirements](Documents/Technical-Reports/Functional-Requirements.md)
+- **User Stories**: See [User Stories](Documents/Requirements/User-Stories.md)
+- **User Interface**: UI wireframes can be found in the [Images folder](Documents/Images/)
+- **Development Guide**: See [MongoDB Integration Guide](Documents/Help/Milestone3_DevHelp.md)
+- **Admin Documentation**: See [Admin Implementation Guide](Documents/Help/Admin-Implementation.md)
 
 ## Getting Started
 
@@ -49,7 +66,6 @@ CineScope follows an N-layer architecture:
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [MongoDB](https://www.mongodb.com/try/download/community) (local) or [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) (cloud)
 - [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) or [Visual Studio Code](https://code.visualstudio.com/)
-- [Git](https://git-scm.com/downloads)
 
 ### Installation
 
@@ -64,120 +80,31 @@ CineScope follows an N-layer architecture:
    dotnet restore
    ```
 
-3. Build the solution:
-   ```bash
-   dotnet build
-   ```
+3. Configure MongoDB connection in `appsettings.json`
 
-4. Navigate to the Server project directory:
+4. Run the application:
    ```bash
    cd Source/CineScope/Server
-   ```
-
-5. Run the application:
-   ```bash
    dotnet run
    ```
 
-### Configuration
+## Development Workflow
 
-1. Configure MongoDB connection in `appsettings.json`:
-   ```json
-   "MongoDbSettings": {
-     "ConnectionString": "mongodb://localhost:27017",
-     "DatabaseName": "CineScopeDb",
-     "UsersCollectionName": "Users",
-     "MoviesCollectionName": "Movies",
-     "ReviewsCollectionName": "Reviews",
-     "BannedWordsCollectionName": "BannedWords"
-   }
-   ```
+Our team follows an Agile development process:
 
-2. Configure JWT settings for authentication:
-   ```json
-   "JwtSettings": {
-     "Secret": "your-secret-key-at-least-32-characters",
-     "Issuer": "cinescope",
-     "Audience": "cinescope-client",
-     "ExpiryMinutes": 60
-   }
-   ```
+1. User stories and requirements are managed in [Jira](https://cinescopedev.atlassian.net/jira/software/projects/SCRUM/boards/1/backlog)
+2. Source code is stored in this GitHub repository
+3. Development follows the specifications in our [Technical Design Document](Documents/Technical-Reports/Technical-Design.md)
+4. Testing procedures are outlined in [Test Procedures](Documents/Training/Test-procedures-gcu.md)
 
-## Usage
+## Deployment and Maintenance
 
-After running the application, navigate to `https://localhost:7136` in your browser (or the port specified in your configuration). 
+For information on deployment and maintenance procedures, please refer to:
 
-- **Browse Movies**: View featured, top-rated, and recently added movies on the landing page
-- **Register/Login**: Create an account or log in to access personalized features
-- **Write Reviews**: Share your thoughts on movies with ratings and detailed reviews
-- **Manage Content**: Admin users can moderate content and manage the platform
-
-## Technologies Used
-
-- **Frontend**: Blazor WebAssembly, MudBlazor UI components
-- **Backend**: C# ASP.NET Core, .NET 8.0
-- **Database**: MongoDB
-- **Authentication**: JWT (JSON Web Tokens)
-- **CI/CD**: Azure DevOps
-- **Cloud**: Azure App Service, MongoDB Atlas
-
-## Project Structure
-
-```
-CineScope/
-├── Documents/                  # Documentation files
-│   ├── Help/                   # Guides and training materials
-│   ├── Images/                 # Wireframes and diagrams
-│   ├── Requirements/           # Functional and non-functional requirements
-│   ├── Technical-Reports/      # Technical design and documentation
-│   └── Training/               # Training modules
-├── Source/                     # Source code
-│   └── CineScope/              # Main application
-│       ├── Client/             # Blazor WebAssembly client application
-│       │   ├── Components/     # Reusable UI components
-│       │   ├── Pages/          # Application pages
-│       │   └── Shared/         # Shared layouts and components
-│       ├── Server/             # ASP.NET Core server application
-│       │   ├── Controllers/    # API endpoints
-│       │   ├── Models/         # Data models
-│       │   ├── Services/       # Business logic services
-│       │   └── Repositories/   # Data access layer
-│       └── Shared/             # Shared code between Client and Server
-├── Tests/                      # Test projects
-│   ├── CineScope.Tests.Unit/          # Unit tests
-│   └── CineScope.Tests.Integration/   # Integration tests
-└── README.md                   # This file
-```
-
-## API Documentation
-
-The API documentation is available via Swagger when running the application in development mode. Navigate to `https://localhost:7136/swagger` to explore the available endpoints.
-
-Key API endpoints include:
-- `/api/auth` - Authentication endpoints
-- `/api/movie` - Movie data endpoints
-- `/api/review` - Review management endpoints
-- `/api/admin` - Admin functionality (restricted access)
-
-## Development Team
-
-| Name | Role | Department |
-|------|------|------------|
-| Carter Wright | Scrum Master | Development |
-| Rian Smart | Product Owner | Management |
-| Owen Lindsey | Developer | Development |
-| Andrew Mack | Developer | Development |
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/your-feature-name`)
-3. Commit your changes (`git commit -m 'Add some feature'`)
-4. Push to the branch (`git push origin feature/your-feature-name`)
-5. Open a Pull Request
-
-Please refer to our [contribution guidelines](CONTRIBUTING.md) for more details.
+- [Maintenance Plan](Documents/Technical-Reports/Maintenance/MaintenancePlan.md)
+- [Admin Implementation Guide](Documents/Help/Admin-implementation-support.md)
+- [IT Training Module](Documents/Training/IT-TrainingModule.md)
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
