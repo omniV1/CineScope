@@ -178,54 +178,6 @@
     </MudGrid>
 </MudContainer>
 
-<style>
-    /* Custom styles to ensure proper alignment */
-    .search-filter-container {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 8px;
-        width: 100%;
-    }
-
-    .control-wrapper {
-        display: flex;
-        align-items: center;
-        height: 40px;
-    }
-
-    .control-wrapper:first-child {
-        flex: 1;
-        min-width: 200px;
-    }
-
-    .control-wrapper:nth-child(2) {
-        min-width: 150px;
-    }
-
-    /* Style for buttons to ensure alignment */
-    .aligned-button {
-        height: 40px;
-        text-transform: uppercase;
-        margin: 0;
-        padding: 0 16px;
-    }
-
-    /* Force consistent height on mobile */
-    @@media (max-width: 600px) {
-        .search-filter-container {
-            flex-direction: column;
-            align-items: stretch;
-        }
-
-        .control-wrapper {
-            margin-left: 0 !important;
-            margin-bottom: 8px;
-            width: 100%;
-        }
-    }
-</style>
-
 @code {
     // State for movies and display
     private List<MovieDto> allMovies = new();

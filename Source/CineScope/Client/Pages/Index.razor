@@ -87,7 +87,7 @@
 <!-- Top Rated Movies Section -->
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-16">
     <div class="d-flex justify-space-between align-center mb-4">
-        <MudText Typo="Typo.h4">Top Rated Movies</MudText>
+        <MudText Typo="Typo.h4" Class="section-title">Top Rated Movies</MudText>
         <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/movies">View All</MudButton>
     </div>
 
@@ -105,7 +105,7 @@
     }
     else
     {
-        <div class="card-grid">
+        <div class="movie-grid">
             @foreach (var movie in topRatedMovies)
             {
                 <MovieCard Movie="@movie" />
@@ -117,7 +117,7 @@
 <!-- Recently Added Section -->
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-16">
     <div class="d-flex justify-space-between align-center mb-4">
-        <MudText Typo="Typo.h4">Recently Added</MudText>
+        <MudText Typo="Typo.h4" Class="section-title">Recently Added</MudText>
         <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/movies">View All</MudButton>
     </div>
 
@@ -135,7 +135,7 @@
     }
     else
     {
-        <div class="card-grid">
+        <div class="movie-grid">
             @foreach (var movie in recentlyAddedMovies)
             {
                 <MovieCard Movie="@movie" />
