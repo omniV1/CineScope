@@ -39,14 +39,19 @@ namespace CineScope.Server.Services
             var collection = _mongoDbService.GetCollection<Movie>(_settings.MoviesCollectionName);
             var movies = await collection.Find(_ => true).ToListAsync();
             
-            // Convert to DTOs
+            // Convert to DTOs with all properties
             var movieDtos = movies.ConvertAll(m => new MovieDto
             {
                 Id = m.Id,
                 Title = m.Title,
+                Description = m.Description,
                 ReleaseDate = m.ReleaseDate,
+                Genres = m.Genres ?? new List<string>(),
+                Director = m.Director,
+                Actors = m.Actors ?? new List<string>(),
+                PosterUrl = m.PosterUrl,
                 AverageRating = m.AverageRating,
-                Genres = m.Genres
+                ReviewCount = m.ReviewCount
             });
 
             // Cache the results
@@ -68,9 +73,14 @@ namespace CineScope.Server.Services
             {
                 Id = movie.Id,
                 Title = movie.Title,
+                Description = movie.Description,
                 ReleaseDate = movie.ReleaseDate,
+                Genres = movie.Genres ?? new List<string>(),
+                Director = movie.Director,
+                Actors = movie.Actors ?? new List<string>(),
+                PosterUrl = movie.PosterUrl,
                 AverageRating = movie.AverageRating,
-                Genres = movie.Genres
+                ReviewCount = movie.ReviewCount
             };
         }
 
@@ -84,9 +94,14 @@ namespace CineScope.Server.Services
             {
                 Id = m.Id,
                 Title = m.Title,
+                Description = m.Description,
                 ReleaseDate = m.ReleaseDate,
+                Genres = m.Genres ?? new List<string>(),
+                Director = m.Director,
+                Actors = m.Actors ?? new List<string>(),
+                PosterUrl = m.PosterUrl,
                 AverageRating = m.AverageRating,
-                Genres = m.Genres
+                ReviewCount = m.ReviewCount
             });
         }
 
@@ -96,9 +111,14 @@ namespace CineScope.Server.Services
             {
                 Id = movieDto.Id,
                 Title = movieDto.Title,
+                Description = movieDto.Description,
                 ReleaseDate = movieDto.ReleaseDate,
+                Genres = movieDto.Genres ?? new List<string>(),
+                Director = movieDto.Director,
+                Actors = movieDto.Actors ?? new List<string>(),
+                PosterUrl = movieDto.PosterUrl,
                 AverageRating = movieDto.AverageRating,
-                Genres = movieDto.Genres
+                ReviewCount = movieDto.ReviewCount
             };
 
             var collection = _mongoDbService.GetCollection<Movie>(_settings.MoviesCollectionName);
@@ -116,9 +136,14 @@ namespace CineScope.Server.Services
             {
                 Id = id,
                 Title = movieDto.Title,
+                Description = movieDto.Description,
                 ReleaseDate = movieDto.ReleaseDate,
+                Genres = movieDto.Genres ?? new List<string>(),
+                Director = movieDto.Director,
+                Actors = movieDto.Actors ?? new List<string>(),
+                PosterUrl = movieDto.PosterUrl,
                 AverageRating = movieDto.AverageRating,
-                Genres = movieDto.Genres
+                ReviewCount = movieDto.ReviewCount
             };
 
             var collection = _mongoDbService.GetCollection<Movie>(_settings.MoviesCollectionName);

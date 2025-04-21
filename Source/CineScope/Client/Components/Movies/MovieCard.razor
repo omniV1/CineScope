@@ -12,7 +12,7 @@
                 <MudProgressCircular Size="Size.Small" Indeterminate="true" />
             </div>
         }
-        <img src="@(isLoadingPoster ? "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" : posterUrl)"
+        <img src="@currentPosterUrl"
              style="opacity: @(isLoadingPoster ? "0" : "1")"
              alt="@Movie.Title"
              loading="lazy"
@@ -63,12 +63,33 @@
             box-shadow: var(--mud-elevation-4);
         }
 
+    .poster-container {
+        position: relative;
+        width: 100%;
+        padding-top: 150%; /* 2:3 aspect ratio */
+        overflow: hidden;
+        background-color: var(--mud-palette-background-grey);
+    }
+
+        .poster-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.3s ease-in-out;
+        }
+
     .poster-skeleton {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 100%;
-        height: 100%;
         background-color: var(--mud-palette-background-grey);
     }
 </style>
@@ -78,153 +99,96 @@
     public MovieDto Movie { get; set; } = new MovieDto();
 
     private ElementReference posterContainer;
-    private string posterUrl = string.Empty;
+    private string currentPosterUrl = string.Empty;
     private bool isLoadingPoster = true;
-    private bool posterLoadAttempted = false;
     private int loadAttemptCount = 0;
     private const int MAX_LOAD_ATTEMPTS = 2;
-    private bool isIntersecting = false;
-    private IDisposable? intersectionObserver;
+    private DotNetObjectReference<MovieCard>? objRef;
+    private bool isIntersectionObserverSet = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (firstRender && !isIntersectionObserverSet)
         {
-            await SetupIntersectionObserver();
-        }
-    }
-
-    private async Task SetupIntersectionObserver()
-    {
-        try
-        {
-            intersectionObserver = await JSRuntime.InvokeAsync<IDisposable>(
-                "eval",
-                $@"
-                (() => {{
-                    const observer = new IntersectionObserver(
-                        (entries) => {{
-                            entries.forEach(entry => {{
-                                if (entry.isIntersecting) {{
-                                    DotNet.invokeMethodAsync('{typeof(MovieCard).Assembly.GetName().Name}', 'OnPosterVisible', '{Movie.Id}');
-                                }}
-                            }});
-                        }},
-                        {{ rootMargin: '50px', threshold: 0.1 }}
-                    );
-                    
-                    const element = document.querySelector('[_bl_{posterContainer.Id}]');
-                    if (element) {{
-                        observer.observe(element);
-                    }}
-                    
-                    return {{
-                        dispose: () => observer.disconnect()
-                    }};
-                }})()");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error setting up intersection observer: {ex.Message}");
+            try
+            {
+                objRef = DotNetObjectReference.Create(this);
+                await JSRuntime.InvokeVoidAsync("observeElement", posterContainer, objRef);
+                isIntersectionObserverSet = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error setting up intersection observer: {ex.Message}");
+                // Fallback: load the poster immediately
+                await LoadPosterUrl();
+            }
         }
     }
 
     [JSInvokable]
-    public static async Task OnPosterVisible(string movieId)
+    public async Task OnPosterVisible()
     {
-        // This will be called when the poster container becomes visible
-        // We'll implement this if needed for preloading
+        await LoadPosterUrl();
     }
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadPosterFromCache();
+        // Don't load poster here anymore - wait for intersection observer
+        currentPosterUrl = $"https://placehold.co/300x450/1a1a1a/white?text={Uri.EscapeDataString(Movie.Title ?? "Loading...")}";
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        // Reset state when Movie changes
-        if (!string.IsNullOrEmpty(Movie.Id) && posterUrl != GetOriginalPosterUrl())
+        if (!string.IsNullOrEmpty(Movie.Id))
         {
             isLoadingPoster = true;
             loadAttemptCount = 0;
-            posterLoadAttempted = false;
-            await LoadPosterFromCache();
+            currentPosterUrl = $"https://placehold.co/300x450/1a1a1a/white?text={Uri.EscapeDataString(Movie.Title ?? "Loading...")}";
+            StateHasChanged();
         }
     }
 
-    private async Task LoadPosterFromCache()
+    private async Task LoadPosterUrl()
     {
         try
         {
-            isLoadingPoster = true;
-            string originalUrl = GetOriginalPosterUrl();
-            
-            // Convert GitHub URLs before caching
-            if (!string.IsNullOrEmpty(originalUrl) && originalUrl.Contains("github.com"))
+            if (string.IsNullOrEmpty(Movie.PosterUrl))
             {
-                originalUrl = ConvertToGitHubRawUrl(originalUrl);
+                currentPosterUrl = $"https://placehold.co/300x450/1a1a1a/white?text={Uri.EscapeDataString(Movie.Title ?? "No Title")}";
+                return;
             }
-            
-            posterUrl = await MovieCache.GetPosterWithCachingAsync(Movie.Id, originalUrl);
+
+            currentPosterUrl = await MovieCache.GetPosterWithCachingAsync(Movie.Id, Movie.PosterUrl);
+            StateHasChanged();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error loading poster from cache: {ex.Message}");
-            posterUrl = GetOriginalPosterUrl();
+            Console.WriteLine($"Error loading poster for {Movie.Title}: {ex.Message}");
+            currentPosterUrl = $"https://placehold.co/300x450/1a1a1a/white?text={Uri.EscapeDataString(Movie.Title ?? "No Title")}";
+            StateHasChanged();
         }
     }
 
-    private async Task HandleImageLoaded()
+    private void HandleImageLoaded()
     {
         isLoadingPoster = false;
-        posterLoadAttempted = true;
         StateHasChanged();
     }
 
     private async Task HandleImageError()
     {
         loadAttemptCount++;
-
+        
         if (loadAttemptCount < MAX_LOAD_ATTEMPTS)
         {
-            posterUrl = $"https://placehold.co/300x450/1a1a1a/white?text={Uri.EscapeDataString(Movie.Title ?? "No Title")}";
-            StateHasChanged();
+            await LoadPosterUrl();
         }
         else
         {
+            currentPosterUrl = $"https://placehold.co/300x450/1a1a1a/white?text={Uri.EscapeDataString(Movie.Title ?? "No Title")}";
             isLoadingPoster = false;
-            posterLoadAttempted = true;
             StateHasChanged();
         }
-    }
-
-    private string GetOriginalPosterUrl()
-    {
-        if (!string.IsNullOrEmpty(Movie.PosterUrl))
-        {
-            if (Movie.PosterUrl.Contains("github.com"))
-            {
-                return ConvertToGitHubRawUrl(Movie.PosterUrl);
-            }
-            
-            if (Movie.PosterUrl.StartsWith("http://") || Movie.PosterUrl.StartsWith("https://"))
-            {
-                return Movie.PosterUrl;
-            }
-        }
-
-        return $"https://placehold.co/300x450/1a1a1a/white?text={Uri.EscapeDataString(Movie.Title ?? "No Title")}";
-    }
-
-    private string ConvertToGitHubRawUrl(string url)
-    {
-        if (string.IsNullOrWhiteSpace(url)) return url;
-        if (url.Contains("raw.githubusercontent.com")) return url;
-        
-        // Convert regular GitHub URL to raw URL
-        return url.Replace("github.com", "raw.githubusercontent.com")
-                 .Replace("/blob/", "/");
     }
 
     private void GoToMovieDetails()
@@ -234,11 +198,22 @@
 
     private void GoToWriteReview()
     {
-        NavigationManager.NavigateTo($"/movie/{Movie.Id}?action=review");
+        NavigationManager.NavigateTo($"/movie/{Movie.Id}/review");
     }
 
     public void Dispose()
     {
-        intersectionObserver?.Dispose();
+        try
+        {
+            if (isIntersectionObserverSet)
+            {
+                _ = JSRuntime.InvokeVoidAsync("unobserveElement", posterContainer);
+            }
+            objRef?.Dispose();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error disposing MovieCard: {ex.Message}");
+        }
     }
 }

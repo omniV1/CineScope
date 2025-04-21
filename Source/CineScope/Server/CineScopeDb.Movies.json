@@ -1,0 +1,1361 @@
+[{
+  "_id": {
+    "$oid": "67cc92874a48162e7bfa4219"
+  },
+  "Title": "The Shawshank Redemption",
+  "Description": "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
+  "ReleaseDate": {
+    "$date": "1994-09-23T00:00:00.000Z"
+  },
+  "Genres": [
+    "Drama"
+  ],
+  "Director": "Frank Darabont",
+  "Actors": [
+    "Tim Robbins",
+    "Morgan Freeman",
+    "Bob Gunton"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMDFkYTc0MGEtZmNhMC00ZDIzLWFmNTEtODM1ZmRlYWMwMWFmXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
+  "AverageRating": 4.7,
+  "ReviewCount": 6
+},
+{
+  "_id": {
+    "$oid": "67cc92874a48162e7bfa421b"
+  },
+  "Title": "The Dark Knight",
+  "Description": "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.",
+  "ReleaseDate": {
+    "$date": "2008-07-18T00:00:00.000Z"
+  },
+  "Genres": [
+    "Action",
+    "Crime",
+    "Drama"
+  ],
+  "Director": "Christopher Nolan",
+  "Actors": [
+    "Christian Bale",
+    "Heath Ledger",
+    "Aaron Eckhart"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg",
+  "AverageRating": 4.2,
+  "ReviewCount": 6
+},
+{
+  "_id": {
+    "$oid": "67cc92874a48162e7bfa421c"
+  },
+  "Title": "Pulp Fiction",
+  "Description": "The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.",
+  "ReleaseDate": {
+    "$date": "1994-10-14T00:00:00.000Z"
+  },
+  "Genres": [
+    "Crime",
+    "Drama"
+  ],
+  "Director": "Quentin Tarantino",
+  "Actors": [
+    "John Travolta",
+    "Uma Thurman",
+    "Samuel L. Jackson"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BNGNhMDIzZTUtNTBlZi00MTRlLWFjM2ItYzViMjE3YzI5MjljXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_.jpg",
+  "AverageRating": 4.2,
+  "ReviewCount": 5
+},
+{
+  "_id": {
+    "$oid": "67cc92874a48162e7bfa421d"
+  },
+  "Title": "Inception",
+  "Description": "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.",
+  "ReleaseDate": {
+    "$date": "2010-07-16T00:00:00.000Z"
+  },
+  "Genres": [
+    "Action",
+    "Adventure",
+    "Sci-Fi"
+  ],
+  "Director": "Christopher Nolan",
+  "Actors": [
+    "Leonardo DiCaprio",
+    "Joseph Gordon-Levitt",
+    "Elliot Page"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg",
+  "AverageRating": 4.7,
+  "ReviewCount": 16
+},
+{
+  "_id": {
+    "$oid": "67cc92874a48162e7bfa421e"
+  },
+  "Title": "The Matrix",
+  "Director": "Lana Wachowski, Lilly Wachowski",
+  "Year": 0,
+  "Genres": [
+    "Action",
+    "Sci-Fi"
+  ],
+  "Rating": 0,
+  "Description": "A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.",
+  "ReleaseDate": {
+    "$date": "1999-03-31T00:00:00.000Z"
+  },
+  "Actors": [
+    "Keanu Reeves",
+    "Laurence Fishburne",
+    "Carrie-Anne Moss"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_.jpg",
+  "AverageRating": 4.6,
+  "ReviewCount": 13
+},
+{
+  "_id": {
+    "$oid": "67cc92874a48162e7bfa421f"
+  },
+  "Title": "Parasite",
+  "Description": "Greed and class discrimination threaten the newly formed symbiotic relationship between the wealthy Park family and the destitute Kim clan.",
+  "ReleaseDate": {
+    "$date": "2019-05-30T00:00:00.000Z"
+  },
+  "Genres": [
+    "Drama",
+    "Thriller"
+  ],
+  "Director": "Bong Joon Ho",
+  "Actors": [
+    "Song Kang-ho",
+    "Lee Sun-kyun",
+    "Cho Yeo-jeong"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_.jpg",
+  "AverageRating": 4.8,
+  "ReviewCount": 4
+},
+{
+  "_id": {
+    "$oid": "67cc92874a48162e7bfa4220"
+  },
+  "Title": "Interstellar",
+  "Description": "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.",
+  "ReleaseDate": {
+    "$date": "2014-11-07T00:00:00.000Z"
+  },
+  "Genres": [
+    "Adventure",
+    "Drama",
+    "Sci-Fi"
+  ],
+  "Director": "Christopher Nolan",
+  "Actors": [
+    "Matthew McConaughey",
+    "Anne Hathaway",
+    "Jessica Chastain"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BZjdkOTU3MDktN2IxOS00OGEyLWFmMjktY2FiMmZkNWIyODZiXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
+  "AverageRating": 4.7,
+  "ReviewCount": 12
+},
+{
+  "_id": {
+    "$oid": "67cc92874a48162e7bfa4221"
+  },
+  "Title": "The Avengers",
+  "Description": "Earth's mightiest heroes must come together and learn to fight as a team if they are going to stop the mischievous Loki and his alien army from enslaving humanity.",
+  "ReleaseDate": {
+    "$date": "2012-05-04T00:00:00.000Z"
+  },
+  "Genres": [
+    "Action",
+    "Adventure",
+    "Sci-Fi"
+  ],
+  "Director": "Joss Whedon",
+  "Actors": [
+    "Robert Downey Jr.",
+    "Chris Evans",
+    "Scarlett Johansson"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmYjU5ZGI2YTI1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
+  "AverageRating": 4.5,
+  "ReviewCount": 14
+},
+{
+  "_id": {
+    "$oid": "67cc92874a48162e7bfa4222"
+  },
+  "Title": "Joker",
+  "Description": "In Gotham City, mentally troubled comedian Arthur Fleck is disregarded and mistreated by society. He then embarks on a downward spiral of revolution and bloody crime. This path brings him face-to-face with his alter-ego: the Joker.",
+  "ReleaseDate": {
+    "$date": "2019-10-04T00:00:00.000Z"
+  },
+  "Genres": [
+    "Crime",
+    "Drama",
+    "Thriller"
+  ],
+  "Director": "Todd Phillips",
+  "Actors": [
+    "Joaquin Phoenix",
+    "Robert De Niro",
+    "Zazie Beetz"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BNGVjNWI4ZGUtNzE0MS00YTJmLWE0ZDctN2ZiYTk2YmI3NTYyXkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_.jpg",
+  "AverageRating": 4.4,
+  "ReviewCount": 5
+},
+{
+  "_id": {
+    "$oid": "67cc92874a48162e7bfa4223"
+  },
+  "Title": "Spirited Away",
+  "Description": "During her family's move to the suburbs, a sullen 10-year-old girl wanders into a world ruled by gods, witches, and spirits, and where humans are changed into beasts.",
+  "ReleaseDate": {
+    "$date": "2001-07-20T00:00:00.000Z"
+  },
+  "Genres": [
+    "Animation",
+    "Adventure",
+    "Family"
+  ],
+  "Director": "Hayao Miyazaki",
+  "Actors": [
+    "Daveigh Chase",
+    "Suzanne Pleshette",
+    "Miyu Irino"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMjlmZmI5MDctNDE2YS00YWE0LWE5ZWItZDBhYWQ0NTcxNWRhXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
+  "AverageRating": 4.8,
+  "ReviewCount": 4
+},
+{
+  "_id": {
+    "$oid": "67cc92874a48162e7bfa4224"
+  },
+  "Title": "Get Out",
+  "Description": "A young African-American visits his white girlfriend's parents for the weekend, where his simmering uneasiness about their reception of him eventually reaches a boiling point.",
+  "ReleaseDate": {
+    "$date": "2017-02-24T00:00:00.000Z"
+  },
+  "Genres": [
+    "Horror",
+    "Mystery",
+    "Thriller"
+  ],
+  "Director": "Jordan Peele",
+  "Actors": [
+    "Daniel Kaluuya",
+    "Allison Williams",
+    "Bradley Whitford"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMjUxMDQwNjcyNl5BMl5BanBnXkFtZTgwNzcwMzc0MTI@._V1_.jpg",
+  "AverageRating": 4.8,
+  "ReviewCount": 4
+},
+{
+  "_id": {
+    "$oid": "67cc92874a48162e7bfa4225"
+  },
+  "Title": "The Social Network",
+  "Description": "As Harvard student Mark Zuckerberg creates the social networking site that would become known as Facebook, he is sued by the twins who claimed he stole their idea, and by the co-founder who was later squeezed out of the business.",
+  "ReleaseDate": {
+    "$date": "2010-10-01T00:00:00.000Z"
+  },
+  "Genres": [
+    "Biography",
+    "Drama"
+  ],
+  "Director": "David Fincher",
+  "Actors": [
+    "Jesse Eisenberg",
+    "Andrew Garfield",
+    "Justin Timberlake"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BOGUyZDUxZjEtMmIzMC00MzlmLTg4MGItZWJmMzBhZjE0Mjc1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_.jpg",
+  "AverageRating": 4.4,
+  "ReviewCount": 7
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa4215"
+  },
+  "Title": "The Godfather",
+  "Description": "The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.",
+  "ReleaseDate": {
+    "$date": "1972-03-24T00:00:00.000Z"
+  },
+  "Genres": [
+    "Crime",
+    "Drama"
+  ],
+  "Director": "Francis Ford Coppola",
+  "Actors": [
+    "Marlon Brando",
+    "Al Pacino",
+    "James Caan"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@.jpg",
+  "AverageRating": 3,
+  "ReviewCount": 2
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa4219"
+  },
+  "Title": "Goodfellas",
+  "Description": "The story of Henry Hill and his life in the mob, covering his relationship with his wife Karen Hill and his mob partners Jimmy Conway and Tommy DeVito.",
+  "ReleaseDate": {
+    "$date": "1990-09-19T00:00:00.000Z"
+  },
+  "Genres": [
+    "Biography",
+    "Crime",
+    "Drama"
+  ],
+  "Director": "Martin Scorsese",
+  "Actors": [
+    "Robert De Niro",
+    "Ray Liotta",
+    "Joe Pesci"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BY2NkZjEzMDgtN2RjYy00YzM1LWI4ZmQtMjIwYjFjNmI3ZGEwXkEyXkFqcGdeQXVyNzkwMjQ5NzM@.jpg",
+  "AverageRating": 4.6,
+  "ReviewCount": 13
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa421e"
+  },
+  "Title": "The Grand Budapest Hotel",
+  "Description": "A writer encounters the owner of an aging high-class hotel, who tells him of his early years serving as a lobby boy in the hotel's glorious years under an exceptional concierge.",
+  "ReleaseDate": {
+    "$date": "2014-03-28T00:00:00.000Z"
+  },
+  "Genres": [
+    "Adventure",
+    "Comedy",
+    "Crime"
+  ],
+  "Director": "Wes Anderson",
+  "Actors": [
+    "Ralph Fiennes",
+    "F. Murray Abraham",
+    "Mathieu Amalric"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMzM5NjUxOTEyMl5BMl5BanBnXkFtZTgwNjEyMDM0MDE@.jpg",
+  "AverageRating": 4.5,
+  "ReviewCount": 10
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa4220"
+  },
+  "Title": "Eternal Sunshine of the Spotless Mind",
+  "Description": "When their relationship turns sour, a couple undergoes a medical procedure to have each other erased from their memories.",
+  "ReleaseDate": {
+    "$date": "2004-03-19T00:00:00.000Z"
+  },
+  "Genres": [
+    "Drama",
+    "Romance",
+    "Sci-Fi"
+  ],
+  "Director": "Michel Gondry",
+  "Actors": [
+    "Jim Carrey",
+    "Kate Winslet",
+    "Tom Wilkinson"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMTY4NzcwODg3Nl5BMl5BanBnXkFtZTcwNTEwOTMyMw@@.jpg",
+  "AverageRating": 4.6,
+  "ReviewCount": 14
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa4226"
+  },
+  "Title": "Her",
+  "Description": "In a near future, a lonely writer develops an unlikely relationship with an operating system designed to meet his every need.",
+  "ReleaseDate": {
+    "$date": "2013-12-18T00:00:00.000Z"
+  },
+  "Genres": [
+    "Drama",
+    "Romance",
+    "Sci-Fi"
+  ],
+  "Director": "Spike Jonze",
+  "Actors": [
+    "Joaquin Phoenix",
+    "Amy Adams",
+    "Scarlett Johansson"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMjA1Nzk0OTM2OF5BMl5BanBnXkFtZTgwNjU2NjEwMDE@.jpg",
+  "AverageRating": 4.3,
+  "ReviewCount": 12
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa4228"
+  },
+  "Title": "The Shape of Water",
+  "Description": "At a top secret research facility in the 1960s, a lonely janitor forms a unique relationship with an amphibious creature that is being held in captivity.",
+  "ReleaseDate": {
+    "$date": "2017-12-01T00:00:00.000Z"
+  },
+  "Genres": [
+    "Adventure",
+    "Drama",
+    "Fantasy"
+  ],
+  "Director": "Guillermo del Toro",
+  "Actors": [
+    "Sally Hawkins",
+    "Octavia Spencer",
+    "Michael Shannon"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BNGNiNWQ5M2MtNGI0OC00MDA2LWI5NzEtMmZiYjVjMDEyOWYzXkEyXkFqcGdeQXVyMjM4NTM5NDY@.jpg",
+  "AverageRating": 4.2,
+  "ReviewCount": 11
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa422a"
+  },
+  "Title": "The Revenant",
+  "Description": "A frontiersman on a fur trading expedition in the 1820s fights for survival after being mauled by a bear and left for dead by members of his own hunting team.",
+  "ReleaseDate": {
+    "$date": "2015-12-25T00:00:00.000Z"
+  },
+  "Genres": [
+    "Action",
+    "Adventure",
+    "Drama"
+  ],
+  "Director": "Alejandro G. Iñárritu",
+  "Actors": [
+    "Leonardo DiCaprio",
+    "Tom Hardy",
+    "Will Poulter"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMDE5OWMzM2QtOTU2ZS00NzAyLWI2MDEtOTRlYjIxZGM0OWRjXkEyXkFqcGdeQXVyODE5NzE3OTE@.jpg",
+  "AverageRating": 4.3,
+  "ReviewCount": 15
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa4217"
+  },
+  "Title": "The Lord of the Rings: The Fellowship of the Ring",
+  "Description": "A meek Hobbit from the Shire and eight companions set out on a journey to destroy the powerful One Ring and save Middle-earth from the Dark Lord Sauron.",
+  "ReleaseDate": {
+    "$date": "2001-12-19T00:00:00.000Z"
+  },
+  "Genres": [
+    "Adventure",
+    "Drama",
+    "Fantasy"
+  ],
+  "Director": "Peter Jackson",
+  "Actors": [
+    "Elijah Wood",
+    "Ian McKellen",
+    "Viggo Mortensen"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BN2EyZjM3NzUtNWUzMi00MTgxLWI0NTctMzY4M2VlOTdjZWRiXkEyXkFqcGdeQXVyNDUzOTQ5MjY@.jpg",
+  "AverageRating": 4,
+  "ReviewCount": 1
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa4218"
+  },
+  "Title": "Forrest Gump",
+  "Description": "The presidencies of Kennedy and Johnson, the Vietnam War, the Watergate scandal and other historical events unfold from the perspective of an Alabama man with an IQ of 75.",
+  "ReleaseDate": {
+    "$date": "1994-07-06T00:00:00.000Z"
+  },
+  "Genres": [
+    "Drama",
+    "Romance"
+  ],
+  "Director": "Robert Zemeckis",
+  "Actors": [
+    "Tom Hanks",
+    "Robin Wright",
+    "Gary Sinise"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BNWIwODRlZTUtY2U3ZS00Yzg1LWJhNzYtMmZiYmEyNmU1NjMzXkEyXkFqcGdeQXVyMTQxNzMzNDI@.jpg",
+  "AverageRating": 4.7,
+  "ReviewCount": 17
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa421a"
+  },
+  "Title": "The Silence of the Lambs",
+  "Description": "A young FBI cadet must receive the help of an incarcerated and manipulative cannibal killer to help catch another serial killer, a madman who skins his victims.",
+  "ReleaseDate": {
+    "$date": "1991-02-14T00:00:00.000Z"
+  },
+  "Genres": [
+    "Crime",
+    "Drama",
+    "Thriller"
+  ],
+  "Director": "Jonathan Demme",
+  "Actors": [
+    "Jodie Foster",
+    "Anthony Hopkins",
+    "Scott Glenn"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BNjNhZTk0ZmEtNjJhMi00YzFlLWE1MmEtYzM1M2ZmMGMwMTU4XkEyXkFqcGdeQXVyNjU0OTQ0OTY@.jpg",
+  "AverageRating": 4.6,
+  "ReviewCount": 12
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa421b"
+  },
+  "Title": "Blade Runner 2049",
+  "Description": "Young Blade Runner K's discovery of a long-buried secret leads him to track down former Blade Runner Rick Deckard, who's been missing for thirty years.",
+  "ReleaseDate": {
+    "$date": "2017-10-06T00:00:00.000Z"
+  },
+  "Genres": [
+    "Action",
+    "Drama",
+    "Sci-Fi"
+  ],
+  "Director": "Denis Villeneuve",
+  "Actors": [
+    "Ryan Gosling",
+    "Harrison Ford",
+    "Ana de Armas"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BNzA1Njg4NzYxOV5BMl5BanBnXkFtZTgwODk5NjU3MzI@.jpg",
+  "AverageRating": 4.5,
+  "ReviewCount": 15
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa421c"
+  },
+  "Title": "Whiplash",
+  "Description": "A promising young drummer enrolls at a cut-throat music conservatory where his dreams of greatness are mentored by an instructor who will stop at nothing to realize a student's potential.",
+  "ReleaseDate": {
+    "$date": "2014-10-10T00:00:00.000Z"
+  },
+  "Genres": [
+    "Drama",
+    "Music"
+  ],
+  "Director": "Damien Chazelle",
+  "Actors": [
+    "Miles Teller",
+    "J.K. Simmons",
+    "Melissa Benoist"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BOTA5NDZlZGUtMjAxOS00YTRkLTkwYmMtYWQ0NWEwZDZiNjEzXkEyXkFqcGdeQXVyMTMxODk2OTU@.jpg",
+  "AverageRating": 4.7,
+  "ReviewCount": 11
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa421d"
+  },
+  "Title": "La La Land",
+  "Description": "While navigating their careers in Los Angeles, a pianist and an actress fall in love while attempting to reconcile their aspirations for the future.",
+  "ReleaseDate": {
+    "$date": "2016-12-09T00:00:00.000Z"
+  },
+  "Genres": [
+    "Comedy",
+    "Drama",
+    "Music"
+  ],
+  "Director": "Damien Chazelle",
+  "Actors": [
+    "Ryan Gosling",
+    "Emma Stone",
+    "Rosemarie DeWitt"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMzUzNDM2NzM2MV5BMl5BanBnXkFtZTgwNTM3NTg4OTE@.jpg",
+  "AverageRating": 4.4,
+  "ReviewCount": 13
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa4222"
+  },
+  "Title": "No Country for Old Men",
+  "Description": "Violence and mayhem ensue after a hunter stumbles upon a drug deal gone wrong and more than two million dollars in cash near the Rio Grande.",
+  "ReleaseDate": {
+    "$date": "2007-11-09T00:00:00.000Z"
+  },
+  "Genres": [
+    "Crime",
+    "Drama",
+    "Thriller"
+  ],
+  "Director": "Ethan Coen, Joel Coen",
+  "Actors": [
+    "Tommy Lee Jones",
+    "Javier Bardem",
+    "Josh Brolin"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMjA5Njk3MjM4OV5BMl5BanBnXkFtZTcwMTc5MTE1MQ@@.jpg",
+  "AverageRating": 5,
+  "ReviewCount": 1
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa4224"
+  },
+  "Title": "Arrival",
+  "Description": "A linguist works with the military to communicate with alien lifeforms after twelve mysterious spacecraft appear around the world.",
+  "ReleaseDate": {
+    "$date": "2016-11-11T00:00:00.000Z"
+  },
+  "Genres": [
+    "Drama",
+    "Mystery",
+    "Sci-Fi"
+  ],
+  "Director": "Denis Villeneuve",
+  "Actors": [
+    "Amy Adams",
+    "Jeremy Renner",
+    "Forest Whitaker"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMTExMzU0ODcxNDheQTJeQWpwZ15BbWU4MDE1OTI4MzAy.jpg",
+  "AverageRating": 4.6,
+  "ReviewCount": 16
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa422b"
+  },
+  "Title": "Dunkirk",
+  "Description": "Allied soldiers from Belgium, the British Commonwealth and Empire, and France are surrounded by the German Army and evacuated during a fierce battle in World War II.",
+  "ReleaseDate": {
+    "$date": "2017-07-21T00:00:00.000Z"
+  },
+  "Genres": [
+    "Action",
+    "Drama",
+    "History"
+  ],
+  "Director": "Christopher Nolan",
+  "Actors": [
+    "Fionn Whitehead",
+    "Barry Keoghan",
+    "Mark Rylance"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BN2YyZjQ0NTEtNzU5MS00NGZkLTg0MTEtYzJmMWY3MWRhZjM2XkEyXkFqcGdeQXVyMDA4NzMyOA@@.jpg",
+  "AverageRating": 4.4,
+  "ReviewCount": 14
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa422d"
+  },
+  "Title": "A Quiet Place",
+  "Description": "In a post-apocalyptic world, a family is forced to live in silence while hiding from monsters with ultra-sensitive hearing.",
+  "ReleaseDate": {
+    "$date": "2018-04-06T00:00:00.000Z"
+  },
+  "Genres": [
+    "Drama",
+    "Horror",
+    "Sci-Fi"
+  ],
+  "Director": "John Krasinski",
+  "Actors": [
+    "Emily Blunt",
+    "John Krasinski",
+    "Millicent Simmonds"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMjI0MDMzNTQ0M15BMl5BanBnXkFtZTgwMTM5NzM3NDM@.jpg",
+  "AverageRating": 4.3,
+  "ReviewCount": 16
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa422e"
+  },
+  "Title": "Roma",
+  "Description": "A year in the life of a middle-class family's maid in Mexico City in the early 1970s.",
+  "ReleaseDate": {
+    "$date": "2018-11-21T00:00:00.000Z"
+  },
+  "Genres": [
+    "Drama"
+  ],
+  "Director": "Alfonso Cuarón",
+  "Actors": [
+    "Yalitza Aparicio",
+    "Marina de Tavira",
+    "Diego Cortina Autrey"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMTU0OTc3ODk4Ml5BMl5BanBnXkFtZTgwMzM4NzI5NjM@.jpg",
+  "AverageRating": 4.4,
+  "ReviewCount": 9
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa422f"
+  },
+  "Title": "Knives Out",
+  "Description": "A detective investigates the death of a patriarch of an eccentric, combative family.",
+  "ReleaseDate": {
+    "$date": "2019-11-27T00:00:00.000Z"
+  },
+  "Genres": [
+    "Comedy",
+    "Crime",
+    "Drama"
+  ],
+  "Director": "Rian Johnson",
+  "Actors": [
+    "Daniel Craig",
+    "Chris Evans",
+    "Ana de Armas"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMGUwZjliMTAtNzAxZi00MWNiLWE2NzgtZGUxMGQxZjhhNDRiXkEyXkFqcGdeQXVyNjU1NzU3MzE@.jpg",
+  "AverageRating": 5,
+  "ReviewCount": 1
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa4230"
+  },
+  "Title": "Marriage Story",
+  "Description": "Noah Baumbach's incisive and compassionate look at a marriage breaking up and a family staying together.",
+  "ReleaseDate": {
+    "$date": "2019-12-06T00:00:00.000Z"
+  },
+  "Genres": [
+    "Comedy",
+    "Drama",
+    "Romance"
+  ],
+  "Director": "Noah Baumbach",
+  "Actors": [
+    "Adam Driver",
+    "Scarlett Johansson",
+    "Julia Greer"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BZGVmY2RjNDgtMTc3Yy00YmY0LTgwODItYzBjNWJhNTRlYjdkXkEyXkFqcGdeQXVyMjM4NTM5NDY@.jpg",
+  "AverageRating": 5,
+  "ReviewCount": 1
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa4232"
+  },
+  "Title": "Jojo Rabbit",
+  "Description": "A young boy in Hitler's army finds out his mother is hiding a Jewish girl in their home.",
+  "ReleaseDate": {
+    "$date": "2019-10-18T00:00:00.000Z"
+  },
+  "Genres": [
+    "Comedy",
+    "Drama",
+    "War"
+  ],
+  "Director": "Taika Waititi",
+  "Actors": [
+    "Roman Griffin Davis",
+    "Thomasin McKenzie",
+    "Scarlett Johansson"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BZjU0Yzk2MzEtMjAzYy00MzY0LTg2YmItM2RkNzdkY2ZhN2JkXkEyXkFqcGdeQXVyNDg4NjY5OTQ@.jpg",
+  "AverageRating": 4.4,
+  "ReviewCount": 14
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa4233"
+  },
+  "Title": "Everything Everywhere All at Once",
+  "Description": "An aging Chinese immigrant is swept up in an insane adventure, where she alone can save the world by exploring other universes connecting with the lives she could have led.",
+  "ReleaseDate": {
+    "$date": "2022-03-25T00:00:00.000Z"
+  },
+  "Genres": [
+    "Action",
+    "Adventure",
+    "Comedy"
+  ],
+  "Director": "Daniel Kwan, Daniel Scheinert",
+  "Actors": [
+    "Michelle Yeoh",
+    "Stephanie Hsu",
+    "Ke Huy Quan"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BYTdiOTIyZTQtNmQ1OS00NjZlLWIyMTgtYzk5Y2M3ZDVmMDk1XkEyXkFqcGdeQXVyMTAzMDg4NzU0.jpg",
+  "AverageRating": 0,
+  "ReviewCount": 0
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa421f"
+  },
+  "Title": "Into the Spider-Verse",
+  "Description": "Teen Miles Morales becomes the Spider-Man of his universe, and must join with five spider-powered individuals from other dimensions to stop a threat for all realities.",
+  "ReleaseDate": {
+    "$date": "2018-12-14T00:00:00.000Z"
+  },
+  "Genres": [
+    "Animation",
+    "Action",
+    "Adventure"
+  ],
+  "Director": "Bob Persichetti, Peter Ramsey, Rodney Rothman",
+  "Actors": [
+    "Shameik Moore",
+    "Jake Johnson",
+    "Hailee Steinfeld"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMjMwNDkxMTgzOF5BMl5BanBnXkFtZTgwNTkwNTQ3NjM@.jpg",
+  "AverageRating": 5,
+  "ReviewCount": 2
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa4223"
+  },
+  "Title": "The Truman Show",
+  "Description": "An insurance salesman discovers his whole life is actually a reality TV show.",
+  "ReleaseDate": {
+    "$date": "1998-06-05T00:00:00.000Z"
+  },
+  "Genres": [
+    "Comedy",
+    "Drama",
+    "Sci-Fi"
+  ],
+  "Director": "Peter Weir",
+  "Actors": [
+    "Jim Carrey",
+    "Ed Harris",
+    "Laura Linney"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMDIzODcyY2EtMmY2MC00ZWVlLTgwMzAtMjQwOWUyNmJjNTYyXkEyXkFqcGdeQXVyNDk3NzU2MTQ@.jpg",
+  "AverageRating": 4.5,
+  "ReviewCount": 11
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa4225"
+  },
+  "Title": "Moonlight",
+  "Description": "A young African-American man grapples with his identity and sexuality while experiencing the everyday struggles of childhood, adolescence, and burgeoning adulthood.",
+  "ReleaseDate": {
+    "$date": "2016-10-21T00:00:00.000Z"
+  },
+  "Genres": [
+    "Drama"
+  ],
+  "Director": "Barry Jenkins",
+  "Actors": [
+    "Mahershala Ali",
+    "Naomie Harris",
+    "Trevante Rhodes"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BNzQxNTIyODAxMV5BMl5BanBnXkFtZTgwNzQyMDA3OTE@.jpg",
+  "AverageRating": 4.5,
+  "ReviewCount": 10
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa4229"
+  },
+  "Title": "Inglourious Basterds",
+  "Description": "In Nazi-occupied France during World War II, a plan to assassinate Nazi leaders by a group of Jewish U.S. soldiers coincides with a theatre owner's vengeful plans for the same.",
+  "ReleaseDate": {
+    "$date": "2009-08-21T00:00:00.000Z"
+  },
+  "Genres": [
+    "Adventure",
+    "Drama",
+    "War"
+  ],
+  "Director": "Quentin Tarantino",
+  "Actors": [
+    "Brad Pitt",
+    "Diane Kruger",
+    "Christoph Waltz"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BOTJiNDEzOWYtMTVjOC00ZjlmLWE0NGMtZmE1OWVmZDQ2OWJhXkEyXkFqcGdeQXVyNTIzOTk5ODM@.jpg",
+  "AverageRating": 4.4,
+  "ReviewCount": 13
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa422c"
+  },
+  "Title": "Black Panther",
+  "Description": "T'Challa, heir to the hidden but advanced kingdom of Wakanda, must step forward to lead his people into a new future and must confront a challenger from his country's past.",
+  "ReleaseDate": {
+    "$date": "2018-02-16T00:00:00.000Z"
+  },
+  "Genres": [
+    "Action",
+    "Adventure",
+    "Sci-Fi"
+  ],
+  "Director": "Ryan Coogler",
+  "Actors": [
+    "Chadwick Boseman",
+    "Michael B. Jordan",
+    "Lupita Nyong'o"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMTg1MTY2MjYzNV5BMl5BanBnXkFtZTgwMTc4NTMwNDI@.jpg",
+  "AverageRating": 4.5,
+  "ReviewCount": 18
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa4231"
+  },
+  "Title": "The Lighthouse",
+  "Description": "Two lighthouse keepers try to maintain their sanity while living on a remote and mysterious New England island in the 1890s.",
+  "ReleaseDate": {
+    "$date": "2019-10-18T00:00:00.000Z"
+  },
+  "Genres": [
+    "Drama",
+    "Fantasy",
+    "Horror"
+  ],
+  "Director": "Robert Eggers",
+  "Actors": [
+    "Robert Pattinson",
+    "Willem Dafoe",
+    "Valeriia Karaman"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BZmE0MGJhNmYtOWNjYi00Njc5LWE2YjEtMWMxZTVmODUwMmMxXkEyXkFqcGdeQXVyMTkxNjUyNQ@@.jpg",
+  "AverageRating": 4.1,
+  "ReviewCount": 10
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa4216"
+  },
+  "Title": "Fight Club",
+  "Description": "An insomniac office worker and a devil-may-care soapmaker form an underground fight club that evolves into something much, much more.",
+  "ReleaseDate": {
+    "$date": "1999-10-15T00:00:00.000Z"
+  },
+  "Genres": [
+    "Drama",
+    "Thriller"
+  ],
+  "Director": "David Fincher",
+  "Actors": [
+    "Brad Pitt",
+    "Edward Norton",
+    "Helena Bonham Carter"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMmEzNTkxYjQtZTc0MC00YTVjLTg5ZTEtZWMwOWVlYzY0NWIwXkEyXkFqcGdeQXVyNzkwMjQ5NzM@.jpg",
+  "AverageRating": 4.5,
+  "ReviewCount": 14
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa4221"
+  },
+  "Title": "The Departed",
+  "Description": "An undercover cop and a mole in the police attempt to identify each other while infiltrating an Irish gang in South Boston.",
+  "ReleaseDate": {
+    "$date": "2006-10-06T00:00:00.000Z"
+  },
+  "Genres": [
+    "Crime",
+    "Drama",
+    "Thriller"
+  ],
+  "Director": "Martin Scorsese",
+  "Actors": [
+    "Leonardo DiCaprio",
+    "Matt Damon",
+    "Jack Nicholson"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMTI1MTY2OTIxNV5BMl5BanBnXkFtZTYwNjQ4NjY3.jpg",
+  "AverageRating": 4.5,
+  "ReviewCount": 15
+},
+{
+  "_id": {
+    "$oid": "67d35af83c5ebb155dfa4227"
+  },
+  "Title": "Gone Girl",
+  "Description": "With his wife's disappearance having become the focus of an intense media circus, a man sees the spotlight turned on him when it's suspected that he may not be innocent.",
+  "ReleaseDate": {
+    "$date": "2014-10-03T00:00:00.000Z"
+  },
+  "Genres": [
+    "Drama",
+    "Mystery",
+    "Thriller"
+  ],
+  "Director": "David Fincher",
+  "Actors": [
+    "Ben Affleck",
+    "Rosamund Pike",
+    "Neil Patrick Harris"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMTk0MDQ3MzAzOV5BMl5BanBnXkFtZTgwNzU1NzE3MjE@.jpg",
+  "AverageRating": 4.3,
+  "ReviewCount": 14
+},
+{
+  "_id": {
+    "$oid": "67f32646ef744a8bbefa4249"
+  },
+  "Title": "When Harry Met Sally",
+  "Description": "Harry and Sally have known each other for years, and are very good friends, but they fear sex would ruin the friendship.",
+  "ReleaseDate": {
+    "$date": "1989-07-21T00:00:00.000Z"
+  },
+  "Genres": [
+    "Comedy",
+    "Drama",
+    "Romance"
+  ],
+  "Director": "Rob Reiner",
+  "Actors": [
+    "Billy Crystal",
+    "Meg Ryan",
+    "Carrie Fisher"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMjE0ODEwNjM2NF5BMl5BanBnXkFtZTcwMjU2Mzg3NA@@._V1_.jpg",
+  "AverageRating": 4.5,
+  "ReviewCount": 12
+},
+{
+  "_id": {
+    "$oid": "67f32646ef744a8bbefa424a"
+  },
+  "Title": "The Proposal",
+  "Director": "Anne Fletcher",
+  "Year": 0,
+  "Genres": [
+    "Comedy",
+    "Drama",
+    "Romance"
+  ],
+  "Rating": 0,
+  "Description": "A pushy boss forces her young assistant to marry her in order to keep her visa status in the U.S. and avoid deportation to Canada.",
+  "ReleaseDate": {
+    "$date": "2009-06-19T00:00:00.000Z"
+  },
+  "Actors": [
+    "Sandra Bullock",
+    "Ryan Reynolds",
+    "Mary Steenburgen"
+  ],
+  "PosterUrl": "https://raw.githubusercontent.com/omniV1/CineScope/main/Documents/Images/The_Proposal.jpg",
+  "AverageRating": 4.2,
+  "ReviewCount": 9
+},
+{
+  "_id": {
+    "$oid": "67f32646ef744a8bbefa424b"
+  },
+  "Title": "10 Things I Hate About You",
+  "Description": "A pretty, popular teenager can't go out on a date until her ill-tempered older sister does.",
+  "ReleaseDate": {
+    "$date": "1999-03-31T00:00:00.000Z"
+  },
+  "Genres": [
+    "Comedy",
+    "Drama",
+    "Romance"
+  ],
+  "Director": "Gil Junger",
+  "Actors": [
+    "Heath Ledger",
+    "Julia Stiles",
+    "Joseph Gordon-Levitt"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMmVhZjhlZDYtMDAwZi00MDcyLTgzOTItOWNiZjY0YmE0MGE0XkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg",
+  "AverageRating": 4.4,
+  "ReviewCount": 11
+},
+{
+  "_id": {
+    "$oid": "67f32646ef744a8bbefa424c"
+  },
+  "Title": "Notting Hill",
+  "Description": "The life of a simple bookshop owner changes when he meets the most famous film star in the world.",
+  "ReleaseDate": {
+    "$date": "1999-05-28T00:00:00.000Z"
+  },
+  "Genres": [
+    "Comedy",
+    "Drama",
+    "Romance"
+  ],
+  "Director": "Roger Michell",
+  "Actors": [
+    "Hugh Grant",
+    "Julia Roberts",
+    "Richard McCabe"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMTE5OTkwYzYtNDhlNC00MzljLTk1YTktY2IxZjliZmNjMjUzL2ltYWdlL2ltYWdlXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg",
+  "AverageRating": 4.3,
+  "ReviewCount": 14
+},
+{
+  "_id": {
+    "$oid": "67f32646ef744a8bbefa424d"
+  },
+  "Title": "How to Lose a Guy in 10 Days",
+  "Description": "A ladies' man bets his friends he can stay in a relationship for 10 days while a journalist needs to lose a guy in 10 days for an article she's writing.",
+  "ReleaseDate": {
+    "$date": "2003-02-07T00:00:00.000Z"
+  },
+  "Genres": [
+    "Comedy",
+    "Romance"
+  ],
+  "Director": "Donald Petrie",
+  "Actors": [
+    "Kate Hudson",
+    "Matthew McConaughey",
+    "Adam Goldberg"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMjE4NTA1NzExN15BMl5BanBnXkFtZTYwNjc3MjM3._V1_.jpg",
+  "AverageRating": 4.1,
+  "ReviewCount": 10
+},
+{
+  "_id": {
+    "$oid": "67f32646ef744a8bbefa424e"
+  },
+  "Title": "Crazy Rich Asians",
+  "Description": "An American-born Chinese economics professor accompanies her boyfriend to Singapore for his best friend's wedding, only to get thrust into the lives of Asia's rich and famous.",
+  "ReleaseDate": {
+    "$date": "2018-08-15T00:00:00.000Z"
+  },
+  "Genres": [
+    "Comedy",
+    "Drama",
+    "Romance"
+  ],
+  "Director": "Jon M. Chu",
+  "Actors": [
+    "Constance Wu",
+    "Henry Golding",
+    "Michelle Yeoh"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMTYxNDMyOTAxN15BMl5BanBnXkFtZTgwMDg1ODYzNTM@._V1_.jpg",
+  "AverageRating": 4.4,
+  "ReviewCount": 18
+},
+{
+  "_id": {
+    "$oid": "67f32646ef744a8bbefa424f"
+  },
+  "Title": "Pretty Woman",
+  "Description": "A man in a legal but hurtful business needs an escort for some social events, and hires a beautiful prostitute he meets... only to fall in love.",
+  "ReleaseDate": {
+    "$date": "1990-03-23T00:00:00.000Z"
+  },
+  "Genres": [
+    "Comedy",
+    "Romance"
+  ],
+  "Director": "Garry Marshall",
+  "Actors": [
+    "Richard Gere",
+    "Julia Roberts",
+    "Jason Alexander"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BNjk2ODQzNDYxNV5BMl5BanBnXkFtZTgwMTcyNDg4NjE@._V1_.jpg",
+  "AverageRating": 4.6,
+  "ReviewCount": 20
+},
+{
+  "_id": {
+    "$oid": "67f32646ef744a8bbefa4250"
+  },
+  "Title": "Bridget Jones's Diary",
+  "Director": "Sharon Maguire",
+  "Year": 0,
+  "Genres": [
+    "Comedy",
+    "Drama",
+    "Romance"
+  ],
+  "Rating": 0,
+  "Description": "Bridget Jones, a thirty-something English woman decides to improve herself and chronicles her efforts in a diary.",
+  "ReleaseDate": {
+    "$date": "2001-04-13T00:00:00.000Z"
+  },
+  "Actors": [
+    "Renée Zellweger",
+    "Colin Firth",
+    "Hugh Grant"
+  ],
+  "PosterUrl": "https://raw.githubusercontent.com/omniV1/CineScope/main/Documents/Images/BridgetJonesDiaryMoviePoster.jpg",
+  "AverageRating": 4.2,
+  "ReviewCount": 13
+},
+{
+  "_id": {
+    "$oid": "67f32646ef744a8bbefa4251"
+  },
+  "Title": "The Princess Bride",
+  "Description": "A bedridden boy's grandfather reads him the story of a farmboy-turned-pirate who encounters numerous obstacles, enemies and allies in his quest to be reunited with his true love.",
+  "ReleaseDate": {
+    "$date": "1987-09-25T00:00:00.000Z"
+  },
+  "Genres": [
+    "Adventure",
+    "Comedy",
+    "Fantasy",
+    "Romance"
+  ],
+  "Director": "Rob Reiner",
+  "Actors": [
+    "Cary Elwes",
+    "Robin Wright",
+    "Mandy Patinkin"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMGM4M2Q5N2MtNThkZS00NTc1LTk1NTItNWEyZjJjNDRmNDk5XkEyXkFqcGdeQXVyMjA0MDQ0Mjc@._V1_.jpg",
+  "AverageRating": 4.8,
+  "ReviewCount": 22
+},
+{
+  "_id": {
+    "$oid": "67f32646ef744a8bbefa4252"
+  },
+  "Title": "Love Actually",
+  "Description": "Follows the lives of eight very different couples in dealing with their love lives in various loosely interrelated tales all set during a frantic month before Christmas in London.",
+  "ReleaseDate": {
+    "$date": "2003-11-07T00:00:00.000Z"
+  },
+  "Genres": [
+    "Comedy",
+    "Drama",
+    "Romance"
+  ],
+  "Director": "Richard Curtis",
+  "Actors": [
+    "Hugh Grant",
+    "Martine McCutcheon",
+    "Liam Neeson"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMTY4NjQ5NDc0Nl5BMl5BanBnXkFtZTYwNjk5NDM3._V1_.jpg",
+  "AverageRating": 4.5,
+  "ReviewCount": 17
+},
+{
+  "_id": {
+    "$oid": "67f32646ef744a8bbefa4253"
+  },
+  "Title": "500 Days of Summer",
+  "Description": "An offbeat romantic comedy about a woman who doesn't believe true love exists, and the young man who falls for her.",
+  "ReleaseDate": {
+    "$date": "2009-07-17T00:00:00.000Z"
+  },
+  "Genres": [
+    "Comedy",
+    "Drama",
+    "Romance"
+  ],
+  "Director": "Marc Webb",
+  "Actors": [
+    "Zooey Deschanel",
+    "Joseph Gordon-Levitt",
+    "Geoffrey Arend"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMTk5MjM4OTU1OV5BMl5BanBnXkFtZTcwODkzNDIzMw@@._V1_.jpg",
+  "AverageRating": 4.4,
+  "ReviewCount": 15
+},
+{
+  "_id": {
+    "$oid": "67f32646ef744a8bbefa4254"
+  },
+  "Title": "About Time",
+  "Description": "At the age of 21, Tim discovers he can travel in time and change what happens and has happened in his own life. His decision to make his world a better place by getting a girlfriend turns out not to be as easy as you might think.",
+  "ReleaseDate": {
+    "$date": "2013-11-01T00:00:00.000Z"
+  },
+  "Genres": [
+    "Comedy",
+    "Drama",
+    "Fantasy",
+    "Romance"
+  ],
+  "Director": "Richard Curtis",
+  "Actors": [
+    "Domhnall Gleeson",
+    "Rachel McAdams",
+    "Bill Nighy"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMTA1ODUzMDA3NzFeQTJeQWpwZ15BbWU3MDgxMTYxNTk@._V1_.jpg",
+  "AverageRating": 4.6,
+  "ReviewCount": 14
+},
+{
+  "_id": {
+    "$oid": "67f32646ef744a8bbefa4255"
+  },
+  "Title": "The Holiday",
+  "Description": "Two women troubled with guy-problems swap homes in each other's countries, where they each meet a local guy and fall in love.",
+  "ReleaseDate": {
+    "$date": "2006-12-08T00:00:00.000Z"
+  },
+  "Genres": [
+    "Comedy",
+    "Romance"
+  ],
+  "Director": "Nancy Meyers",
+  "Actors": [
+    "Kate Winslet",
+    "Cameron Diaz",
+    "Jude Law"
+  ],
+  "PosterUrl": "https://m.media-amazon.com/images/M/MV5BMTI1MDk4MzA2OF5BMl5BanBnXkFtZTYwMjQ3NDc3._V1_.jpg",
+  "AverageRating": 4.3,
+  "ReviewCount": 12
+},
+{
+  "_id": {
+    "$oid": "67feb20fb5309f535852af59"
+  },
+  "Title": "Scott Pilgrim vs. the World",
+  "Director": "Edgar Wright",
+  "Year": 0,
+  "Genres": [
+    "Action",
+    "Comedy",
+    "Romance"
+  ],
+  "Rating": 0,
+  "Description": "A young man must defeat his new girlfriend's seven evil exes, who are willing to do anything to prevent her happiness with someone else",
+  "ReleaseDate": {
+    "$date": "2010-07-27T07:00:00.000Z"
+  },
+  "Actors": [
+    "Michael Cera",
+    "Michael Cera",
+    "Kieran Culkin"
+  ],
+  "PosterUrl": "https://raw.githubusercontent.com/omniV1/CineScope/main/Documents/Images/Scott_Pilgrim_vs._the_World_teaser.jpg",
+  "AverageRating": 0,
+  "ReviewCount": 0
+}]

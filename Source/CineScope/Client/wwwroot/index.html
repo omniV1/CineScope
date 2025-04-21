@@ -155,6 +155,39 @@
 
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+
+    <script>
+        // Intersection Observer for lazy loading
+        const observers = new Map();
+
+        window.observeElement = (element, dotNetHelper) => {
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            dotNetHelper.invokeMethodAsync('OnPosterVisible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                },
+                { rootMargin: '50px', threshold: 0.1 }
+            );
+
+            const target = element;
+            if (target) {
+                observer.observe(target);
+                observers.set(element, observer);
+            }
+        };
+
+        window.unobserveElement = (element) => {
+            const observer = observers.get(element);
+            if (observer) {
+                observer.disconnect();
+                observers.delete(element);
+            }
+        };
+    </script>
 </body>
 
 </html>
