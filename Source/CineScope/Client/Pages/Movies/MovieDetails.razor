@@ -220,24 +220,42 @@ else
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        await LoadMovie();
-        await LoadReviews();
-        LoadMovieTitles();
-
-        // Check if there's a query parameter to show the review form
-        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        if (uri.Query.Contains("action=review"))
+        try
         {
-            // Only show the review form if user is authenticated
-            if (!string.IsNullOrEmpty(currentUserId))
+            // Get the current user's ID for review management
+            var authState = await authStateTask;
+            if (authState.User.Identity.IsAuthenticated)
             {
-                showReviewForm = true;
+                var user = await AuthService.GetCurrentUser();
+                if (user != null)
+                {
+                    currentUserId = user.Id;
+                }
             }
-            else
+
+            await LoadMovie();
+            await LoadReviews();
+            LoadMovieTitles();
+
+            // Check if there's a query parameter to show the review form
+            var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+            if (uri.Query.Contains("action=review"))
             {
-                // Redirect to login if not authenticated
-                NavigationManager.NavigateTo($"/login?returnUrl={Uri.EscapeDataString(NavigationManager.Uri)}");
+                // Only show the review form if user is authenticated
+                if (!string.IsNullOrEmpty(currentUserId))
+                {
+                    showReviewForm = true;
+                }
+                else
+                {
+                    // Redirect to login if not authenticated
+                    NavigationManager.NavigateTo($"/login?returnUrl={Uri.EscapeDataString(NavigationManager.Uri)}");
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
         }
     }
 

@@ -234,10 +234,34 @@
         var dialog = await DialogService.ShowAsync<BannedWordDialog>("Edit Banned Word", parameters);
         var result = await dialog.Result;
 
-        // Here you would implement the API call to update the word
-        if (!result.Canceled)
+        if (!result.Canceled && result.Data is BannedWordDto updatedWord)
         {
-            Snackbar.Add("Banned word updated successfully", Severity.Success);
+            try
+            {
+                var response = await Http.PutAsJsonAsync($"api/admin/banned-words/{word.Id}", updatedWord);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var savedWord = await response.Content.ReadFromJsonAsync<BannedWordDto>();
+                    // Update the word in the list
+                    var index = bannedWords.FindIndex(w => w.Id == word.Id);
+                    if (index != -1)
+                    {
+                        bannedWords[index] = savedWord;
+                        StateHasChanged();
+                    }
+                    Snackbar.Add("Banned word updated successfully", Severity.Success);
+                }
+                else
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    Snackbar.Add($"Failed to update banned word: {error}", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+            }
         }
     }
 
@@ -250,9 +274,27 @@
 
         if (confirm == true)
         {
-            // Here you would implement the API call to delete the word
-            Snackbar.Add("Banned word deleted successfully", Severity.Success);
-            await LoadBannedWords();
+            try
+            {
+                var response = await Http.DeleteAsync($"api/admin/banned-words/{id}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Remove the word from the list
+                    bannedWords.RemoveAll(w => w.Id == id);
+                    StateHasChanged();
+                    Snackbar.Add("Banned word deleted successfully", Severity.Success);
+                }
+                else
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    Snackbar.Add($"Failed to delete banned word: {error}", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+            }
         }
     }
 
@@ -264,17 +306,25 @@
             bool originalValue = word.IsActive;
             word.IsActive = !word.IsActive;
 
-            // Here you would implement the API call to toggle the word status
-            try
+            var response = await Http.PutAsJsonAsync($"api/admin/banned-words/{word.Id}", word);
+
+            if (response.IsSuccessStatusCode)
             {
-                // API call would go here
+                var savedWord = await response.Content.ReadFromJsonAsync<BannedWordDto>();
+                // Update the word in the list
+                var index = bannedWords.FindIndex(w => w.Id == word.Id);
+                if (index != -1)
+                {
+                    bannedWords[index] = savedWord;
+                }
                 Snackbar.Add($"Banned word {(word.IsActive ? "activated" : "deactivated")} successfully", Severity.Success);
             }
-            catch
+            else
             {
                 // Revert on failure
                 word.IsActive = originalValue;
-                throw;
+                var error = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Failed to update word status: {error}", Severity.Error);
             }
         }
         catch (Exception ex)

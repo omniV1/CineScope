@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace CineScope.Server.Services
     /// Service responsible for filtering user-generated content.
     /// Identifies and flags inappropriate content based on a list of banned words.
     /// </summary>
-    public class ContentFilterService
+    public class ContentFilterService : IContentFilterService
     {
         /// <summary>
         /// Reference to the MongoDB service for database operations.
@@ -215,57 +216,6 @@ namespace CineScope.Server.Services
             var collection = _mongoDbService.GetCollection<BannedWord>(_settings.BannedWordsCollectionName);
             _cachedBannedWords = await collection.Find(w => w.IsActive).ToListAsync();
             _cacheLastUpdated = DateTime.UtcNow;
-        }
-    }
-
-    /// <summary>
-    /// Represents the result of a content filter validation.
-    /// Contains approval status and details of any violations.
-    /// Enhanced with severity scoring for graduated responses.
-    /// </summary>
-    public class ContentFilterResult
-    {
-        /// <summary>
-        /// Indicates whether the content is approved (true) or rejected (false).
-        /// </summary>
-        public bool IsApproved { get; set; }
-
-        /// <summary>
-        /// List of banned words found in the content.
-        /// Empty if no violations are found.
-        /// </summary>
-        public List<string> ViolationWords { get; set; } = new();
-
-        /// <summary>
-        /// Cumulative severity score of all violations.
-        /// Can be used for graduated responses (warning vs. rejection).
-        /// </summary>
-        public int SeverityScore { get; set; } = 0;
-
-        /// <summary>
-        /// Gets a user-friendly message explaining the reason for rejection.
-        /// </summary>
-        /// <returns>A message suitable for displaying to users</returns>
-        public string GetUserFriendlyMessage()
-        {
-            if (IsApproved)
-            {
-                return "Content approved";
-            }
-
-            // Customize messages based on severity
-            if (SeverityScore >= 10)
-            {
-                return "Your content contains highly inappropriate language and has been rejected.";
-            }
-            else if (SeverityScore >= 5)
-            {
-                return "Your content contains inappropriate language. Please revise before submitting.";
-            }
-            else
-            {
-                return "Your content may contain inappropriate language. Please review before submitting.";
-            }
         }
     }
 }

@@ -129,6 +129,55 @@ namespace CineScope.Server.Controllers
             }
         }
 
+        [HttpPut("banned-words/{id}")]
+        public async Task<ActionResult<BannedWordDto>> UpdateBannedWord(string id, [FromBody] BannedWordDto bannedWordDto)
+        {
+            try
+            {
+                if (id != bannedWordDto.Id)
+                {
+                    return BadRequest(new { Message = "ID mismatch" });
+                }
+
+                var result = await _adminService.UpdateBannedWordAsync(id, bannedWordDto);
+                if (result == null)
+                {
+                    return NotFound(new { Message = $"Banned word with ID {id} not found" });
+                }
+
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error updating banned word with ID: {id}");
+                return StatusCode(500, new { Message = "Error updating banned word", Error = ex.Message });
+            }
+        }
+
+        [HttpDelete("banned-words/{id}")]
+        public async Task<IActionResult> DeleteBannedWord(string id)
+        {
+            try
+            {
+                var success = await _adminService.DeleteBannedWordAsync(id);
+                if (!success)
+                {
+                    return NotFound(new { Message = $"Banned word with ID {id} not found" });
+                }
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error deleting banned word with ID: {id}");
+                return StatusCode(500, new { Message = "Error deleting banned word", Error = ex.Message });
+            }
+        }
+
         [HttpPost("moderate/{reviewId}")]
         public async Task<IActionResult> ModerateContent(string reviewId, [FromBody] ModerationActionDto action)
         {

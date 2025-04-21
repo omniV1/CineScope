@@ -1,7 +1,10 @@
 ﻿@using MudBlazor
 @using Microsoft.AspNetCore.Components.Authorization
+@using CineScope.Client.Services
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
+@inject StateContainer StateContainer
+@implements IDisposable
 
 <div class="d-flex flex-column h-100">
     <!-- Navigation menu for the application -->
@@ -13,12 +16,27 @@
         <MudNavLink Href="movies" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Movie">Movies</MudNavLink>
 
         <!-- MCP Demo link -->
-        <MudNavLink Href="mcp" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.QuestionAnswer">
-            <div class="d-flex flex-column">
-                <div>Help & FAQ</div>
-                <MudText Typo="Typo.caption">Ask Claude about movies</MudText>
-            </div>
-        </MudNavLink>
+        <AuthorizeView>
+            <Authorized>
+                <MudNavLink Href="mcp" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.QuestionAnswer">
+                    <div class="d-flex flex-column">
+                        <div>Help & FAQ</div>
+                        <MudText Typo="Typo.caption">Ask Claude about movies</MudText>
+                    </div>
+                </MudNavLink>
+            </Authorized>
+            <NotAuthorized>
+                <MudNavLink Href="login" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.QuestionAnswer">
+                    <div class="d-flex flex-column">
+                        <div>Help & FAQ</div>
+                        <MudText Typo="Typo.caption" Color="Color.Warning">
+                            <MudIcon Icon="@Icons.Material.Filled.Lock" Size="Size.Small" Class="mr-1" />
+                            Login required
+                        </MudText>
+                    </div>
+                </MudNavLink>
+            </NotAuthorized>
+        </AuthorizeView>
 
         <!-- Admin dashboard link - only shown for admins -->
         <AuthorizeView Roles="Admin">
@@ -78,4 +96,15 @@
     public string Username { get; set; } = "";
 
     private string AvatarStyle => $"background-color: transparent; border-radius: 50%; {(UserProfilePicture == "default.svg" ? "" : "border: 2px solid var(--mud-palette-error);")}";
+
+    protected override void OnInitialized()
+    {
+        StateContainer.OnChange += StateHasChanged;
+        UserProfilePicture = StateContainer.UserProfilePicture;
+    }
+
+    public void Dispose()
+    {
+        StateContainer.OnChange -= StateHasChanged;
+    }
 }

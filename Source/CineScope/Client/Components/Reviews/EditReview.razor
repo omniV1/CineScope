@@ -6,40 +6,55 @@
 
 <MudDialog>
     <TitleContent>
-        <MudText Typo="Typo.h6">Edit Review for "@MovieTitle"</MudText>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-2" />
+            Edit Review for "@MovieTitle"
+        </MudText>
     </TitleContent>
     <DialogContent>
         <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
-            <!-- Custom rating selection -->
+            <!-- Rating section with improved visual feedback -->
             <div class="d-flex flex-column gap-2 mb-4">
-                <MudText Typo="Typo.subtitle1">Your Rating</MudText>
+                <MudText Typo="Typo.subtitle1" Class="d-flex align-center">
+                    <MudIcon Icon="@Icons.Material.Filled.Star" Class="mr-2" Color="Color.Warning" />
+                    Your Rating
+                </MudText>
                 <div class="d-flex align-center">
-                    @for (int i = 1; i <= 5; i++)
-                    {
-                        int ratingVal = i;
-                        <MudIconButton Icon="@(ratingValue >= ratingVal ? Icons.Material.Filled.Star : Icons.Material.Outlined.StarOutline)"
-                                       Color="Color.Warning"
-                                       OnClick="@(() => SetRating(ratingVal))" />
-                    }
-                    <MudText Typo="Typo.body2" Class="ml-2">(@ratingValue stars)</MudText>
+                    <MudRating Value="@ratingValue" ValueChanged="@((int value) => ratingValue = value)" 
+                              MaxValue="5" Color="Color.Warning" Size="Size.Large" />
+                    <MudText Typo="Typo.body2" Class="ml-4">
+                        @(ratingValue switch
+                        {
+                            1 => "Poor",
+                            2 => "Fair",
+                            3 => "Good",
+                            4 => "Very Good",
+                            5 => "Excellent",
+                            _ => "Select a rating"
+                        })
+                    </MudText>
                 </div>
             </div>
 
-            <!-- Review text -->
+            <!-- Review text with character counter and validation -->
             <MudTextField T="string" Label="Your Review" @bind-Value="reviewText"
                           Required="true" RequiredError="Review text is required"
                           Variant="Variant.Outlined" Lines="5"
                           Counter="1000" MaxLength="1000"
-                          HelperText="Write your thoughts about the movie" />
+                          Immediate="true"
+                          HelperText="Share your thoughts about the movie"
+                          Class="mb-4" />
 
             @if (!string.IsNullOrEmpty(errorMessage))
             {
-                <MudAlert Severity="Severity.Error" Class="mt-4" Dense="true">@errorMessage</MudAlert>
+                <MudAlert Severity="Severity.Error" Class="mb-4" Dense="true" Elevation="0">
+                    @errorMessage
+                </MudAlert>
             }
 
             @if (contentWarning != null && contentWarning.Any())
             {
-                <MudAlert Severity="Severity.Warning" Class="mt-4">
+                <MudAlert Severity="Severity.Warning" Class="mb-4" Elevation="0">
                     <MudText>Content Warning</MudText>
                     <MudText Typo="Typo.body2">
                         Your review contains content that may violate our community guidelines.
@@ -50,16 +65,17 @@
         </MudForm>
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="Cancel">Cancel</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                   Disabled="@(!success || isLoading || ratingValue == 0)" OnClick="SubmitChanges">
+        <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="Cancel" DisableElevation>Cancel</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SubmitChanges" 
+                   Disabled="@(isLoading || !success || ratingValue == 0)" DisableElevation>
             @if (isLoading)
             {
                 <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                <MudText Class="ms-2">Updating</MudText>
+                <MudText Class="ms-2">Saving...</MudText>
             }
             else
             {
+                <MudIcon Icon="@Icons.Material.Filled.Save" Class="mr-2" />
                 <MudText>Save Changes</MudText>
             }
         </MudButton>
@@ -80,19 +96,9 @@
     [Parameter] public ReviewDto Review { get; set; } = new ReviewDto();
     [Parameter] public string MovieTitle { get; set; } = string.Empty;
 
-    // Local state
-    private double ratingValue;
+    // Local state - change type from double to int
+    private int ratingValue;
     private string reviewText;
-
-    /// <summary>
-    /// Sets the rating value directly
-    /// </summary>
-    private void SetRating(int rating)
-    {
-        ratingValue = rating;
-        Console.WriteLine($"Rating manually set to: {ratingValue}");
-        StateHasChanged();
-    }
 
     /// <summary>
     /// Initializes component data when parameters set
@@ -100,7 +106,7 @@
     protected override void OnParametersSet()
     {
         // Set initial values from the review parameter
-        ratingValue = Review.Rating;
+        ratingValue = (int)Math.Round(Review.Rating);
         reviewText = Review.Text;
         Console.WriteLine($"EditReview initialized with rating: {ratingValue}");
     }
@@ -196,7 +202,7 @@
                     MovieId = Review.MovieId,
                     UserId = Review.UserId,
                     Username = Review.Username,
-                    Rating = ratingValue,
+                    Rating = ratingValue, // This will now be converted from int to double implicitly
                     Text = reviewText,
                     CreatedAt = Review.CreatedAt
                 };

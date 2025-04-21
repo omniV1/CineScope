@@ -1,5 +1,7 @@
 ﻿@using CineScope.Client.Shared.Profile
+@using CineScope.Client.Services
 @inject ISnackbar Snackbar
+@inject StateContainer StateContainer
 
 <MudPaper Class="pa-4 mb-4" Elevation="0">
     <div class="d-flex flex-column">
@@ -103,15 +105,10 @@
         Console.WriteLine($"ProfilePictureSelector initialized with URL: {SelectedProfilePicture}");
     }
 
-    private async Task SelectProfilePicture(string pictureUrl)
+    private async Task SelectProfilePicture(string picture)
     {
-        // Only trigger event if selection has changed
-        if (pictureUrl != SelectedProfilePicture)
-        {
-            SelectedProfilePicture = pictureUrl;
-            Console.WriteLine($"Selected profile picture: {pictureUrl}");
-            await OnProfilePictureSelected.InvokeAsync(pictureUrl);
-            Snackbar.Add("Profile picture selected", Severity.Success);
-        }
+        SelectedProfilePicture = picture;
+        StateContainer.UserProfilePicture = Path.GetFileName(picture);
+        await OnProfilePictureSelected.InvokeAsync(picture);
     }
 }

@@ -16,15 +16,18 @@ namespace CineScope.Server.Services
         private readonly IMongoDbService _mongoDbService;
         private readonly MongoDbSettings _settings;
         private readonly ILogger<AdminService> _logger;
+        private readonly IContentFilterService _contentFilterService;
 
         public AdminService(
             IMongoDbService mongoDbService,
             IOptions<MongoDbSettings> settings,
-            ILogger<AdminService> logger)
+            ILogger<AdminService> logger,
+            IContentFilterService contentFilterService)
         {
             _mongoDbService = mongoDbService;
             _settings = settings.Value;
             _logger = logger;
+            _contentFilterService = contentFilterService;
         }
 
         public async Task<List<ReviewModerationDto>> GetFlaggedReviewsAsync()
@@ -306,6 +309,77 @@ namespace CineScope.Server.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error adding banned word: {bannedWordDto.Word}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Updates an existing banned word.
+        /// </summary>
+        public async Task<BannedWordDto?> UpdateBannedWordAsync(string id, BannedWordDto bannedWordDto)
+        {
+            try
+            {
+                var bannedWordsCollection = _mongoDbService.GetCollection<BannedWord>(_settings.BannedWordsCollectionName);
+
+                // Check if another word with the same text exists (excluding the current word)
+                var existingWord = await bannedWordsCollection
+                    .Find(w => w.Word == bannedWordDto.Word && w.Id != id)
+                    .FirstOrDefaultAsync();
+
+                if (existingWord != null)
+                {
+                    throw new InvalidOperationException($"The word '{bannedWordDto.Word}' is already in the banned words list.");
+                }
+
+                // Convert DTO to domain model
+                var bannedWord = MapToModel(bannedWordDto);
+                bannedWord.UpdatedAt = DateTime.UtcNow;
+
+                var result = await bannedWordsCollection.ReplaceOneAsync(
+                    w => w.Id == id,
+                    bannedWord);
+
+                if (result.ModifiedCount == 0)
+                {
+                    return null;
+                }
+
+                // Refresh the content filter cache
+                await _contentFilterService.RefreshCacheAsync();
+
+                return MapToDto(bannedWord);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error updating banned word with ID: {id}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Deletes a banned word.
+        /// </summary>
+        public async Task<bool> DeleteBannedWordAsync(string id)
+        {
+            try
+            {
+                var bannedWordsCollection = _mongoDbService.GetCollection<BannedWord>(_settings.BannedWordsCollectionName);
+
+                var result = await bannedWordsCollection.DeleteOneAsync(w => w.Id == id);
+
+                if (result.DeletedCount > 0)
+                {
+                    // Refresh the content filter cache
+                    await _contentFilterService.RefreshCacheAsync();
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error deleting banned word with ID: {id}");
                 throw;
             }
         }

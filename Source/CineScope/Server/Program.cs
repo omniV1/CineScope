@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Runtime.CompilerServices;
+using Azure.Identity;
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
 
 [assembly: InternalsVisibleTo("CineScope.Tests")]
 
@@ -52,6 +54,18 @@ public partial class Program
         if (builder.Environment.IsDevelopment())
         {
             builder.Configuration.AddUserSecrets<Program>();
+        }
+
+        // Configure Key Vault for non-development environments
+        if (!builder.Environment.IsDevelopment())
+        {
+            var keyVaultUrl = builder.Configuration["KeyVault:Url"];
+            if (!string.IsNullOrEmpty(keyVaultUrl))
+            {
+                builder.Configuration.AddAzureKeyVault(
+                    new Uri(keyVaultUrl),
+                    new DefaultAzureCredential());
+            }
         }
 
         /// <summary>
@@ -149,6 +163,7 @@ public partial class Program
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<ReviewService>();
         builder.Services.AddScoped<ContentFilterService>();
+        builder.Services.AddScoped<IContentFilterService, ContentFilterService>();
         builder.Services.AddScoped<UserService>();
 
         /// <summary>

@@ -267,46 +267,63 @@ namespace CineScope.Server.Controllers
         [Authorize] // Require authentication
         public async Task<IActionResult> UpdateReview(string id, [FromBody] ReviewDto reviewDto)
         {
-            // Validate content against banned words
-            var contentValidation = await _contentFilterService.ValidateContentAsync(reviewDto.Text);
-
-            // If content is not approved, return bad request
-            if (!contentValidation.IsApproved)
+            try
             {
-                return BadRequest(new
+                // Get the authenticated user's ID
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("sub");
+                if (userIdClaim == null)
                 {
-                    Message = "Review contains inappropriate content",
-                    ViolationWords = contentValidation.ViolationWords
-                });
+                    return Unauthorized(new { Message = "User identity could not be determined" });
+                }
+
+                // Get the existing review
+                var existingReview = await _reviewService.GetReviewByIdAsync(id);
+
+                // If review doesn't exist, return 404
+                if (existingReview == null)
+                    return NotFound(new { Message = "Review not found" });
+
+                // Verify the user owns this review
+                if (existingReview.UserId != userIdClaim.Value)
+                {
+                    return Forbid();
+                }
+
+                // Validate content against banned words
+                var contentValidation = await _contentFilterService.ValidateContentAsync(reviewDto.Text);
+
+                // If content is not approved, return bad request
+                if (!contentValidation.IsApproved)
+                {
+                    return BadRequest(new
+                    {
+                        Message = "Review contains inappropriate content",
+                        ViolationWords = contentValidation.ViolationWords
+                    });
+                }
+
+                // Update properties
+                existingReview.Rating = reviewDto.Rating;
+                existingReview.Text = reviewDto.Text;
+                existingReview.UpdatedAt = DateTime.UtcNow;
+
+                // Perform the update
+                var success = await _reviewService.UpdateReviewAsync(id, existingReview);
+
+                if (success)
+                {
+                    // Update the movie's average rating
+                    await _reviewService.UpdateMovieAverageRatingAsync(existingReview.MovieId);
+                    return NoContent();
+                }
+                else
+                    return BadRequest(new { Message = "Failed to update review" });
             }
-
-            // Get the existing review
-            var existingReview = await _reviewService.GetReviewByIdAsync(id);
-
-            // If review doesn't exist, return 404
-            if (existingReview == null)
-                return NotFound();
-
-            // In a real implementation, verify the user is authorized to update this review
-            // For example: if (existingReview.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
-            //    return Forbid();
-
-            // Update properties
-            existingReview.Rating = reviewDto.Rating;
-            existingReview.Text = reviewDto.Text;
-            existingReview.UpdatedAt = DateTime.UtcNow;
-
-            // Perform the update
-            var success = await _reviewService.UpdateReviewAsync(id, existingReview);
-
-            if (success)
+            catch (Exception ex)
             {
-                // Update the movie's average rating
-                await _reviewService.UpdateMovieAverageRatingAsync(existingReview.MovieId);
-                return NoContent();
+                Console.WriteLine($"Error updating review: {ex.Message}");
+                return StatusCode(500, new { Message = "An error occurred while updating the review" });
             }
-            else
-                return BadRequest("Failed to update review");
         }
 
         /// <summary>
@@ -319,28 +336,45 @@ namespace CineScope.Server.Controllers
         [Authorize] // Require authentication
         public async Task<IActionResult> DeleteReview(string id)
         {
-            // Get the existing review
-            var existingReview = await _reviewService.GetReviewByIdAsync(id);
-
-            // If review doesn't exist, return 404
-            if (existingReview == null)
-                return NotFound();
-
-            // In a real implementation, verify the user is authorized to delete this review
-            // For example: if (existingReview.UserId != User.FindFirstValue(ClaimTypes.NameIdentifier))
-            //    return Forbid();
-
-            // Perform the deletion
-            var success = await _reviewService.DeleteReviewAsync(id);
-
-            if (success)
+            try
             {
-                // Update the movie's average rating
-                await _reviewService.UpdateMovieAverageRatingAsync(existingReview.MovieId);
-                return NoContent();
+                // Get the authenticated user's ID
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("sub");
+                if (userIdClaim == null)
+                {
+                    return Unauthorized(new { Message = "User identity could not be determined" });
+                }
+
+                // Get the existing review
+                var existingReview = await _reviewService.GetReviewByIdAsync(id);
+
+                // If review doesn't exist, return 404
+                if (existingReview == null)
+                    return NotFound(new { Message = "Review not found" });
+
+                // Verify the user owns this review
+                if (existingReview.UserId != userIdClaim.Value)
+                {
+                    return Forbid();
+                }
+
+                // Perform the deletion
+                var success = await _reviewService.DeleteReviewAsync(id);
+
+                if (success)
+                {
+                    // Update the movie's average rating
+                    await _reviewService.UpdateMovieAverageRatingAsync(existingReview.MovieId);
+                    return NoContent();
+                }
+                else
+                    return BadRequest(new { Message = "Failed to delete review" });
             }
-            else
-                return BadRequest("Failed to delete review");
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting review: {ex.Message}");
+                return StatusCode(500, new { Message = "An error occurred while deleting the review" });
+            }
         }
 
         /// <summary>

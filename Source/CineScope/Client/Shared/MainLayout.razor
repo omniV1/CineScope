@@ -73,8 +73,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-        StateContainer.OnChange += StateHasChanged;
+        StateContainer.OnChange += HandleStateChange;
+        _userProfilePicture = StateContainer.UserProfilePicture;
         await RefreshUserState();
+    }
+
+    private void HandleStateChange()
+    {
+        _userProfilePicture = StateContainer.UserProfilePicture;
+        StateHasChanged();
     }
 
     protected override async Task OnParametersSetAsync()
@@ -112,6 +119,6 @@
 
     public void Dispose()
     {
-        StateContainer.OnChange -= StateHasChanged;
+        StateContainer.OnChange -= HandleStateChange;
     }
 }
