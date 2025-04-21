@@ -53,6 +53,14 @@
                 const config = await response.json();
                 const siteKey = config.ReCaptcha.SiteKey;
 
+                if (!siteKey) {
+                    console.error('reCAPTCHA site key not found in configuration');
+                    resolve(null);
+                    return;
+                }
+
+                console.log('Initializing reCAPTCHA with site key:', siteKey);
+
                 var checkRecaptchaInterval = setInterval(function () {
                     if (typeof grecaptcha !== 'undefined' && grecaptcha.render) {
                         clearInterval(checkRecaptchaInterval);
@@ -73,6 +81,7 @@
                                     }
                                 }
                             });
+                            console.log('reCAPTCHA widget rendered successfully');
                             resolve(recaptchaWidget);
                         } catch (e) {
                             console.error('reCAPTCHA render error:', e);
@@ -127,26 +136,24 @@
 </head>
 
 <body>
-    <!-- Root element where Blazor renders the application -->
     <div id="app">
-        <!-- Loading indicator shown until Blazor initializes -->
-        <div class="loading-progress-text">
-            <div style="text-align: center; padding-top: 100px;">
-                <h1 style="color: #E50914;">CineScope</h1>
-                <p>Loading your cinematic experience...</p>
-                <div class="mud-progress-circular mud-default-text" role="progressbar" style="height: 40px; width: 40px; margin: 20px auto;">
-                    <svg class="mud-progress-circular-svg" viewBox="22 22 44 44">
-                        <circle class="mud-progress-circular-circle-indeterminate" cx="44" cy="44" r="20" fill="none" stroke-width="3"></circle>
-                    </svg>
-                </div>
+        <div class="loading-container">
+            <div class="loading-animation">
+                <div class="loading-circle"></div>
+                <div class="loading-circle"></div>
+                <div class="loading-circle"></div>
             </div>
+            <div class="loading-text">Loading CineScope...</div>
         </div>
     </div>
 
-    <!-- Blazor WebAssembly framework script -->
-    <script src="_framework/blazor.webassembly.js"></script>
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
 
-    <!-- MudBlazor JavaScript functionality -->
+    <script src="_framework/blazor.webassembly.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
 </body>
 
