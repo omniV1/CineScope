@@ -16,9 +16,7 @@ April 25, 2025
 |----------|-----|
 | Jira Issue Tracking | [https://cinescopedev.atlassian.net/issues/?filter=-9](https://cinescopedev.atlassian.net/issues/?filter=-9) |
 | Source Code Repository | [https://github.com/omniV1/CineScope/tree/main](https://github.com/omniV1/CineScope/tree/main) |
-| Unit Tests | [View Unit Tests](https://github.com/omniV1/CineScope/tree/main/Source/CineScope/CineScope.Tests.Unit) |
-| Integration Tests | [View Integration Tests](https://github.com/omniV1/CineScope/tree/main/Source/CineScope/CineScope.Tests.Integration) |
-| MongoDB | [Database Implementation](https://github.com/omniV1/CineScope/tree/main/Source/CineScope/CineScope.Tests.Integration) |
+
 
 ---
 
