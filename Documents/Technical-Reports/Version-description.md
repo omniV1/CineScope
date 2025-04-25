@@ -18,6 +18,7 @@ April 25, 2025
 |----------|-----|
 | Jira Issue Tracking | [https://cinescopedev.atlassian.net/issues/?filter=-9](https://cinescopedev.atlassian.net/issues/?filter=-9) |
 | Source Code Repository | [https://github.com/omniV1/CineScope/tree/main](https://github.com/omniV1/CineScope/tree/main) |
+| Release V.1 | https://github.com/omniV1/CineScope/releases/tag/Dev |
 
 
 ---
