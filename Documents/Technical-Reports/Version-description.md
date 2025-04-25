@@ -8,6 +8,8 @@ Grand Canyon University: CST-326
 
 April 25, 2025
 
+## Project Version 1.0
+
 ---
 
 ### Project Links
